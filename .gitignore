@@ -1,29 +1,39 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
 
-# Precompiled Headers
-*.gch
-*.pch
+# Mac OS X cruft
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.user
+project.xcworkspace
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+.DS_Store
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+build/
 
-# Fortran module files
-*.mod
-*.smod
+# Windows cruft
+*.suo
+*.ncb
+*.sdf
+*.VC.opendb
+*.VC.db
+*.opensdf
+Debug/
+Release/
+RelWithDebInfo
+ipch/
+*/vc2013/enc_temp_folder
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# Jetbrains IDEs
+.idea
 
-# Executables
-*.exe
-*.out
-*.app
+# doxygen generated files
+docs/html
+docs/doxygen/cinder.tag
+
+# dart
+.pub
+pubspec.lock
+vector_math
+test/MasonTests/assets/wisps/packages/cinder
