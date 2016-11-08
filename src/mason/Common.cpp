@@ -29,7 +29,9 @@
 #include "mason/Assets.h"
 #include "mason/Hud.h"
 
-#include "cidart/VM.h"
+#if defined( CINDER_DART_ENABLED )
+	#include "cidart/VM.h"
+#endif
 
 using namespace ci;
 using namespace std;
@@ -67,6 +69,19 @@ const fs::path& getRepoRootPath()
 	return sRepoRootPath;
 }
 
+
+ci::fs::path getDataPath()
+{
+	return getRepoRootPath() / "data";
+}
+
+fs::path getGlslDirectory()
+{
+	return getRepoRootPath() / "src/glsl";
+}
+
+#if defined( CINDER_DART_ENABLED )
+
 fs::path getCinderDartDirectory()
 {
 	return getRepoRootPath() / "lib/Cinder-Dart/src/cidart";
@@ -75,11 +90,6 @@ fs::path getCinderDartDirectory()
 fs::path getDartScriptDirectory()
 {
 	return getRepoRootPath() / "src/dart";
-}
-
-fs::path getGlslDirectory()
-{
-	return getRepoRootPath() / "src/glsl";
 }
 
 DataSourceRef getDartSnapshot()
@@ -109,10 +119,7 @@ void initializeDartVM()
 	}
 }
 
-ci::fs::path getDataPath()
-{
-	return getRepoRootPath() / "data";
-}
+#endif // defined( CINDER_DART_ENABLED )
 
 void notifyResourceReloaded()
 {

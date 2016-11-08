@@ -43,27 +43,30 @@
 
 namespace mason {
 
+//! Returns the path the mason repository root
 const ci::fs::path&		getRepoRootPath();
-//! returns the directory that contains cinder.dart
-ci::fs::path			getCinderDartDirectory();
-//! returns the base directory for mason-specific dart code
-ci::fs::path			getDartScriptDirectory();
-//! returns the snapshot_gen.bin that ships with Cinder-Dart
-ci::DataSourceRef		getDartSnapshot();
 //! returns the root directory for common glsl
 ci::fs::path			getGlslDirectory();
 //! Returns the directory containing repo assets
 ci::fs::path			getDataPath();
 
+#if defined( CINDER_DART_ENABLED )
+//! returns the directory that contains cinder.dart
+ci::fs::path			getCinderDartDirectory();
+//! returns the base directory for mason-specific dart code
+ci::fs::path			getDartScriptDirectory();
+//! returns the snapshot_gen.bin that ships with Cinder-Dart
+ci::DataSourceRef		getDartSnapshot(); 
 //! Initializes dart script paths and installs the snapshot bin according to mason repo layout.
-void					initializeDartVM();
-
-void    notifyResourceReloaded();
-
-ci::Timeline*   timeline();
+void					initializeDartVM(); 
+#endif
 
 //! Initializes a bunch of global stuff
 void		initialize();
+//! Sends a global notification that a resource has been loaded. If Hud is in use, this causes the border to flash green.
+void    notifyResourceReloaded();
+//! Returns a pointer the global Timeline instance
+ci::Timeline*   timeline();
 
 // TODO: move these to mason/Rand.h
 void		initRand( bool randomSeed = false );
