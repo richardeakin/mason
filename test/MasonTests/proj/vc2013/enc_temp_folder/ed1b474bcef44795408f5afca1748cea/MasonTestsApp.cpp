@@ -48,6 +48,8 @@ void MasonTestsApp::setup()
 	mSuite->registerSuiteView<MiscTest>( "misc" );
 
 	reload();
+	//size_t testIndex = ma::config()->get<size_t>( "app", "test" );
+	//mSuite->select( testIndex );
 }
 
 void MasonTestsApp::reload()
