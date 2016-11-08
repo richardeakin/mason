@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -18,6 +10,63 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\cppformat\format.cc" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Graph.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Image.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ImageView.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Interface3d.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Label.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layer.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Renderer.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ScrollView.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Selector.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Slider.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Suite.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\TextManager.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\View.cpp" />
+    <ClCompile Include="..\..\src\mason\Assets.cpp" />
+    <ClCompile Include="..\..\src\mason\CameraFpsUi.cpp" />
+    <ClCompile Include="..\..\src\mason\Common.cpp" />
+    <ClCompile Include="..\..\src\mason\Hud.cpp" />
+    <ClCompile Include="..\..\src\mason\Notifications.cpp" />
+    <ClCompile Include="..\..\src\mason\ui\Controls.cpp" />
+    <ClCompile Include="..\..\src\mason\VisualMonitor.cpp" />
+    <ClCompile Include="..\..\src\mason\WorldClock.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\cppformat\format.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Graph.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Image.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ImageView.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Interface3d.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Label.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layer.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Renderer.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ScrollView.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Selector.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Slider.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Suite.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\TextManager.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ui.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\View.h" />
+    <ClInclude Include="..\..\src\mason\Assets.h" />
+    <ClInclude Include="..\..\src\mason\CameraFpsUi.h" />
+    <ClInclude Include="..\..\src\mason\Common.h" />
+    <ClInclude Include="..\..\src\mason\Hud.h" />
+    <ClInclude Include="..\..\src\mason\Mason.h" />
+    <ClInclude Include="..\..\src\mason\Notifications.h" />
+    <ClInclude Include="..\..\src\mason\ui\Controls.h" />
+    <ClInclude Include="..\..\src\mason\ui\ShaderControls.h" />
+    <ClInclude Include="..\..\src\mason\Var.h" />
+    <ClInclude Include="..\..\src\mason\VisualMonitor.h" />
+    <ClInclude Include="..\..\src\mason\WorldClock.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -25,29 +74,16 @@
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -56,32 +92,23 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
@@ -89,25 +116,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,6 +131,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
