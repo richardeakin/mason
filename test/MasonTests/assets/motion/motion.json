@@ -1,0 +1,13 @@
+{
+	"a" : {
+		"type" : "vec2",
+		"valueBegin" : 0, // TODO: consider calling this from / to instead as it is shorter. first check other types
+		"keyFrames : [
+			{
+				"valueEnd" : 300,
+				"ease" : "EaseInCubic"
+
+			}
+		]
+	}
+}

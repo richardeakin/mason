@@ -29,6 +29,12 @@
     <Filter Include="Blocks\Cinder-View\src\cppformat">
       <UniqueIdentifier>{6c2fcfa5-4821-4602-b4a5-5a5720e84072}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Blocks\Cinder-Profiler">
+      <UniqueIdentifier>{ade02a93-dba7-4ee7-9c96-378433b87187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cinder-Profiler\src">
+      <UniqueIdentifier>{c955a58e-037a-4404-923b-97b5fa068ae6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mason\Assets.cpp">
@@ -104,6 +110,15 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mason\FileWatcher.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-Profiler\src\Profiler.cpp">
+      <Filter>Blocks\Cinder-Profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\Dictionary.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
   </ItemGroup>
@@ -196,6 +211,18 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\FileWatcher.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-Profiler\src\Profiler.h">
+      <Filter>Blocks\Cinder-Profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\Profiling.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\Dictionary.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>

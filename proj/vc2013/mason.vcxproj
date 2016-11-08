@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\blocks\Cinder-Profiler\src\Profiler.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\cppformat\format.cc" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp" />
@@ -30,14 +31,17 @@
     <ClCompile Include="..\..\src\mason\Assets.cpp" />
     <ClCompile Include="..\..\src\mason\CameraFpsUi.cpp" />
     <ClCompile Include="..\..\src\mason\Common.cpp" />
+    <ClCompile Include="..\..\src\mason\Dictionary.cpp" />
     <ClCompile Include="..\..\src\mason\FileWatcher.cpp" />
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
+    <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp" />
     <ClCompile Include="..\..\src\mason\ui\Controls.cpp" />
     <ClCompile Include="..\..\src\mason\VisualMonitor.cpp" />
     <ClCompile Include="..\..\src\mason\WorldClock.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\blocks\Cinder-Profiler\src\Profiler.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\cppformat\format.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h" />
@@ -59,10 +63,13 @@
     <ClInclude Include="..\..\src\mason\Assets.h" />
     <ClInclude Include="..\..\src\mason\CameraFpsUi.h" />
     <ClInclude Include="..\..\src\mason\Common.h" />
+    <ClInclude Include="..\..\src\mason\Dictionary.h" />
     <ClInclude Include="..\..\src\mason\FileWatcher.h" />
     <ClInclude Include="..\..\src\mason\Hud.h" />
     <ClInclude Include="..\..\src\mason\Mason.h" />
     <ClInclude Include="..\..\src\mason\Notifications.h" />
+    <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h" />
+    <ClInclude Include="..\..\src\mason\Profiling.h" />
     <ClInclude Include="..\..\src\mason\ui\Controls.h" />
     <ClInclude Include="..\..\src\mason\ui\ShaderControls.h" />
     <ClInclude Include="..\..\src\mason\Var.h" />

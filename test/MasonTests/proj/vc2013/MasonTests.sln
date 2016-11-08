@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MasonTests", "MasonTests.vcxproj", "{940020E9-C4C8-4FB9-B9B1-78F062133556}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mason", "..\..\..\..\proj\vc2013\mason.vcxproj", "{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{940020E9-C4C8-4FB9-B9B1-78F062133556}.Debug|x64.ActiveCfg = Release|x64
+		{940020E9-C4C8-4FB9-B9B1-78F062133556}.Debug|x64.Build.0 = Release|x64
+		{940020E9-C4C8-4FB9-B9B1-78F062133556}.Release|x64.ActiveCfg = Release|x64
+		{940020E9-C4C8-4FB9-B9B1-78F062133556}.Release|x64.Build.0 = Release|x64
+		{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}.Debug|x64.ActiveCfg = Debug|x64
+		{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}.Debug|x64.Build.0 = Debug|x64
+		{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}.Release|x64.ActiveCfg = Release|x64
+		{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
