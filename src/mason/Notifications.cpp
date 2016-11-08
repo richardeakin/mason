@@ -87,7 +87,7 @@ void Dispatch::once( double delaySeconds, const std::function<void ()> &func )
 	// - perhaps I should be using a Timeline controlled by Score, and do the stepTo there
 //	timeline.stepTo( app::getElapsedSeconds() );
 
-	timeline->add( func, timeline->getCurrentTime() + delaySeconds );
+	timeline->add( func, timeline->getCurrentTime() + (float)delaySeconds );
 }
 
 // static

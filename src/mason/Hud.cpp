@@ -301,13 +301,13 @@ void Hud::updateNotificationBorder()
 	if( mShouldIndicateFailure ) {
 		mIsInidicatingFailure = true; // don't allow success to be indicated until failure completes
 		app::timeline().apply( mBorderView->getColorAnim(), ColorA( 0.5f, 0, 0 ), ColorA( 0, 0, 0, 0 ), 1.2f, EaseInCubic() )
-			.startTime( app::getElapsedSeconds() )
+			.startTime( (float)app::getElapsedSeconds() )
 			.finishFn( [this] { mIsInidicatingFailure = false; } )
 		;
 	}
 	else if( ! mIsInidicatingFailure && mShouldIndicateSuccess ) {
 		app::timeline().apply( mBorderView->getColorAnim(), ColorA( 0.1f, 0.5f, 0.1f ), ColorA( 0, 0, 0, 0 ), 0.9f, EaseInQuad() )
-			.startTime( app::getElapsedSeconds() )
+			.startTime( (float)app::getElapsedSeconds() )
 		;
 	}
 
