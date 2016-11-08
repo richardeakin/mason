@@ -103,6 +103,9 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\View.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\FileWatcher.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -191,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\View.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\FileWatcher.h">
+      <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

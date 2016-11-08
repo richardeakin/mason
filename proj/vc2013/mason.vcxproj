@@ -30,6 +30,7 @@
     <ClCompile Include="..\..\src\mason\Assets.cpp" />
     <ClCompile Include="..\..\src\mason\CameraFpsUi.cpp" />
     <ClCompile Include="..\..\src\mason\Common.cpp" />
+    <ClCompile Include="..\..\src\mason\FileWatcher.cpp" />
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
     <ClCompile Include="..\..\src\mason\ui\Controls.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="..\..\src\mason\Assets.h" />
     <ClInclude Include="..\..\src\mason\CameraFpsUi.h" />
     <ClInclude Include="..\..\src\mason\Common.h" />
+    <ClInclude Include="..\..\src\mason\FileWatcher.h" />
     <ClInclude Include="..\..\src\mason\Hud.h" />
     <ClInclude Include="..\..\src\mason\Mason.h" />
     <ClInclude Include="..\..\src\mason\Notifications.h" />
