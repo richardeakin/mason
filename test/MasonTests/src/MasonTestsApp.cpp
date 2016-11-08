@@ -109,27 +109,34 @@ void MasonTestsApp::draw()
 	CI_CHECK_GL();
 }
 
-CINDER_APP( MasonTestsApp, RendererGl( RendererGl::Options().msaa( MSAA ) ), []( App::Settings *settings ) {
+void prepareSettings(App::Settings *settings)
+{
 
-	bool useSecondaryScreen = ( USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1 );
+	bool useSecondaryScreen = (USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1);
 
-	if( useSecondaryScreen ) {
-		for( const auto &display : Display::getDisplays() ) {
+	if (useSecondaryScreen) {
+		for (const auto &display : Display::getDisplays()) {
 			//CI_LOG_I( "display name: " << display->getName() );
-			if( display->getName() == "Color LCD" ) {
+			if (display->getName() == "Color LCD") {
 				// macbook
-				settings->setDisplay( display );
-				settings->setWindowSize( 1280, 720 );
+				settings->setDisplay(display);
+				settings->setWindowSize(1280, 720);
 			}
-			else if( display->getName() == "Generic PnP Monitor" ) {
+			else if (display->getName() == "Generic PnP Monitor") {
 				// gechic 1303i 13"touch display
-				settings->setDisplay( display );
-				settings->setFullScreen( true );
+				settings->setDisplay(display);
+				settings->setFullScreen(true);
 			}
 		}
 	}
 	else {
-		settings->setWindowPos( 0, 0 );
+#if defined( CINDER_MAC )
+		vec2 windowPos = { 0, 0 };
+#else
+		vec2 windowPos = { 0, 24 };
+#endif
+		settings->setWindowPos( windowPos.x, windowPos.y );
 		settings->setWindowSize( 960, 565 );
 	}
-} )
+}
+CINDER_APP( MasonTestsApp, RendererGl( RendererGl::Options().msaa( MSAA ) ), prepareSettings )

@@ -56,12 +56,13 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>"$(CINDER_PATH)\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\mason.lib;$(REPO_PATH)\lib\Cinder-View\lib\msw\$(PlatformTarget)\$(Configuration)\cinder-view.lib;cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -87,7 +88,7 @@
       <AdditionalIncludeDirectories>"$(CINDER_PATH)\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\mason.lib;$(REPO_PATH)\lib\Cinder-View\lib\msw\$(PlatformTarget)\$(Configuration)\cinder-view.lib;cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>

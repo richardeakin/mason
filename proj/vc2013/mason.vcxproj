@@ -15,12 +15,14 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\cppformat\format.cc" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Filter.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Graph.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Image.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ImageView.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Interface3d.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Label.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layer.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layout.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Renderer.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ScrollView.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Selector.cpp" />
@@ -46,12 +48,14 @@
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Filter.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Graph.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Image.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ImageView.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Interface3d.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Label.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layer.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layout.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Renderer.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ScrollView.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Selector.h" />
@@ -126,6 +130,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +147,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
