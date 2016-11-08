@@ -1,3 +1,9 @@
 [submodule "blocks/Cinder-View"]
 	path = blocks/Cinder-View
 	url = git@github.com:richardeakin/Cinder-View.git
+[submodule "blocks/Cinder-Profiler"]
+	path = blocks/Cinder-Profiler
+	url = git@github.com:num3ric/Cinder-Profiler.git
+[submodule "blocks/Cinder-Dictionary"]
+	path = blocks/Cinder-Dictionary
+	url = git@github.com:richardeakin/Cinder-Dictionary.git
