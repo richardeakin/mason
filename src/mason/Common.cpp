@@ -121,6 +121,16 @@ void initializeDartVM()
 
 #endif // defined( CINDER_DART_ENABLED )
 
+ci::Timeline* timeline()
+{
+	return &app::timeline();
+}
+
+double currentTime()
+{
+	return app::getElapsedSeconds();
+}
+
 void notifyResourceReloaded()
 {
 	NotificationCenter::post( NOTIFY_RESOURCE_RELOADED );

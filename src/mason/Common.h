@@ -67,6 +67,8 @@ void		initialize();
 void    notifyResourceReloaded();
 //! Returns a pointer the global Timeline instance
 ci::Timeline*   timeline();
+//! Returns the current time since the app was started
+double			currentTime();
 
 // TODO: move these to mason/Rand.h
 void		initRand( bool randomSeed = false );
