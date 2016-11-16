@@ -43,8 +43,10 @@
 
 namespace mason {
 
-//! Returns the path the mason repository root
+//! Returns the path the current repositories root folder (walks up from the executable until '.git' is found.
 const ci::fs::path&		getRepoRootPath();
+//! Returns a resolved a file path, removing any '..'s if they exist.
+ci::fs::path normalizePath( const ci::fs::path &path );
 
 #if defined( CINDER_DART_ENABLED )
 //! returns the directory that contains cinder.dart

@@ -69,6 +69,41 @@ const fs::path& getRepoRootPath()
 	return sRepoRootPath;
 }
 
+// http://stackoverflow.com/a/12797413/506584
+fs::path normalizePath( const fs::path &path )
+{
+	fs::path absPath = fs::absolute( path );
+	fs::path::iterator it = absPath.begin();
+	fs::path result = *it++;
+
+	// Get canonical version of the existing part
+	for( ; fs::exists( result / *it ) && it != absPath.end(); ++it ) {
+		result /= *it;
+	}
+	result = canonical( result );
+
+	// For the rest remove ".." and "." in a path with no symlinks
+	for( ; it != absPath.end(); ++it ) {
+		// Just move back on ../
+		if( *it == ".." ) {
+			result = result.parent_path();
+		}
+		// Ignore "."
+		else if( *it != "." ) {
+			// Just cat other path entries
+			result /= *it;
+		}
+	}
+
+	// Remove leading forward slash, if it exists
+	if( !result.empty() && result.string().front() == '/' ) {
+		string tmp = result.string();
+		result = tmp.erase( 0, 1 );
+	}
+
+	return result;
+}
+
 #if defined( CINDER_DART_ENABLED )
 
 fs::path getCinderDartDirectory()
