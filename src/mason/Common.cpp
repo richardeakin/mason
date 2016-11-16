@@ -69,17 +69,6 @@ const fs::path& getRepoRootPath()
 	return sRepoRootPath;
 }
 
-
-ci::fs::path getDataPath()
-{
-	return getRepoRootPath() / "data";
-}
-
-fs::path getGlslDirectory()
-{
-	return getRepoRootPath() / "src/glsl";
-}
-
 #if defined( CINDER_DART_ENABLED )
 
 fs::path getCinderDartDirectory()
@@ -139,7 +128,6 @@ void notifyResourceReloaded()
 void initialize()
 {
 	initRand();
-	app::addAssetDirectory( ma::getGlslDirectory() );
 	log::makeOrGetLogger<ma::LoggerNotification>();
 	ma::assets()->getSignalShaderLoaded().connect( ci::signals::slot( ma::hud(), &ma::Hud::addShaderControls ) );
 }

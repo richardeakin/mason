@@ -48,8 +48,6 @@ AssetManager* AssetManager::instance()
 
 AssetManager::AssetManager()
 {
-	mShaderPreprocessor.addSearchDirectory( mason::getGlslDirectory() );
-
 #if defined( CINDER_GL_ES )
 	mShaderPreprocessor.setVersion( 300 );
 	mShaderPreprocessor.addDefine( "CINDER_GL_ES" );
