@@ -59,8 +59,8 @@ ci::DataSourceRef		getDartSnapshot();
 void					initializeDartVM(); 
 #endif
 
-//! Initializes a bunch of global stuff
-void		initialize();
+//! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
+void		initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
 //! Sends a global notification that a resource has been loaded. If Hud is in use, this causes the border to flash green.
 void    notifyResourceReloaded();
 //! Returns a pointer the global Timeline instance

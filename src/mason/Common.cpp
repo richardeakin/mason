@@ -160,11 +160,21 @@ void notifyResourceReloaded()
 	NotificationCenter::post( NOTIFY_RESOURCE_RELOADED );
 }
 
-void initialize()
+void initialize( const fs::path &masonRootDir )
 {
 	initRand();
 	log::makeOrGetLogger<ma::LoggerNotification>();
 	ma::assets()->getSignalShaderLoaded().connect( ci::signals::slot( ma::hud(), &ma::Hud::addShaderControls ) );
+
+	if( ! masonRootDir.empty() ) {
+		fs::path glslDir = masonRootDir / "src/glsl";
+		if( fs::exists( glslDir ) && fs::is_directory( glslDir ) ) {
+			ma::assets()->getShaderPreprocessor()->addSearchDirectory( glslDir );
+		}
+		else {
+			CI_LOG_W( "not a directory: " << glslDir << ", is masonRootDir correct (" << masonRootDir << ")?" );
+		}
+	}
 }
 
 
@@ -172,8 +182,8 @@ void initRand( bool randomSeed )
 {
 	if( randomSeed ) {
 		auto now = std::chrono::system_clock::now().time_since_epoch();
-		int seconds = std::chrono::duration_cast<std::chrono::seconds>( now ).count();
-		sRand.seed( seconds );
+		auto seconds = std::chrono::duration_cast<std::chrono::seconds>( now ).count();
+		sRand.seed( (int32_t)seconds );
 	}
 	else
 		sRand.seed( 21837219 );

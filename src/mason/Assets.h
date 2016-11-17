@@ -202,6 +202,8 @@ public:
 	//!
 	void readArchive( const ci::DataSourceRef &dataSource );
 
+	ci::gl::ShaderPreprocessor*	getShaderPreprocessor()	{ return &mShaderPreprocessor; }
+
 private:
 	AssetManager();
 
