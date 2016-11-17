@@ -245,6 +245,11 @@ void Hud::resizeInfoLabel()
 	mInfoLabel->setBounds( { windowSize - labelSize - PADDING, windowSize - PADDING } ); // anchor bottom right
 }
 
+void Hud::showInfo( size_t rowIndex, const std::vector<std::string> &textColumns )
+{
+	mInfoLabel->setRow( rowIndex, textColumns );
+}
+
 void Hud::layout()
 {
 	mGraph->setSize( app::getWindowSize() );

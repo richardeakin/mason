@@ -79,7 +79,7 @@ class Hud : public VarOwner {
 
 	ui::GraphRef getGraph() const					{ return mGraph; }
 	ui::StrokedRectViewRef	getBorderView() const	{ return mBorderView; }
-	//! Returns a LabelGrid that users can display information with
+	//! Returns a LabelGrid that users can display information with.
 	ui::LabelGridRef    getInfoLabel() const { return mInfoLabel; }
 
 	void addView( const ui::ViewRef &view, const std::string &label, const Options &options = Options() );
@@ -110,7 +110,10 @@ class Hud : public VarOwner {
 	template <typename T>
 	std::shared_ptr<ui::NumberBoxT<T>> numBox( Var<T> *x, const std::string &label, Options options = Options() );
 
+	//! Displays the app's average frames per second at row index 0 in the info panel
 	void showFps( bool show = true )	{ mShowFps = show; }
+	//! Displays a set of strings at the provided row index.
+	void showInfo( size_t rowIndex, const std::vector<std::string> &textColumns );
 
 	// VarOwner implementation. TODO: make private or protected if possible
 	void removeTarget( void *target ) override;
