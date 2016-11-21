@@ -42,10 +42,9 @@ void MasonTestsApp::setup()
 
 	mSuite = make_shared<ui::Suite>();
 
-	//mSuite->registerSuiteView<MotionTest>( "motion" );
 	mSuite->registerSuiteView<HudTest>( "hud" );
-//	mSuite->registerSuiteView<BlendingTest>( "blending" );
 	mSuite->registerSuiteView<MiscTest>( "misc" );
+	//mSuite->registerSuiteView<MotionTest>( "motion" );
 
 	reload();
 }

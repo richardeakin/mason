@@ -110,10 +110,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\BlendingTest.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\EmptyTest.cpp" />
     <ClCompile Include="..\..\src\HudTest.cpp" />
     <ClCompile Include="..\..\src\MasonTestsApp.cpp" />
@@ -126,7 +122,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ClInclude Include="..\..\src\BlendingTest.h" />
     <ClInclude Include="..\..\src\EmptyTest.h" />
     <ClInclude Include="..\..\src\HudTest.h" />
     <ClInclude Include="..\..\src\MiscTest.h" />
