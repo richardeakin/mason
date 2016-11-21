@@ -38,9 +38,6 @@
 #include <memory>
 #include <string>
 
-// TODO: remove, Hud handles this with a custom logger now
-#define MA_LOG_EXCEPTION( str, exc )	{ CI_LOG_E( str << ", exception type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() ); mason::NotificationCenter::post( mason::NOTIFY_ERROR ); }
-
 namespace mason {
 
 //! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
