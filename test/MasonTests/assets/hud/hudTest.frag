@@ -1,7 +1,6 @@
 #version 410
 
-#include "util.glsl"
-#include "hg_sdf.glsl"
+#include "mason/util.glsl"
 
 uniform float ciElapsedSeconds;
 
