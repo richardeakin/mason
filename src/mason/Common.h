@@ -43,28 +43,17 @@
 
 namespace mason {
 
+//! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
+void					initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
 //! Returns the path the current repositories root folder (walks up from the executable until '.git' is found.
 const ci::fs::path&		getRepoRootPath();
 //! Returns a resolved a file path, removing any '..'s if they exist.
-ci::fs::path normalizePath( const ci::fs::path &path );
-
-#if defined( CINDER_DART_ENABLED )
-//! returns the directory that contains cinder.dart
-ci::fs::path			getCinderDartDirectory();
-//! returns the base directory for mason-specific dart code
-ci::fs::path			getDartScriptDirectory();
-//! returns the snapshot_gen.bin that ships with Cinder-Dart
-ci::DataSourceRef		getDartSnapshot(); 
-//! Initializes dart script paths and installs the snapshot bin according to mason repo layout.
-void					initializeDartVM(); 
-#endif
-
-//! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
-void		initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
+ci::fs::path			normalizePath( const ci::fs::path &path );
 //! Sends a global notification that a resource has been loaded. If Hud is in use, this causes the border to flash green.
-void    notifyResourceReloaded();
+void					notifyResourceReloaded();
+
 //! Returns a pointer the global Timeline instance
-ci::Timeline*   timeline();
+ci::Timeline*	timeline();
 //! Returns the current time since the app was started
 double			currentTime();
 

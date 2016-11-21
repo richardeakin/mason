@@ -29,9 +29,6 @@
 #include "mason/Assets.h"
 #include "mason/Hud.h"
 
-#if defined( CINDER_DART_ENABLED )
-	#include "cidart/VM.h"
-#endif
 
 using namespace ci;
 using namespace std;
@@ -103,47 +100,6 @@ fs::path normalizePath( const fs::path &path )
 
 	return result;
 }
-
-#if defined( CINDER_DART_ENABLED )
-
-fs::path getCinderDartDirectory()
-{
-	return getRepoRootPath() / "lib/Cinder-Dart/src/cidart";
-}
-
-fs::path getDartScriptDirectory()
-{
-	return getRepoRootPath() / "src/dart";
-}
-
-DataSourceRef getDartSnapshot()
-{
-	fs::path fullSnapshotPath = getRepoRootPath() / "lib/Cinder-Dart/dart-runtime/lib/snapshot_gen.bin";
-
-	try {
-		return loadFile( fullSnapshotPath );
-	}
-	catch( std::exception &exc ) {
-		CI_LOG_EXCEPTION( "failed to load snapshot_gen.bin at expected path: " << fullSnapshotPath, exc );
-	}
-
-	return DataSourceRef();
-}
-
-void initializeDartVM()
-{
-	static bool sInitialized = false;
-	if( ! sInitialized ) {
-		sInitialized = true;
-
-		auto vm = cidart::VM::instance();
-		vm->addImportDirectory( getCinderDartDirectory() );
-		vm->addImportDirectory( getDartScriptDirectory() );
-		vm->setSnapshotBinDataSource( getDartSnapshot() );
-	}
-}
-
-#endif // defined( CINDER_DART_ENABLED )
 
 ci::Timeline* timeline()
 {
