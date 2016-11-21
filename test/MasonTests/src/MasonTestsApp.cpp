@@ -38,7 +38,7 @@ class MasonTestsApp : public App {
 
 void MasonTestsApp::setup()
 {
-	ma::initialize();
+	ma::initialize( ma::getRepoRootPath() );
 
 	mSuite = make_shared<ui::Suite>();
 

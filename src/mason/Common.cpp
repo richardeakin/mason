@@ -57,7 +57,7 @@ const fs::path& getRepoRootPath()
 				break;
 
 			const fs::path currentGitPath = currentPath / ".git";
-			if( fs::exists( currentGitPath ) && fs::is_directory( currentGitPath ) ) {
+			if( fs::exists( currentGitPath ) ) {
 				sRepoRootPath = currentPath;
 				break;
 			}
