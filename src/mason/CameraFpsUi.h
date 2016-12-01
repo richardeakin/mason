@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include "mason/Mason.h"
+
 #include "cinder/Vector.h"
 #include "cinder/Camera.h"
 #include "cinder/app/MouseEvent.h"

@@ -21,6 +21,8 @@
 
  #pragma once
 
+#include "mason/Mason.h"
+
 #include "cinder/Cinder.h"
 #include "cinder/Signals.h"
 
