@@ -68,18 +68,46 @@ uint32_t AssetManager::uuid( const string &str )
 	return uint32_t( hasher( str ) );
 }
 
-//! Returns the requested shader. Loads the files synchronously if the shader is not cached. Returns empty shader if the shader could not be compiled.
-gl::GlslProgRef AssetManager::getShader( const fs::path &vertex, const gl::GlslProg::Format &format )
+namespace {
+
+void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::Format *format )
 {
-	uint32_t hash = uuid( vertex.generic_string() );
+	string suffix = shaderFile->getFilePathHint().extension().string();
+
+	if( suffix == ".vert" )
+		format->vertex( shaderFile );
+	else if( suffix == ".frag" )
+		format->fragment( shaderFile );
+	else if( suffix == ".comp" )
+		format->compute( shaderFile );
+	else if( suffix == ".geom" )
+		format->geometry( shaderFile );
+	else if( suffix == ".tesc" )
+		format->tessellationCtrl( shaderFile );
+	else if( suffix == ".tese" )
+		format->tessellationEval( shaderFile );
+	else {
+		string errorMessage = "unexpected suffix '" + suffix + "' for shader file: " + shaderFile->getFilePathHint().string();
+		throw AssetManagerExc( errorMessage );
+	}
+}
+
+} // anonymous namespace
+
+//! Returns the requested shader. Loads the files synchronously if the shader is not cached. Returns empty shader if the shader could not be compiled.
+gl::GlslProgRef AssetManager::getShader( const fs::path &shaderFile, const gl::GlslProg::Format &format )
+{
+	uint32_t hash = uuid( shaderFile.generic_string() );
 
 	gl::GlslProgRef shader = mShaders[hash].lock();
 	if( ! shader || mGroups[hash]->isModified() ) {
-		auto vertFile = findFile( vertex );
+		auto shaderDataSource = findFile( shaderFile );
 
 		try {
 			auto formatCopy = format;
-			formatCopy.vertex( vertFile );
+
+			// find the type of shader by looking at the suffix
+			setShaderFilePathBySuffix( shaderDataSource, &formatCopy );
 
 			auto group = getAssetGroupRef( hash );
 			shader = reloadShader( formatCopy, group, hash );
@@ -90,7 +118,7 @@ gl::GlslProgRef AssetManager::getShader( const fs::path &vertex, const gl::GlslP
 		catch( const exception &exc ) {
 			if( mAssetErrors.count( hash ) < 1 ) {
 				mAssetErrors[hash] = true;
-				CI_LOG_EXCEPTION( "Failed to compile glsl: " << vertex.filename(), exc );
+				CI_LOG_EXCEPTION( "Failed to compile glsl: " << shaderFile.filename(), exc );
 			}
 		}
 	}
@@ -136,11 +164,11 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const g
 	auto glslModifiedCallback = [this, format, hash, updateCallback, vertex] {
 		try {
 			// Update the format's source.
-			DataSourceRef vertFile = findFile( vertex );
+			DataSourceRef shaderDataSource = findFile( vertex );
 
 			// need to make an additional copy of format because the one captured by value in the lambda is const
 			auto formatCopy = format;
-			formatCopy.vertex( vertFile );
+			setShaderFilePathBySuffix( shaderDataSource, &formatCopy );
 
 			auto group = getAssetGroupRef( hash );
 
@@ -170,6 +198,7 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const g
 	return conn;
 }
 
+// TODO: make this generic, vector of fs::paths along with overloads
 ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const fs::path &fragment, const gl::GlslProg::Format &format, const function<void( gl::GlslProgRef )> &updateCallback )
 {
 	uint32_t hash = uuid( vertex.generic_string() + fragment.generic_string() );
@@ -218,35 +247,54 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const f
 	return conn;
 }
 
+//string AssetManager::parseShaderSource( const fs::path &shaderPath, const AssetGroupRef &group )
+//{
+//	auto vertPath = format.getVertexPath();
+//	group->addAsset( getAssetRef( shaderPath ) );
+//
+//	return mShaderPreprocessor.parse( format.getVertex(), vertPath, &stageIncludedFiles );
+//}
+
 ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format, const AssetGroupRef &group, uint32_t hash )
 {
-	format.setPreprocessingEnabled( false ); // we use our own, preconfigured ShaderPreprocessor
+	format.setPreprocessingEnabled( false ); // we use our own, pre-configured ShaderPreprocessor
 
 	std::vector<std::pair<ci::fs::path, std::string>>	sources;
 
+	std::vector<fs::path> includedFiles;
+	std::set<fs::path> stageIncludedFiles; // '#include'd files parsed by the preprocessor during each stage
+
 	// copy shader paths out first, resetting source on GlslProg::Format will clear them
-	auto vertPath = format.getVertexPath();
-	auto fragPath = format.getFragmentPath();
 
 	// always add the asset paths and clear modified indicator, which enables the shader to be reloaded even if it errored on initial load
-	group->addAsset( getAssetRef( vertPath ) );
 	group->setModified( false );
+	if( ! format.getVertexPath().empty() ) {
+		auto shaderPath = format.getVertexPath();
+		group->addAsset( getAssetRef( shaderPath ) );
 
-	std::vector<fs::path>					includedFiles;
-
-	std::set<fs::path> stageIncludedFiles;
-	string parsedVertex = mShaderPreprocessor.parse( format.getVertex(), vertPath, &stageIncludedFiles );
-	format.vertex( parsedVertex );
-	sources.push_back( { vertPath, parsedVertex } );
-	includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
-
-	if( ! fragPath.empty() ) {
-		group->addAsset( getAssetRef( fragPath ) );
+		string parsedShader = mShaderPreprocessor.parse( format.getVertex(), shaderPath, &stageIncludedFiles );
+		format.vertex( parsedShader );
+		sources.push_back( { shaderPath, parsedShader } );
+		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
+	}
+	if( ! format.getFragmentPath().empty() ) {
+		auto shaderPath = format.getFragmentPath();
+		group->addAsset( getAssetRef( shaderPath ) );
 
 		stageIncludedFiles.clear();
-		string parsedFrag = mShaderPreprocessor.parse( format.getFragment(), fragPath, &stageIncludedFiles );
-		format.fragment( parsedFrag );
-		sources.push_back( { fragPath, parsedFrag } );
+		string parsedShader = mShaderPreprocessor.parse( format.getFragment(), shaderPath, &stageIncludedFiles );
+		format.fragment( parsedShader );
+		sources.push_back( { shaderPath, parsedShader } );
+		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
+	}
+	if( ! format.getComputePath().empty() ) {
+		auto shaderPath = format.getComputePath();
+		group->addAsset( getAssetRef( shaderPath ) );
+
+		stageIncludedFiles.clear();
+		string parsedShader = mShaderPreprocessor.parse( format.getFragment(), shaderPath, &stageIncludedFiles );
+		format.fragment( parsedShader );
+		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
 	}
 
@@ -257,10 +305,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 
 	auto shader = gl::GlslProg::create( format );
 	mShaders[hash] = shader;
-
-
 	mAssetErrors.erase( hash );
-
 	mSignalShaderLoaded.emit( shader, sources );
 
 	return shader;
