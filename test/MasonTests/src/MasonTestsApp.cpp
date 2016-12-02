@@ -52,6 +52,8 @@ void MasonTestsApp::setup()
 void MasonTestsApp::reload()
 {
 	ma::assets()->getFile( app::getAssetPath( "config.json" ), [this]( DataSourceRef dataSource ) {
+		CI_LOG_I( "config.json reloaded" );
+
 		ma::config()->read( dataSource );
 
 		size_t testIndex = (size_t)ma::config()->get<int>( "app", "test" );

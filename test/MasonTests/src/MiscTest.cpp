@@ -42,6 +42,8 @@ MiscTest::MiscTest()
 	catch( exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
 	}
+
+	testConnectionList();
 }
 
 void MiscTest::testDict( const ma::Dictionary &dict )
@@ -78,6 +80,19 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 		oddNumbersStr += "[" + to_string( i ) + "] " + to_string( oddNumbers[i] ) + ", ";
 	}
 	CI_LOG_I( "num elements in oddNumbers: " << oddNumbers.size() << ", values: " << oddNumbersStr );
+}
+
+void MiscTest::testConnectionList()
+{
+	mConnectionList += app::getWindow()->getSignalMouseDown().connect( [this]( app::MouseEvent &event ) {
+		CI_LOG_I( "this: " << hex << this << dec << ", mouse down pos: " << event.getPos() );
+	} );
+	mConnectionList += app::getWindow()->getSignalMouseUp().connect( [this]( app::MouseEvent &event ) {
+		CI_LOG_I( "this: " << hex << this << dec << ", mouse up pos: " << event.getPos() );
+	} );
+	mConnectionList += app::getWindow()->getSignalMouseDrag().connect( [this]( app::MouseEvent &event ) {
+		CI_LOG_I( "this: " << hex << this << dec << ", mouse drag pos: " << event.getPos() );
+	} );
 }
 
 void MiscTest::layout()

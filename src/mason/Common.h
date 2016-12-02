@@ -38,6 +38,9 @@
 #include <memory>
 #include <string>
 
+// For temporary ConnectionList
+#include "cinder/Signals.h"
+
 namespace mason {
 
 //! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
@@ -64,5 +67,29 @@ bool epsilonEqual( const ci::Rectf &r1, const ci::Rectf &r2, float epsilon );
 
 //! Returns a stringified stack trace ready for logging. TODO: move to cinder core
 std::string stackTraceAsString( size_t startingFrame = 0, size_t count = 0, bool skipPlatformFrames = true );
+
+
+struct ConnectionList : private ci::Noncopyable {
+
+	~ConnectionList()
+	{
+		for( auto &conn : mConnections )
+			conn.disconnect();
+	}
+
+	void add( ci::signals::Connection &&target )
+	{
+		mConnections.emplace_back( target );
+	}
+
+	void operator+=( ci::signals::Connection &&target )
+	{
+		add( std::move( target ) );	
+	}
+
+
+private:
+	std::vector<ci::signals::Connection>	mConnections;
+};
 
 } // namespace mason
