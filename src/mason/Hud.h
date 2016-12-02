@@ -100,7 +100,7 @@ class Hud : public VarOwner {
 	//! Adds a CheckBox to the Hud that manipulates \c x in 'immediate mode', that is it must be called once per draw loop.
 	ui::CheckBoxRef checkBox( bool *x, const std::string &label, Options options = Options() );
 	//! Adds a CheckBox to the Hud in 'immediate mode', that is it must be called once per draw loop. Get the value by called `isEnabled()` on the result.
-	ui::CheckBoxRef checkBox( const std::string &label, const Options &options = Options() );
+	ui::CheckBoxRef checkBox( const std::string &label, bool defaultValue = false, const Options &options = Options() );
 	//! Adds a CheckBox to the Hud that manipulates \c x in 'persistent mode', and is only removed once `x` is destroyed (it is not owned by the Hud).
 	ui::CheckBoxRef checkBox( Var<bool> *x, const std::string &label, Options options = Options() );
 	//!

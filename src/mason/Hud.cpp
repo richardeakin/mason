@@ -419,9 +419,9 @@ ui::CheckBoxRef Hud::checkBox( bool *x, const std::string &label, Options option
 	return checkBox;
 }
 
-ui::CheckBoxRef Hud::checkBox( const std::string &label, const Options &options )
+ui::CheckBoxRef Hud::checkBox( const std::string &label, bool defaultValue, const Options &options )
 {
-	bool x;
+	bool x = defaultValue;
 	return checkBox( &x, label, options );
 }
 
