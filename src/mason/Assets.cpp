@@ -292,8 +292,8 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		group->addAsset( getAssetRef( shaderPath ) );
 
 		stageIncludedFiles.clear();
-		string parsedShader = mShaderPreprocessor.parse( format.getFragment(), shaderPath, &stageIncludedFiles );
-		format.fragment( parsedShader );
+		string parsedShader = mShaderPreprocessor.parse( format.getCompute(), shaderPath, &stageIncludedFiles );
+		format.compute( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
 	}
