@@ -35,6 +35,40 @@ using namespace std;
 
 namespace mason {
 
+namespace {
+
+
+//! Returns a unique ID based on the supplied string.
+uint32_t makeUuid( const string &str )
+{
+	hash<string> hasher;
+	return uint32_t( hasher( str ) );
+}
+
+void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::Format *format )
+{
+	string suffix = shaderFile->getFilePathHint().extension().string();
+
+	if( suffix == ".vert" )
+		format->vertex( shaderFile );
+	else if( suffix == ".frag" )
+		format->fragment( shaderFile );
+	else if( suffix == ".comp" )
+		format->compute( shaderFile );
+	else if( suffix == ".geom" )
+		format->geometry( shaderFile );
+	else if( suffix == ".tesc" )
+		format->tessellationCtrl( shaderFile );
+	else if( suffix == ".tese" )
+		format->tessellationEval( shaderFile );
+	else {
+		string errorMessage = "unexpected suffix '" + suffix + "' for shader file: " + shaderFile->getFilePathHint().string();
+		throw AssetManagerExc( errorMessage );
+	}
+}
+
+} // anonymous namespace
+
 // ----------------------------------------------------------------------------------------------------
 // AssetManager
 // ----------------------------------------------------------------------------------------------------
@@ -61,42 +95,9 @@ AssetManager::~AssetManager()
 {
 }
 
-// static
-uint32_t AssetManager::uuid( const string &str )
-{
-	hash<string> hasher;
-	return uint32_t( hasher( str ) );
-}
-
-namespace {
-
-void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::Format *format )
-{
-	string suffix = shaderFile->getFilePathHint().extension().string();
-
-	if( suffix == ".vert" )
-		format->vertex( shaderFile );
-	else if( suffix == ".frag" )
-		format->fragment( shaderFile );
-	else if( suffix == ".comp" )
-		format->compute( shaderFile );
-	else if( suffix == ".geom" )
-		format->geometry( shaderFile );
-	else if( suffix == ".tesc" )
-		format->tessellationCtrl( shaderFile );
-	else if( suffix == ".tese" )
-		format->tessellationEval( shaderFile );
-	else {
-		string errorMessage = "unexpected suffix '" + suffix + "' for shader file: " + shaderFile->getFilePathHint().string();
-		throw AssetManagerExc( errorMessage );
-	}
-}
-
-} // anonymous namespace
-
 ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const gl::GlslProg::Format &format, const function<void( gl::GlslProgRef )> &updateCallback )
 {
-	uint32_t hash = uuid( vertex.generic_string() );
+	uint32_t hash = makeUuid( vertex.generic_string() );
 
 	auto glslModifiedCallback = [this, format, hash, updateCallback, vertex] {
 		try {
@@ -138,7 +139,7 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const g
 // TODO: make this generic, vector of fs::paths along with overloads
 ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const fs::path &fragment, const gl::GlslProg::Format &format, const function<void( gl::GlslProgRef )> &updateCallback )
 {
-	uint32_t hash = uuid( vertex.generic_string() + fragment.generic_string() );
+	uint32_t hash = makeUuid( vertex.generic_string() + fragment.generic_string() );
 
 	if( vertex.filename() == "scene.vert" ) {
 		int blarg = 2;
@@ -253,7 +254,7 @@ gl::Texture2dRef AssetManager::getTexture( const fs::path& path )
 {
 	auto dataSource = findFile( path );
 	fs::path fullPath = dataSource->getFilePathHint(); // works with both file and archived assets
-	uint32_t hash = uuid( fullPath.generic_string() );
+	uint32_t hash = makeUuid( fullPath.generic_string() );
 
 	gl::Texture2dRef texture = mTextures[hash].lock();
 	if( ! texture || mGroups[hash]->isModified() ) {
@@ -446,7 +447,7 @@ AssetRef AssetManager::getAssetRef( const fs::path &path )
 {
 //	lock_guard<mutex> lock( mAssetsLock );
 
-	uint32_t hash = uuid( path.generic_string() );
+	uint32_t hash = makeUuid( path.generic_string() );
 	auto asset = mAssets[hash];
 
 	if( ! asset ) {

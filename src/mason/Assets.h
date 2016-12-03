@@ -145,9 +145,6 @@ public:
 	static AssetManager* instance();
 	~AssetManager();
 
-	//! Returns a unique ID based on the supplied string.
-	static uint32_t uuid( const std::string& str );
-
 	//! Returns the requested shader within the provided \a updateCallback upon initial load and any time it is updated on file.
 	ci::signals::Connection getShader( const ci::fs::path& vertex, const ci::gl::GlslProg::Format &format, const std::function<void( ci::gl::GlslProgRef )> &updateCallback );
 	//! Returns the requested shader within the provided \a updateCallback upon initial load and any time it is updated on file.
