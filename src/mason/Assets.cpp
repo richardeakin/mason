@@ -94,69 +94,6 @@ void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::F
 
 } // anonymous namespace
 
-//! Returns the requested shader. Loads the files synchronously if the shader is not cached. Returns empty shader if the shader could not be compiled.
-gl::GlslProgRef AssetManager::getShader( const fs::path &shaderFile, const gl::GlslProg::Format &format )
-{
-	uint32_t hash = uuid( shaderFile.generic_string() );
-
-	gl::GlslProgRef shader = mShaders[hash].lock();
-	if( ! shader || mGroups[hash]->isModified() ) {
-		auto shaderDataSource = findFile( shaderFile );
-
-		try {
-			auto formatCopy = format;
-
-			// find the type of shader by looking at the suffix
-			setShaderFilePathBySuffix( shaderDataSource, &formatCopy );
-
-			auto group = getAssetGroupRef( hash );
-			shader = reloadShader( formatCopy, group, hash );
-			mShaders[hash] = shader;
-
-			notifyResourceReloaded();
-		}
-		catch( const exception &exc ) {
-			if( mAssetErrors.count( hash ) < 1 ) {
-				mAssetErrors[hash] = true;
-				CI_LOG_EXCEPTION( "Failed to compile glsl: " << shaderFile.filename(), exc );
-			}
-		}
-	}
-
-	return shader;
-}
-
-//! Returns the requested shader. Loads the files synchronously if the shader is not cached. Returns empty shader if the shader could not be compiled.
-gl::GlslProgRef AssetManager::getShader( const fs::path& vertex, const fs::path& fragment, const gl::GlslProg::Format &format )
-{
-	uint32_t hash = uuid( vertex.generic_string() + fragment.generic_string() );
-
-	gl::GlslProgRef shader = mShaders[hash].lock();
-	if( ! shader || mGroups[hash]->isModified() ) {
-		auto vert = findFile( vertex );
-		auto frag = findFile( fragment );
-
-		try {
-			auto formatCopy = format;
-			formatCopy.vertex( vert );
-			formatCopy.fragment( frag );
-
-			auto group = getAssetGroupRef( hash );
-			shader = reloadShader( formatCopy, group, hash );
-
-			notifyResourceReloaded();
-		}
-		catch( const exception &exc ) {
-			if( mAssetErrors.count( hash ) < 1 ) {
-				mAssetErrors[hash] = true;
-				CI_LOG_EXCEPTION( "Failed to compile glsl: [" << vertex.filename() << "," << fragment.filename() << "]", exc );
-			}
-		}
-	}
-
-	return shader;
-}
-
 ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const gl::GlslProg::Format &format, const function<void( gl::GlslProgRef )> &updateCallback )
 {
 	uint32_t hash = uuid( vertex.generic_string() );
