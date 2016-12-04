@@ -86,14 +86,29 @@ float noise3D( in vec3 x )
                    mix( hash(n+170.0), hash(n+171.0),f.x),f.y),f.z);
 }
 
-highp float random( vec2 co )
+float random( vec2 s )
 {
     highp float a = 12.9898;
     highp float b = 78.233;
     highp float c = 43758.5453;
-    highp float dt= dot( co.xy, vec2( a, b ) );
+    highp float dt= dot( s.xy, vec2( a, b ) );
     highp float sn= mod( dt, 3.14 );
     return fract(sin(sn) * c);
+}
+
+float random( float s )
+{
+	return random( vec2( s ) );
+}
+
+float random( vec2 s, float min, float max )
+{
+	return min + random( s ) * ( max - min );
+}
+
+float random( float s, float min, float max )
+{
+	return min + random( s ) * ( max - min );
 }
 
 float fbm( vec2 p )
