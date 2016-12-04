@@ -145,21 +145,13 @@ public:
 	static AssetManager* instance();
 	~AssetManager();
 
-	//! Returns a unique ID based on the supplied string.
-	static uint32_t uuid( const std::string& str );
-
-	//! Returns the requested shader. Loads the files synchronously if the shader is not cached. Returns empty shader if the shader could not be compiled.
-	// TODO: rename all these to getGlsl()
-	ci::gl::GlslProgRef getShader( const ci::fs::path& vertex, const ci::gl::GlslProg::Format &format = ci::gl::GlslProg::Format() );
-	//! Returns the requested shader. Loads the files synchronously if the shader is not cached. Returns empty shader if the shader could not be compiled.
-	ci::gl::GlslProgRef getShader( const ci::fs::path& vertex, const ci::fs::path& fragment, const ci::gl::GlslProg::Format &format = ci::gl::GlslProg::Format() );
-	//!
+	//! Returns the requested shader within the provided \a updateCallback upon initial load and any time it is updated on file.
 	ci::signals::Connection getShader( const ci::fs::path& vertex, const ci::gl::GlslProg::Format &format, const std::function<void( ci::gl::GlslProgRef )> &updateCallback );
-	//!
+	//! Returns the requested shader within the provided \a updateCallback upon initial load and any time it is updated on file.
 	ci::signals::Connection getShader( const ci::fs::path& vertex, const ci::fs::path& fragment, const ci::gl::GlslProg::Format &format, const std::function<void( ci::gl::GlslProgRef )> &updateCallback );
-	//!
+	//! Returns the requested shader within the provided \a updateCallback upon initial load and any time it is updated on file.
 	ci::signals::Connection getShader( const ci::fs::path& vertex, const std::function<void( ci::gl::GlslProgRef )> &updateCallback )	{ return getShader( vertex, ci::gl::GlslProg::Format(), updateCallback ); }
-	//!
+	//! Returns the requested shader within the provided \a updateCallback upon initial load and any time it is updated on file.
 	ci::signals::Connection getShader( const ci::fs::path& vertex, const ci::fs::path& fragment, const std::function<void( ci::gl::GlslProgRef )> &updateCallback ) { return getShader( vertex, fragment, ci::gl::GlslProg::Format(), updateCallback ); }
 
 	//! Returns the requested texture. Loads the file synchronously if the texture is not cached. Returns empty texture if the file failed to load.
