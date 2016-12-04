@@ -111,6 +111,11 @@ float random( float s, float min, float max )
 	return min + random( s ) * ( max - min );
 }
 
+float random( float s, vec2 minMaxRange )
+{
+	return minMaxRange[0] + random( s ) * ( minMaxRange[1] - minMaxRange[0] );
+}
+
 float fbm( vec2 p )
 {
 	const mat2 m = mat2( 0.80,  0.60, -0.60,  0.80 );
