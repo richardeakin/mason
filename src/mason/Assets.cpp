@@ -141,10 +141,6 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const f
 {
 	uint32_t hash = makeUuid( vertex.generic_string() + fragment.generic_string() );
 
-	if( vertex.filename() == "scene.vert" ) {
-		int blarg = 2;
-	}
-
 	auto glslModifiedCallback = [this, format, hash, updateCallback, vertex, fragment] {
 		try {
 
@@ -249,48 +245,57 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 	return shader;
 }
 
-//! Returns the requested texture. Loads the file synchronously if the texture is not cached. Returns empty texture if the file failed to load.
-gl::Texture2dRef AssetManager::getTexture( const fs::path& path )
+signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, const std::function<void( ci::gl::Texture2dRef )> &updateCallback  )
 {
-	auto dataSource = findFile( path );
-	fs::path fullPath = dataSource->getFilePathHint(); // works with both file and archived assets
-	uint32_t hash = makeUuid( fullPath.generic_string() );
+	uint32_t hash = makeUuid( texturePath.generic_string() );
 
-	gl::Texture2dRef texture = mTextures[hash].lock();
-	if( ! texture || mGroups[hash]->isModified() ) {
-
+	auto textureModifiedCallback = [this, texturePath, hash, updateCallback] {
 		try {
-			Surface surface = loadImage( dataSource );
+			auto dataSource = findFile( texturePath );
+
+			gl::Texture2dRef texture = mTextures[hash].lock();
+			if( ! texture || mGroups[hash]->isModified() ) {
+				Surface surface = loadImage( dataSource );
 
 #if USE_DEEP_LOADING
-			if( texture && texture->getSize() == surface.getSize() ) {
-				texture->update( surface, 0 );
-			}
-			else
+				if( texture && texture->getSize() == surface.getSize() ) {
+					texture->update( surface, 0 );
+				}
+				else
 #endif
-			{
-				gl::Texture2d::Format format = gl::Texture2d::Format().mipmap( true ).minFilter( GL_LINEAR_MIPMAP_LINEAR ).wrap( GL_REPEAT );
-				texture = gl::Texture2d::create( surface, format );
-				mTextures[hash] = texture;
+				{
+					gl::Texture2d::Format format = gl::Texture2d::Format().mipmap( true ).minFilter( GL_LINEAR_MIPMAP_LINEAR ).wrap( GL_REPEAT );
+					texture = gl::Texture2d::create( surface, format );
+					mTextures[hash] = texture;
+				}
+
+
+				notifyResourceReloaded();
+				mAssetErrors.erase( hash );
+
+				if( updateCallback )
+					updateCallback( texture );
+
+
 			}
-
-			auto group = getAssetGroupRef( hash );
-			group->addAsset( getAssetRef( fullPath ) );
-			group->setModified( false );
-
-			mAssetErrors.erase( hash );
-
-			notifyResourceReloaded();
 		}
 		catch( const exception &exc ) {
-			if( mAssetErrors.count( hash ) < 1 ) {
+			if( mAssetErrors.count( hash ) == 0 ) {
 				mAssetErrors[hash] = true;
-				CI_LOG_EXCEPTION( "Failed to load texture: " << path.filename(), exc );
+				CI_LOG_EXCEPTION( "Failed to reload texture: [" << texturePath.filename() << "]", exc );
 			}
 		}
-	}
-	
-	return texture;
+	};
+
+	auto group = getAssetGroupRef( hash );
+	group->addAsset( getAssetRef( texturePath ) );
+	group->setModified( false );
+
+	auto connection = group->addModifiedCallback( textureModifiedCallback );
+
+	// ensure the callback specific to this request is fired on initial request
+	textureModifiedCallback();
+	return connection;
 }
 
 /*
@@ -509,31 +514,31 @@ void AssetManager::onFileChanged( const fs::path &path )
 	auto asset = getAssetRef( path );
 	if( asset /* && asset->isModified() */ ) {
 		// Assumes groups never delete themselves from the asset on the main thread.
-		bool bInUse = false;
+		bool inUse = false;
 		for( auto &ref : asset->mGroups ) {
 			auto group = ref.lock();
 			if( group ) {
 				group->setModified( true );
-				bInUse = true;
+				inUse = true;
 
 				// Reset error state, so a new error can be shown.
 				mAssetErrors.erase( group->getUuid() );
 			}
 		}
-		asset->setInUse( bInUse );
+		asset->setInUse( inUse );
 
 		// If this is a texture, force it to update.
-		if( bInUse ) {
-			auto texture = mTextures[asset->getUuid()].lock();
-			if( texture ) {
-				try {
-					getTexture( path );
-				}
-				catch( const std::exception &exc ) {
-					CI_LOG_EXCEPTION( "Failed to get texture", exc );
-				}
-			}
-		}
+		//if( inUse ) {
+		//	auto texture = mTextures[asset->getUuid()].lock();
+		//	if( texture ) {
+		//		try {
+		//			getTexture( path );
+		//		}
+		//		catch( const std::exception &exc ) {
+		//			CI_LOG_EXCEPTION( "Failed to get texture", exc );
+		//		}
+		//	}
+		//}
 	}
 }
 
