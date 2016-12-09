@@ -26,6 +26,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "cinder/DataSource.h"
 #include "cinder/DataTarget.h"
+#include "cinder/Area.h"
+#include "cinder/Rect.h"
 #include "cinder/System.h"
 #include "cinder/Vector.h"
 #include "cinder/Color.h"
@@ -291,6 +293,32 @@ inline bool Config::getValue<ci::vec4>( const Json::Value &value, ci::vec4 *resu
 	success		|= getValue<float>( value[1], &result->y );
 	success		|= getValue<float>( value[2], &result->z );
 	success		|= getValue<float>( value[3], &result->w );
+	return success;
+}
+
+template<>
+inline bool Config::getValue<ci::Area>( const Json::Value &value, ci::Area *result )
+{
+	if( ! value.isArray() || value.size() < 4 )
+		return false;
+
+	bool success = getValue<int32_t>( value[0], &result->x1 );
+	success |= getValue<int32_t>( value[1], &result->y1 );
+	success |= getValue<int32_t>( value[2], &result->x2 );
+	success |= getValue<int32_t>( value[3], &result->y2 );
+	return success;
+}
+
+template<>
+inline bool Config::getValue<ci::Rectf>( const Json::Value &value, ci::Rectf *result )
+{
+	if( ! value.isArray() || value.size() < 4 )
+		return false;
+
+	bool success = getValue<float>( value[0], &result->x1 );
+	success |= getValue<float>( value[1], &result->y1 );
+	success |= getValue<float>( value[2], &result->x2 );
+	success |= getValue<float>( value[3], &result->y2 );
 	return success;
 }
 
