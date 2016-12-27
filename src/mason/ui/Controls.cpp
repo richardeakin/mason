@@ -283,6 +283,31 @@ void NumberBoxT<T>::onValueChanged()
 	getSignalValueChanged().emit();
 }
 
+// Specializing float type:
+template<>
+size_t NumberBoxT<float>::getSize() const
+{
+	return 1;
+}
+
+template <>
+void NumberBoxT<float>::setValue( const float &value )
+{
+	mValue = value;
+	mNumberBoxes[0]->setValue( value );
+
+	getSignalValueChanged().emit();
+}
+
+template <>
+void NumberBoxT<float>::onValueChanged()
+{
+	mValue = mNumberBoxes[0]->getValue();
+
+	getSignalValueChanged().emit();
+}
+
+template class NumberBoxT<float>;
 template class NumberBoxT<vec2>;
 template class NumberBoxT<vec3>;
 template class NumberBoxT<vec4>;

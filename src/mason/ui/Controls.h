@@ -127,10 +127,12 @@ class NumberBoxT : public Control {
 
 };
 
+typedef NumberBoxT<float>		NumberBox1;
 typedef NumberBoxT<ci::vec2>	NumberBox2;
 typedef NumberBoxT<ci::vec3>	NumberBox3;
 typedef NumberBoxT<ci::vec4>	NumberBox4;
 
+typedef std::shared_ptr<NumberBox1>	NumberBox1Ref;
 typedef std::shared_ptr<NumberBox2>	NumberBox2Ref;
 typedef std::shared_ptr<NumberBox3>	NumberBox3Ref;
 typedef std::shared_ptr<NumberBox4>	NumberBox4Ref;

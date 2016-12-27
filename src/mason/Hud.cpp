@@ -916,15 +916,16 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 	}
 }
 
-
-template std::shared_ptr<ui::NumberBoxT<ci::vec2>> Hud::findOrMakeNumberBoxN( const ci::vec2 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template std::shared_ptr<ui::NumberBoxT<ci::vec3>> Hud::findOrMakeNumberBoxN( const ci::vec3 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template std::shared_ptr<ui::NumberBoxT<ci::vec4>> Hud::findOrMakeNumberBoxN( const ci::vec4 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template std::shared_ptr<ui::NumberBoxT<ci::vec2>> Hud::numBox( ci::vec2 *x, const std::string &label, Options options );
-template std::shared_ptr<ui::NumberBoxT<ci::vec3>> Hud::numBox( ci::vec3 *x, const std::string &label, Options options );
-template std::shared_ptr<ui::NumberBoxT<ci::vec4>> Hud::numBox( ci::vec4 *x, const std::string &label, Options options );
-template std::shared_ptr<ui::NumberBoxT<ci::vec2>> Hud::numBox( Var<ci::vec2> *x, const std::string &label, Options options );
-template std::shared_ptr<ui::NumberBoxT<ci::vec3>> Hud::numBox( Var<ci::vec3> *x, const std::string &label, Options options );
-template std::shared_ptr<ui::NumberBoxT<ci::vec4>> Hud::numBox( Var<ci::vec4> *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<float>>		Hud::findOrMakeNumberBoxN( const float &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<ui::NumberBoxT<ci::vec2>>	Hud::findOrMakeNumberBoxN( const ci::vec2 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<ui::NumberBoxT<ci::vec3>>	Hud::findOrMakeNumberBoxN( const ci::vec3 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<ui::NumberBoxT<ci::vec4>>	Hud::findOrMakeNumberBoxN( const ci::vec4 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<ui::NumberBoxT<float>>		Hud::numBox( float *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<ci::vec2>>	Hud::numBox( ci::vec2 *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<ci::vec3>>	Hud::numBox( ci::vec3 *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<ci::vec4>>	Hud::numBox( ci::vec4 *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<float>>		Hud::numBox( float *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<ci::vec3>>	Hud::numBox( Var<ci::vec3> *x, const std::string &label, Options options );
+template std::shared_ptr<ui::NumberBoxT<ci::vec4>>	Hud::numBox( Var<ci::vec4> *x, const std::string &label, Options options );
 
 } // namespace mason
