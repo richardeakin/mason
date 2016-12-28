@@ -77,6 +77,13 @@ class Hud : public VarOwner {
 
 	void clear();
 
+	//! Sets the bounds that the Hud uses to draw into window. By default, it is the full size of the window.
+	void setBounds( const ci::Rectf &bounds );
+	//! Sets the bounds to match the size of the app::Window (this is the default).
+	void setFillWindow();
+	//! Returns whether the bounds matches the size of the app::Window (true until you call setBounds()).
+	bool isFillWindowEnabled() const	{ return mFullScreen; }
+
 	ui::GraphRef getGraph() const					{ return mGraph; }
 	ui::StrokedRectViewRef	getBorderView() const	{ return mBorderView; }
 	//! Returns a LabelGrid that users can display information with.
@@ -164,6 +171,7 @@ private:
 	bool		mShouldIndicateFailure = false;
 	bool		mShouldIndicateSuccess = false;
 	bool		mIsInidicatingFailure = false;
+	bool		mFullScreen = true;
 
 	bool	mShowFps = true;
 

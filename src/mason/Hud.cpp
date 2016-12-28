@@ -144,6 +144,19 @@ void Hud::initViews()
 	mGraph->addSubview( mBorderView );
 }
 
+void Hud::setBounds( const ci::Rectf &bounds )
+{
+	mFullScreen = false;
+	mGraph->setBounds( bounds );
+	layout();
+}
+
+void Hud::setFullScreen()
+{
+	mFullScreen = true;
+	layout();
+}
+
 void Hud::addView( const ui::ViewRef &view, const string &label, const Options &options )
 {
 	if( findView( label ) ) {
@@ -240,7 +253,7 @@ void Hud::clearViewsMarkedForRemoval()
 void Hud::resizeInfoLabel()
 {
 	const int numRows = mInfoLabel->getNumRows();
-	vec2 windowSize = vec2( app::getWindow()->getSize() );
+	vec2 windowSize = vec2( getGraph()->getSize() );
 	vec2 labelSize = { INFO_ROW_SIZE.x, INFO_ROW_SIZE.y * numRows };
 	mInfoLabel->setBounds( { windowSize - labelSize - PADDING, windowSize - PADDING } ); // anchor bottom right
 }
@@ -252,7 +265,12 @@ void Hud::showInfo( size_t rowIndex, const std::vector<std::string> &textColumns
 
 void Hud::layout()
 {
-	mGraph->setSize( app::getWindowSize() );
+	if( mFullScreen ) {
+		mGraph->setPos( vec2( 0 ) );
+		mGraph->setSize( app::getWindowSize() );
+	}
+	else
+		mGraph->setNeedsLayout();
 
 	auto offset = vec2( PADDING, PADDING );
 
