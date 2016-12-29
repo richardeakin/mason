@@ -151,7 +151,7 @@ void Hud::setBounds( const ci::Rectf &bounds )
 	layout();
 }
 
-void Hud::setFullScreen()
+void Hud::setFillWindow()
 {
 	mFullScreen = true;
 	layout();
