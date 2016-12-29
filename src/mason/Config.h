@@ -417,6 +417,30 @@ inline bool Config::set<ci::vec4>( const std::string &category, const std::strin
 }
 
 template<>
+inline bool Config::set<ci::Area>( const std::string &category, const std::string &key, const ci::Area &value )
+{
+	Json::Value array( Json::arrayValue );
+	array[0] = value.x1;
+	array[1] = value.y1;
+	array[2] = value.x2;
+	array[3] = value.y2;
+
+	return set( category, key, array );
+}
+
+template<>
+inline bool Config::set<ci::Rectf>( const std::string &category, const std::string &key, const ci::Rectf &value )
+{
+	Json::Value array( Json::arrayValue );
+	array[0] = value.x1;
+	array[1] = value.y1;
+	array[2] = value.x2;
+	array[3] = value.y2;
+
+	return set( category, key, array );
+}
+
+template<>
 inline bool Config::set<ci::Color>( const std::string &category, const std::string &key, const ci::Color &value )
 {
 	Json::Value array( Json::arrayValue );
