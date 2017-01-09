@@ -23,7 +23,7 @@ Debug/
 Release/
 RelWithDebInfo
 ipch/
-*/vc2013/enc_temp_folder
+**/vc2013/enc_temp_folder/**
 
 # Jetbrains IDEs
 .idea
