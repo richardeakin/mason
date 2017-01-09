@@ -6,7 +6,6 @@
 #include "mason/FileWatcher.h"
 #include "mason/Dictionary.h"
 #include "mason/ui/Controls.h"
-#include "mason/Common.h"
 
 class MiscTest : public ui::SuiteView {
   public:
@@ -20,6 +19,5 @@ class MiscTest : public ui::SuiteView {
 	void testDict( const ma::Dictionary &dict );
 	void testConnectionList();
 
-	mason::ScopedWatch mWatchDict;
-	mason::ConnectionList mConnectionList;
+	mason::ScopedWatch			mWatchDict;
 };
