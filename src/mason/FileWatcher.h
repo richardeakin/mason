@@ -77,13 +77,6 @@ class FileWatcher {
 class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
   public:
 
-	  // temp: define our own TimeT type to handle vc140 versus all else
-#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
-	  typedef ci::fs::file_time_type TimeT;
-#else
-	  typedef std::time_t TimeT;
-#endif
-
 	virtual ~Watch() = default;
 
 	//! Reloads the asset and calls the callback.
@@ -115,7 +108,7 @@ class WatchSingle : public Watch {
   protected:
 	std::function<void ( const ci::fs::path& )>	mCallback;
 	ci::fs::path								mFilePath;
-	TimeT										mTimeLastWrite;
+	ci::fs::file_time_type						mTimeLastWrite;
 };
 
 //! Handles multiple live assets. Takes a vector of fs::paths as argument, result function gets an array of resolved filepaths.
@@ -131,8 +124,8 @@ class WatchMany : public Watch {
   protected:
 	std::function<void ( const std::vector<ci::fs::path>& )>	mCallback;
 
-	std::vector<ci::fs::path>		mFilePaths;
-	std::vector<TimeT>				mTimeStamps;
+	std::vector<ci::fs::path>			mFilePaths;
+	std::vector<ci::fs::file_time_type>	mTimeStamps;
 };
 
 //! Calls Watch::unwatch() when goes out of scope.
