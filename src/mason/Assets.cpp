@@ -565,7 +565,7 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 // ----------------------------------------------------------------------------------------------------
 
 Asset::Asset( const fs::path& path, uint32_t uuid )
-	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( 0 )
+	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( std::chrono::system_clock::now() )
 {
 	mWatch = mason::FileWatcher::watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
@@ -579,7 +579,7 @@ Asset::~Asset()
 bool Asset::isModified() const
 {
 	if( fs::exists( mPath ) ) {
-		time_t modified = fs::last_write_time( mPath );
+		auto modified = fs::last_write_time( mPath );
 		if( modified != mTimeModified ) {
 			mTimeModified = modified;
 			return true;

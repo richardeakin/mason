@@ -96,7 +96,7 @@ private:
 
 	bool                mInUse;
 
-	mutable time_t      mTimeModified;
+	mutable ci::fs::file_time_type	mTimeModified;
 
 	std::vector<std::weak_ptr<AssetGroup>>  mGroups;
 
