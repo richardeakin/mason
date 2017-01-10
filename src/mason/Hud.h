@@ -188,7 +188,7 @@ bool Hud::getAttribValue( const std::string &label, T *result ) const
 				*result = *boost::any_cast<T*>( attrib.mAnyValue );
 				return true;
 			}
-			catch( boost::bad_any_cast &exc ) {
+			catch( boost::bad_any_cast & ) {
 				// keep trying..
 			}
 		}

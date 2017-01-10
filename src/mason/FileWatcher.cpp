@@ -233,7 +233,7 @@ void FileWatcher::update()
 			++it;
 		}
 	}
-	catch( fs::filesystem_error &exc ) {
+	catch( fs::filesystem_error & ) {
 		// some file probably got locked by the system. Do nothing this update frame, we'll check again next
 	}
 }
