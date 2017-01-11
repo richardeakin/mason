@@ -564,8 +564,14 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 // Asset
 // ----------------------------------------------------------------------------------------------------
 
+#if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
+#define ASSET_INITIAL_TIME_MODIFIED std::chrono::system_clock::now()
+#else
+#define ASSET_INITIAL_TIME_MODIFIED std::time_t( 0 )
+#endif
+
 Asset::Asset( const fs::path& path, uint32_t uuid )
-	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( std::chrono::system_clock::now() )
+	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( ASSET_INITIAL_TIME_MODIFIED )
 {
 	mWatch = mason::FileWatcher::watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
