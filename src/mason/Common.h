@@ -38,13 +38,32 @@
 #include <memory>
 #include <string>
 
-// For temporary ConnectionList
+// For temporary ConnectionList TODO: remove
 #include "cinder/Signals.h"
+
+
+#if defined( MASON_DLL ) || 1
+#if defined( MASON_EXPORTS ) || 1
+#define MA_API __declspec(dllexport)
+//#define CI_API_TEMPLATE
+#else
+#define CI_API __declspec(dllimport)
+//#define CI_API_TEMPLATE extern
+#endif
+// "needs to have dll-interface to be used by clients of class" warning
+//#pragma warning (disable: 4251)
+// "non dll-interface class 'std::exception' used as base for dll-interface class" (Mostly for cinder::Exception)
+//#pragma warning (disable: 4275)
+#else
+#define MA_API
+//#define CI_API_TEMPLATE
+#endif
+
 
 namespace mason {
 
 //! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
-void					initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
+MA_API void				initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
 //! Returns the path the current repositories root folder (walks up from the executable until '.git' is found.
 const ci::fs::path&		getRepoRootPath();
 //! Returns a resolved a file path, removing any '..'s if they exist.

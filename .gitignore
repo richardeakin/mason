@@ -20,8 +20,9 @@ build/
 *.VC.db
 *.opensdf
 Debug/
+Debug_DLL/
 Release/
-RelWithDebInfo
+Release_DLL/
 ipch/
 **/vc2013/enc_temp_folder/**
 
