@@ -22,6 +22,7 @@
     <ProjectGuid>{E2BCD360-A33E-4099-9458-28E62E3EEA68}</ProjectGuid>
     <RootNamespace>MasonTests</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -77,20 +78,20 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\intermediate\</IntDir>
+    <OutDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">
-    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\intermediate\</IntDir>
+    <OutDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\intermediate\</IntDir>
+    <OutDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">
-    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\intermediate\</IntDir>
+    <OutDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\intermediate\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
