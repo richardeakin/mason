@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\blocks\Cinder-Profiler\src\Profiler.cpp" />
-    <ClCompile Include="..\..\blocks\Cinder-View\src\cppformat\format.cc" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\fmt\format.cc" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Filter.cpp" />
@@ -53,10 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\blocks\Cinder-Profiler\src\Profiler.h" />
-    <ClInclude Include="..\..\blocks\Cinder-View\src\cppformat\format.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\fmt\format.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Export.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Filter.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Graph.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Image.h" />
@@ -78,6 +79,7 @@
     <ClInclude Include="..\..\src\mason\Common.h" />
     <ClInclude Include="..\..\src\mason\Config.h" />
     <ClInclude Include="..\..\src\mason\Dictionary.h" />
+    <ClInclude Include="..\..\src\mason\Export.h" />
     <ClInclude Include="..\..\src\mason\FileWatcher.h" />
     <ClInclude Include="..\..\src\mason\Hud.h" />
     <ClInclude Include="..\..\src\mason\Mason.h" />
@@ -168,7 +170,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -190,8 +192,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>CINDER_DLL;JSON_DLL;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_DLL;MASON_EXPORT;CINDER_UI_EXPORT;PERF_EXPORT;FMT_EXPORT;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -220,7 +222,7 @@
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -247,8 +249,8 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>CINDER_DLL;JSON_DLL;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_DLL;MASON_EXPORT;CINDER_UI_EXPORT;PERF_EXPORT;FMT_EXPORT;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>

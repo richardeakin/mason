@@ -23,6 +23,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "ui/Button.h"
 #include "ui/Slider.h"
+
+#include "mason/Mason.h"
 #include "mason/ui/Controls.h"
 
 

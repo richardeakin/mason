@@ -32,7 +32,7 @@
 namespace mason {
 
 //! Enables user interaction with a CameraPersp via the mouse
-class CameraFpsUi {
+class MA_API CameraFpsUi {
  public:
 	CameraFpsUi();
 	//! Constructs a CameraFpsUi which manipulates \a camera directly (and consequently expects its pointer to remain valid). Optionally attaches to mouse/window signals of \a window, with priority \a signalPriority.

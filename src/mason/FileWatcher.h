@@ -27,6 +27,8 @@
 #include "cinder/Filesystem.h"
 #include "cinder/Signals.h"
 
+#include "mason/Export.h"
+
 #include <list>
 #include <vector>
 #include <mutex>
@@ -37,7 +39,7 @@ typedef std::shared_ptr<class Watch>		WatchRef;
 typedef std::shared_ptr<class ScopedWatch>	ScopedWatchRef;
 
 //! Global object for managing live-asset watching.
-class FileWatcher {
+class MA_API FileWatcher {
   public:
 	//! Returns the global instance of FileWatcher
 	static FileWatcher* instance();

@@ -36,9 +36,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "jsoncpp/json.h"
 
+#include "mason/Mason.h"
+
 namespace mason {
 
-class ConfigExc : public ci::Exception {
+class MA_API ConfigExc : public ci::Exception {
   public:
 	ConfigExc( const std::string &description )
 		: Exception( description )
@@ -51,7 +53,7 @@ class ConfigExc : public ci::Exception {
 
 typedef std::shared_ptr<class Config> ConfigRef;
 
-class Config : private ci::Noncopyable {
+class MA_API Config : private ci::Noncopyable {
 public:
 	class Options {
 		friend class Config;

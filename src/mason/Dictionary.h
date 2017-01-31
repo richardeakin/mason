@@ -31,12 +31,14 @@
 
 #include <boost/any.hpp>
 
+#include "mason/Mason.h"
+
 namespace mason {
 
 typedef std::shared_ptr<class Dictionary> DictionaryRef;
 
 //! Object for storing dynamic data in a hierarchical form, key = string, value = any.
-class Dictionary {
+class MA_API Dictionary {
   public:
 	//! Constructs an empty Dictionary on the stack
 	Dictionary();
@@ -90,14 +92,14 @@ class Dictionary {
 	std::map<std::string, boost::any>	mData;
 };
 
-class DictionaryExc : public ci::Exception {
+class MA_API DictionaryExc : public ci::Exception {
   public:
 	DictionaryExc( const std::string &description )
 			: Exception( description )
 	{ }
 };
 
-class DictionaryBadTypeExc : public DictionaryExc {
+class MA_API DictionaryBadTypeExc : public DictionaryExc {
   public:
 	DictionaryBadTypeExc( const std::string &key, const boost::any &value, const std::type_info &typeInfo )
 		: DictionaryExc( "" )

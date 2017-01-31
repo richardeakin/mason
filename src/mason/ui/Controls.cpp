@@ -24,7 +24,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/ui/Controls.h"
 #include "ui/Layout.h"
 #include "cinder/Log.h"
-#include "cppformat/format.h"
+#include "fmt/format.h"
 #include <array>
 
 //#define LOG_TOUCHES( stream )	CI_LOG_I( stream )
@@ -307,9 +307,9 @@ void NumberBoxT<float>::onValueChanged()
 	getSignalValueChanged().emit();
 }
 
-template class NumberBoxT<float>;
-template class NumberBoxT<vec2>;
-template class NumberBoxT<vec3>;
-template class NumberBoxT<vec4>;
+template class MA_API NumberBoxT<float>;
+template class MA_API NumberBoxT<vec2>;
+template class MA_API NumberBoxT<vec3>;
+template class MA_API NumberBoxT<vec4>;
 
 } // namespace ui

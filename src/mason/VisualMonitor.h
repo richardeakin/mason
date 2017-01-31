@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "mason/Mason.h"
+
 #include "ui/View.h"
 #include "ui/TextManager.h"
 
@@ -38,7 +40,8 @@ namespace mason {
 
 typedef std::shared_ptr<class VisualMonitorView> VisualMonitorViewRef;
 
-class VisualMonitorView : public ui::View {
+// TODO: move to ma::ui namespace
+class MA_API VisualMonitorView : public ui::View {
   public:
 	VisualMonitorView( const ci::Rectf &bounds = ci::Rectf::zero(), size_t windowFrames = 0 );
 

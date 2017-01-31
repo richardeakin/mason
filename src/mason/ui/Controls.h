@@ -23,12 +23,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include "mason/Export.h"
+
 #include "ui/Control.h"
 #include "ui/Label.h"
 
 namespace ui {
 
-class NumberBox : public Control {
+class MA_API NumberBox : public Control {
   public:
 	NumberBox( const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -87,7 +89,7 @@ class NumberBox : public Control {
 typedef std::shared_ptr<NumberBox>	NumberBoxRef;
 
 template <typename T>
-class NumberBoxT : public Control {
+class MA_API NumberBoxT : public Control {
   public:
 	NumberBoxT( const ci::Rectf &bounds = ci::Rectf::zero() );
 

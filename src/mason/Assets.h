@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/ShaderPreprocessor.h"
 
+#include "mason/Mason.h"
 //#include "tools/AssetArchiver.h"
 #include "mason/FileWatcher.h"
 
@@ -137,7 +138,7 @@ private:
 
 typedef ci::signals::Signal<void( const ci::gl::GlslProgRef &, const std::vector<std::pair<ci::fs::path, std::string>> & )>	SignalShaderLoaded;
 
-class AssetManager {
+class MA_API AssetManager {
 public:
 	static const int kSeed = 9213;
 
