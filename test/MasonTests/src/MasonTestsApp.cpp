@@ -95,6 +95,7 @@ void MasonTestsApp::update()
 {
 	{
 		CI_PROFILE_CPU( "Suite update" );
+		CI_PROFILE_GPU( "Suite update" );
 		mSuite->update();
 	}
 
@@ -107,16 +108,19 @@ void MasonTestsApp::update()
 void MasonTestsApp::draw()
 {
 	CI_PROFILE_CPU( "main draw" );
+	CI_PROFILE_GPU( "main draw" );
 
 	gl::clear();
 
 	{
 		CI_PROFILE_CPU( "Suite draw" );
+		CI_PROFILE_GPU( "Suite draw" );
 		mSuite->draw();
 	}
 
 	if( mDrawHud ) {
 		CI_PROFILE_CPU( "Hud draw" );
+		CI_PROFILE_GPU( "Hud draw" );
 		ma::hud()->draw();
 	}
 
@@ -144,9 +148,9 @@ void prepareSettings( App::Settings *settings )
 	}
 	else {
 #if defined( CINDER_MAC )
-		vec2 windowPos = { 0, 0 };
+		ivec2 windowPos = { 0, 0 };
 #else
-		vec2 windowPos = { 0, 24 };
+		ivec2 windowPos = { 0, 24 };
 #endif
 		settings->setWindowPos( windowPos.x, windowPos.y );
 		settings->setWindowSize( 960, 565 );
