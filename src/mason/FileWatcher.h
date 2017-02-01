@@ -76,7 +76,7 @@ class MA_API FileWatcher {
 };
 
 //! Base class for Watch types, which are returned from FileWatcher::load() and watch()
-class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
+class MA_API Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
   public:
 
 	virtual ~Watch() = default;
@@ -100,7 +100,7 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
 };
 
 //! Handles a single live asset
-class WatchSingle : public Watch {
+class MA_API WatchSingle : public Watch {
   public:
 	WatchSingle( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
 
@@ -114,7 +114,7 @@ class WatchSingle : public Watch {
 };
 
 //! Handles multiple live assets. Takes a vector of fs::paths as argument, result function gets an array of resolved filepaths.
-class WatchMany : public Watch {
+class MA_API WatchMany : public Watch {
   public:
 	WatchMany( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path>& )> &callback );
 
@@ -133,7 +133,7 @@ class WatchMany : public Watch {
 //! Calls Watch::unwatch() when goes out of scope.
 // TODO: this should inherit from Watch
 // - I don't think that is happening because I return WatchRefs. Is that necessary? maybe instead a Watch can have a handle to hold info
-class ScopedWatch : private ci::Noncopyable {
+class MA_API ScopedWatch : private ci::Noncopyable {
   public:
 	ScopedWatch() = default;
 #if defined( CINDER_MSW ) && ( _MSC_VER <= 1800 )
@@ -183,7 +183,7 @@ class ScopedWatch : private ci::Noncopyable {
 };
 
 //! Exception type thrown from errors within FileWatcher
-class FileWatcherException : public ci::Exception {
+class MA_API FileWatcherException : public ci::Exception {
   public:
 	FileWatcherException( const std::string &description )
 		: Exception( description )
