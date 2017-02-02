@@ -94,8 +94,7 @@ void MasonTestsApp::resize()
 void MasonTestsApp::update()
 {
 	{
-		CI_PROFILE_CPU( "Suite update" );
-		CI_PROFILE_GPU( "Suite update" );
+		CI_PROFILE( "Suite update" );
 		mSuite->update();
 	}
 
@@ -107,20 +106,17 @@ void MasonTestsApp::update()
 
 void MasonTestsApp::draw()
 {
-	CI_PROFILE_CPU( "main draw" );
-	CI_PROFILE_GPU( "main draw" );
+	CI_PROFILE( "main draw" );
 
 	gl::clear();
 
 	{
-		CI_PROFILE_CPU( "Suite draw" );
-		CI_PROFILE_GPU( "Suite draw" );
+		CI_PROFILE( "Suite draw" );
 		mSuite->draw();
 	}
 
 	if( mDrawHud ) {
-		CI_PROFILE_CPU( "Hud draw" );
-		CI_PROFILE_GPU( "Hud draw" );
+		CI_PROFILE( "Hud draw" );
 		ma::hud()->draw();
 	}
 
