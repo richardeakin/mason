@@ -19,12 +19,10 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined( CINDER_DLL )
-	#if defined( MASON_EXPORT )
-		#define MA_API __declspec(dllexport)
-	#else
-		#define MA_API __declspec(dllimport)
-	#endif
+#if defined( MASON_EXPORT )
+	#define MA_API __declspec(dllexport)
+#elif defined( MASON_SHARED )
+	#define MA_API __declspec(dllimport)
 #else
 	#define MA_API
 #endif
