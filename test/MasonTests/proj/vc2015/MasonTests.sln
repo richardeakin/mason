@@ -15,11 +15,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mason", "..\..\..\..\proj\v
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\..\..\..\cinder\proj\vc2015\cinder.vcxproj", "{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MasonTestsGlob", "MasonTestsGlob.vcxproj", "{98574B12-37B7-4B07-9634-4E72F2790E12}"
-	ProjectSection(ProjectDependencies) = postProject
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_ANGLE|x64 = Debug_ANGLE|x64
@@ -104,26 +99,6 @@ Global
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x64.Build.0 = Release|x64
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x86.ActiveCfg = Release|Win32
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x86.Build.0 = Release|Win32
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_ANGLE|x64.ActiveCfg = Debug_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_ANGLE|x64.Build.0 = Debug_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_ANGLE|x86.ActiveCfg = Release|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_ANGLE|x86.Build.0 = Release|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_DLL|x64.ActiveCfg = Debug_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_DLL|x64.Build.0 = Debug_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug_DLL|x86.ActiveCfg = Debug_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug|x64.ActiveCfg = Debug|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug|x64.Build.0 = Debug|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Debug|x86.ActiveCfg = Debug|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_ANGLE|x64.ActiveCfg = Release_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_ANGLE|x64.Build.0 = Release_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_ANGLE|x86.ActiveCfg = Release|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_ANGLE|x86.Build.0 = Release|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_DLL|x64.ActiveCfg = Release_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_DLL|x64.Build.0 = Release_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release_DLL|x86.ActiveCfg = Release_DLL|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release|x64.ActiveCfg = Release|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release|x64.Build.0 = Release|x64
-		{98574B12-37B7-4B07-9634-4E72F2790E12}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
