@@ -71,6 +71,6 @@ class MA_API VisualMonitorView : public ui::View {
 	ui::TextRef	mLabelText;
 };
 
-VisualMonitorViewRef addVarMonitor( float *var, const std::string &label = "", size_t windowSize = 0 );
+MA_API VisualMonitorViewRef addVarMonitor( float *var, const std::string &label = "", size_t windowSize = 0 );
 
 } // namespace mason

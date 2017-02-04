@@ -23,10 +23,14 @@
 
 #include "cinder/Signals.h"
 #include "cinder/Log.h"
+#include "cinder/Noncopyable.h"
 
 // for Dispatch:
 #include "cinder/Timeline.h"
 
+#include "mason/Mason.h"
+
+#include <vector>
 #include <map>
 #include <string>
 
@@ -35,19 +39,19 @@ namespace mason {
 extern const char* NOTIFY_RESOURCE_RELOADED;
 extern const char* NOTIFY_ERROR;
 
-class Notification {
-
+struct MA_API Notification {
 };
 
 // TODO: rework into Dispatch class?
-class NotificationCenter {
-public:
+class MA_API NotificationCenter : private ci::Noncopyable {
+  public:
+
 	typedef std::function<void ( const Notification& )> NotificationCallback;
 
 	static void post( const char *name, const Notification &notification = Notification() )		{ instance()->postImpl( name, notification ); }
 	static void listen( const char *name, const NotificationCallback &slot )					{ instance()->listenImpl( name, slot ); }
 
-private:
+  private:
 	static NotificationCenter* instance();
 
 	void postImpl( const char *name, const Notification &notification );
@@ -56,11 +60,17 @@ private:
 	std::map<const char*, ci::signals::Signal<void ( const Notification & )> >	mRegisteredNotificiations;
 };
 
+//! Posts a NOTIFY_ERROR Notification whenever a log message of ERROR or higher occurs.
+class MA_API LoggerNotification : public ci::log::Logger {
+  public:
+	void write( const ci::log::Metadata &meta, const std::string &text ) override;
+};
+
 // TODO: consider naming Scheduler
 // - but maybe Score should be called scheduler. Need to look closer at the conceptual differences between the two
-class Dispatch {
+class MA_API Dispatch {
   public:
-	// TODO (later): return a handle that can allow cancelling
+	// TODO (later): return a handle that can allow canceling
 	static void once( double delaySeconds, const std::function<void ()> &func );
 
 	//! Calls \a func on the main thread. If currently on a background thread, the call is async.
@@ -69,12 +79,6 @@ class Dispatch {
 	static void setTimeline( const ci::TimelineRef &timeline );
 
 	static ci::Timeline*	getTimeline();
-};
-
-//! Flashes the border red when there is an error log (non-production)
-class LoggerNotification : public ci::log::Logger {
-public:
-	void write( const ci::log::Metadata &meta, const std::string &text ) override;
 };
 
 } // namespace mason

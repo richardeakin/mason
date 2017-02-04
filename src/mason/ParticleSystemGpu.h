@@ -24,11 +24,13 @@
 #include "cinder/gl/gl.h"
 #include "cinder/GeomIo.h"
 
+#include "mason/Mason.h"
+
 namespace mason {
 
 typedef std::shared_ptr<class ParticleSystemGpu>	ParticleSystemGpuRef;
 
-class ParticleSystemGpu : private ci::Noncopyable {
+class MA_API ParticleSystemGpu : private ci::Noncopyable {
   public:
 	//! Constructs a new ParticleSystemGpu with \a numAttribs attrib components, all of type vec4.
 	ParticleSystemGpu( size_t numParticles, size_t numAttribs, const std::vector<ci::vec4> &initialData );
