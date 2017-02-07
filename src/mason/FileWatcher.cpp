@@ -28,6 +28,38 @@ using namespace std;
 
 namespace mason {
 
+
+//! Handles a single live asset
+class WatchSingle : public Watch {
+  public:
+	WatchSingle( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
+
+	void reload() override;
+	bool checkCurrent() override;
+
+  protected:
+	std::function<void ( const ci::fs::path& )>	mCallback;
+	ci::fs::path								mFilePath;
+	ci::fs::file_time_type						mTimeLastWrite;
+};
+
+//! Handles multiple live assets. Takes a vector of fs::paths as argument, result function gets an array of resolved filepaths.
+class WatchMany : public Watch {
+  public:
+	WatchMany( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path>& )> &callback );
+
+	void reload() override;
+	bool checkCurrent() override;
+
+	size_t	getNumFiles() const	{ return mFilePaths.size(); }
+
+  protected:
+	std::function<void ( const std::vector<ci::fs::path>& )>	mCallback;
+
+	std::vector<ci::fs::path>			mFilePaths;
+	std::vector<ci::fs::file_time_type>	mTimeStamps;
+};
+
 namespace {
 
 fs::path findFullFilePath( const fs::path &filePath )

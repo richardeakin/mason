@@ -99,37 +99,6 @@ class MA_API Watch : public std::enable_shared_from_this<Watch>, private ci::Non
 	bool mEnabled = true;
 };
 
-//! Handles a single live asset
-class MA_API WatchSingle : public Watch {
-  public:
-	WatchSingle( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
-
-	void reload() override;
-	bool checkCurrent() override;
-
-  protected:
-	std::function<void ( const ci::fs::path& )>	mCallback;
-	ci::fs::path								mFilePath;
-	ci::fs::file_time_type						mTimeLastWrite;
-};
-
-//! Handles multiple live assets. Takes a vector of fs::paths as argument, result function gets an array of resolved filepaths.
-class MA_API WatchMany : public Watch {
-  public:
-	WatchMany( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path>& )> &callback );
-
-	void reload() override;
-	bool checkCurrent() override;
-
-	size_t	getNumFiles() const	{ return mFilePaths.size(); }
-
-  protected:
-	std::function<void ( const std::vector<ci::fs::path>& )>	mCallback;
-
-	std::vector<ci::fs::path>			mFilePaths;
-	std::vector<ci::fs::file_time_type>	mTimeStamps;
-};
-
 //! Calls Watch::unwatch() when goes out of scope.
 // TODO: this should inherit from Watch
 // - I don't think that is happening because I return WatchRefs. Is that necessary? maybe instead a Watch can have a handle to hold info
