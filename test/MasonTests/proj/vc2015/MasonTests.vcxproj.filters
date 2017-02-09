@@ -9,9 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="Source Files\motionjson">
-      <UniqueIdentifier>{6df18684-ffe9-45f4-b519-37a6c519a413}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\EmptyTest.cpp">
@@ -26,12 +23,6 @@
     <ClCompile Include="..\..\src\MiscTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\MotionTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\motionjson\MotionJson.cpp">
-      <Filter>Source Files\motionjson</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\EmptyTest.h">
@@ -42,12 +33,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\MiscTest.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\MotionTest.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\motionjson\MotionJson.h">
-      <Filter>Source Files\motionjson</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
