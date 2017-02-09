@@ -298,29 +298,7 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 	return connection;
 }
 
-/*
-signals::Connection AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
-{
-	uint32_t hash = uuid( path.generic_string() );
-	auto assetIt = mAssets.find( hash );
-	if( assetIt != mAssets.end() && ! assetIt->second->isModified() ) {
-		// TODO: this should return a DataSourceRef stored on Asset, which is possibly our custom one that looks up in bin stream.
-		updateCallback( loadFile( assetIt->second->getPath() ) );
-
-		// TODO: how to return connection here?
-		return ci::signals::Connection();
-	}
-	else {
-		auto assetFile = findFile( path );
-		auto group = getAssetGroupRef( hash );
-		group->addAsset( getAssetRef( path ) );
-	}
-
-	return ci::signals::Connection();
-}
-*/
-
-mason::WatchRef AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
+ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
 {
 	try {
 #if defined( OOBE_DEPLOY ) || defined( CINDER_ANDROID )
@@ -328,18 +306,19 @@ mason::WatchRef AssetManager::getFile( const fs::path &path, const std::function
 		updateCallback( assetFile );
 		return mason::WatchRef();
 #else
-		auto watch = mason::FileWatcher::load( path, [updateCallback]( const ci::fs::path &fullPath ) {
+		auto conn = mason::FileWatcher::load( path, [updateCallback]( const ci::fs::path &fullPath ) {
 			updateCallback( loadFile( fullPath ) );
 		} );
 
-		return watch;
+		return conn;
 #endif
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load file for path: " << path, exc );
 		CI_LOG_E( "stacktrace:\n" << ma::stackTraceAsString( 0, 4 ) );
-		return mason::WatchRef();
 	}
+
+	return {};
 }
 
 ci::DataSourceRef AssetManager::loadAsset( const ci::fs::path &path )
@@ -573,13 +552,13 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 Asset::Asset( const fs::path& path, uint32_t uuid )
 	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( ASSET_INITIAL_TIME_MODIFIED )
 {
-	mWatch = mason::FileWatcher::watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
+	mConnection = mason::FileWatcher::watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
 
 Asset::~Asset()
 {
-	if( mWatch )
-		mWatch->unwatch();
+	//if( mWatch )
+	//	mWatch->unwatch();
 }
 
 bool Asset::isModified() const

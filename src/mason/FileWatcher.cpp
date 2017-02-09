@@ -22,31 +22,60 @@
 #include "mason/FileWatcher.h"
 
 #include "cinder/app/App.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace std;
 
 namespace mason {
 
+//! Base class for Watch types, which are returned from FileWatcher::load() and watch()
+class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
+public:
+
+	virtual ~Watch() = default;
+
+	//! Reloads the asset and calls the callback.
+	// TODO: rename to emit()
+	virtual void reload() = 0;
+	//! returns \a true if the asset file is up-to-date, false otherwise.
+	virtual bool checkCurrent() = 0;
+
+	void unwatch();
+
+	bool isDiscarded() const		{ return mDiscarded; }
+	bool isEnabled() const			{ return mEnabled; }
+	void setEnabled( bool b )		{ b ? enable() : disable(); }
+	void enable()					{ mEnabled = true; } // TODO: for this to work it would have to update the current time stamp here
+	void disable()					{ mEnabled = false; }
+
+private:
+	bool mDiscarded = false;
+	bool mEnabled = true;
+};
 
 //! Handles a single live asset
 class WatchSingle : public Watch {
   public:
-	WatchSingle( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
+	WatchSingle( const ci::fs::path &filePath );
+
+	signals::Connection	connect( const function<void ( const ci::fs::path& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
 	void reload() override;
 	bool checkCurrent() override;
 
   protected:
-	std::function<void ( const ci::fs::path& )>	mCallback;
-	ci::fs::path								mFilePath;
-	ci::fs::file_time_type						mTimeLastWrite;
+	ci::signals::Signal<void ( const ci::fs::path& )>	mSignalChanged;
+	ci::fs::path										mFilePath;
+	ci::fs::file_time_type								mTimeLastWrite;
 };
 
 //! Handles multiple live assets. Takes a vector of fs::paths as argument, result function gets an array of resolved filepaths.
 class WatchMany : public Watch {
   public:
-	WatchMany( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path>& )> &callback );
+	WatchMany( const std::vector<ci::fs::path> &filePaths );
+
+	signals::Connection	connect( const function<void ( const vector<fs::path>& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
 	void reload() override;
 	bool checkCurrent() override;
@@ -54,7 +83,7 @@ class WatchMany : public Watch {
 	size_t	getNumFiles() const	{ return mFilePaths.size(); }
 
   protected:
-	std::function<void ( const std::vector<ci::fs::path>& )>	mCallback;
+	ci::signals::Signal<void ( const std::vector<ci::fs::path>& )>	mSignalChanged;
 
 	std::vector<ci::fs::path>			mFilePaths;
 	std::vector<ci::fs::file_time_type>	mTimeStamps;
@@ -92,8 +121,7 @@ void Watch::unwatch()
 // WatchSingle
 // ----------------------------------------------------------------------------------------------------
 
-WatchSingle::WatchSingle( const fs::path &filePath, const function<void ( const fs::path& )> &callback )
-	: mCallback( callback )
+WatchSingle::WatchSingle( const fs::path &filePath )
 {
 	mFilePath = findFullFilePath( filePath );
 	mTimeLastWrite = fs::last_write_time( mFilePath );
@@ -101,7 +129,7 @@ WatchSingle::WatchSingle( const fs::path &filePath, const function<void ( const 
 
 void WatchSingle::reload()
 {
-	mCallback( mFilePath );
+	mSignalChanged.emit( mFilePath );
 }
 
 bool WatchSingle::checkCurrent()
@@ -122,8 +150,7 @@ bool WatchSingle::checkCurrent()
 // WatchMany
 // ----------------------------------------------------------------------------------------------------
 
-WatchMany::WatchMany( const vector<fs::path> &filePaths, const function<void ( const std::vector<fs::path>& )> &callback )
-	: mCallback( callback )
+WatchMany::WatchMany( const vector<fs::path> &filePaths )
 {
 	mFilePaths.reserve( filePaths.size() );
 	mTimeStamps.reserve( filePaths.size() );
@@ -136,7 +163,7 @@ WatchMany::WatchMany( const vector<fs::path> &filePaths, const function<void ( c
 
 void WatchMany::reload()
 {
-	mCallback( mFilePaths );
+	mSignalChanged.emit( mFilePaths );
 }
 
 bool WatchMany::checkCurrent()
@@ -199,46 +226,56 @@ bool FileWatcher::isWatchingEnabled()
 }
 
 // static
-WatchRef FileWatcher::load( const fs::path &filePath, const function<void( const fs::path& )> &callback )
+signals::Connection FileWatcher::load( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
-	auto asset = watch( filePath, callback );
-	asset->reload();
+	auto watch = make_shared<WatchSingle>( filePath );
 
-	return asset;
+
+	auto fw = instance();
+	lock_guard<recursive_mutex> lock( fw->mMutex );
+
+	fw->mWatchList.push_back( watch );
+	auto conn = watch->connect( callback );
+	watch->reload();
+	return conn;
 }
 
 // static
-WatchRef FileWatcher::load( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
+signals::Connection FileWatcher::load( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
 {
-	auto asset = watch( filePaths, callback );
-	asset->reload();
+	auto watch = make_shared<WatchMany>( filePaths );
 
-	return asset;
+	auto fw = instance();
+	lock_guard<recursive_mutex> lock( fw->mMutex );
+
+	fw->mWatchList.push_back( watch );
+	auto conn = watch->connect( callback );
+	watch->reload();
+	return conn;
 }
 
 // static
-WatchRef FileWatcher::watch( const fs::path &filePath, const function<void( const fs::path& )> &callback )
+signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
-	WatchRef asset( new WatchSingle( filePath, callback ) );
-	instance()->watch( asset );
+	auto watch = make_shared<WatchSingle>( filePath );
 
-	return asset;
+	auto fw = instance();
+	lock_guard<recursive_mutex> lock( fw->mMutex );
+
+	fw->mWatchList.push_back( watch );
+	return watch->connect( callback );
 }
 
 // static
-WatchRef FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
+signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
 {
-	WatchRef asset( new WatchMany( filePaths, callback ) );
-	instance()->watch( asset );
+	auto watch = make_shared<WatchMany>( filePaths );
 
-	return asset;
-}
+	auto fw = instance();
+	lock_guard<recursive_mutex> lock( fw->mMutex );
 
-void FileWatcher::watch( const WatchRef &asset )
-{
-	lock_guard<recursive_mutex> lock( mMutex );
-
-	mWatchList.push_back( asset );
+	fw->mWatchList.push_back( watch );
+	return watch->connect( callback );
 }
 
 void FileWatcher::update()

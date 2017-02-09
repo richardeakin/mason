@@ -17,7 +17,6 @@ class MiscTest : public ui::SuiteView {
 
   private:
 	void testDict( const ma::Dictionary &dict );
-	void testConnectionList();
 
-	mason::ScopedWatch			mWatchDict;
+	ci::signals::ScopedConnection		mConnDict;
 };

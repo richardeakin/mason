@@ -36,7 +36,6 @@
 namespace mason {
 
 typedef std::shared_ptr<class Watch>		WatchRef;
-typedef std::shared_ptr<class ScopedWatch>	ScopedWatchRef;
 
 //! Global object for managing live-asset watching.
 class MA_API FileWatcher {
@@ -48,15 +47,13 @@ class MA_API FileWatcher {
 	static bool	isWatchingEnabled();
 
 	//! Loads a single file at \a filePath and adds it to the watch list. Immediately calls \a callback with the resolved path, and also calls it whenever the file has been updated.
-	static WatchRef load( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
+	static ci::signals::Connection load( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
 	//! Loads the files in \a filePaths and adds them to the watch list. Immediately calls \a callback with the resolved paths, and also calls it whenever one of the files has been updated.
-	static WatchRef load( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
+	static ci::signals::Connection load( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
 	//! Adds a single file at \a filePath to the watch list. Does not immediately call \a callback, but calls it whenever the file has been updated.
-	static WatchRef watch( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
+	static ci::signals::Connection watch( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
 	//! Adds the files in \a filePaths to the watch list. Does not immediately call \a callback, but calls it whenever one of the files has been updated.
-	static WatchRef watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
-	//! Adds \a asset to the watch list. Use this if you need to use your own custom Watch type.
-	void watch( const WatchRef &watch );
+	static ci::signals::Connection watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
 
 	//! Returns the number of Watch instances being watched.
 	const size_t	getNumWatches() const	{ return mWatchList.size(); }
@@ -66,89 +63,15 @@ class MA_API FileWatcher {
   private:
 	FileWatcher();
 
+	//void	addWatch( const WatchRef &watch );
 	void	connectUpdate();
 	void	update();
-	void	removeDiscarded();
 
+	// TODO: if Watches are only internal, do they need a shared pointer?
+	// - if not, will need to be a unique_ptr or will need to move the list to a pimpl
 	std::list<WatchRef>			mWatchList;
 	std::recursive_mutex		mMutex;
 	ci::signals::Connection		mUpdateConn;
-};
-
-//! Base class for Watch types, which are returned from FileWatcher::load() and watch()
-class MA_API Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
-  public:
-
-	virtual ~Watch() = default;
-
-	//! Reloads the asset and calls the callback.
-	virtual void reload() = 0;
-	//! returns \a true if the asset file is up-to-date, false otherwise.
-	virtual bool checkCurrent() = 0;
-
-	void unwatch();
-
-	bool isDiscarded() const		{ return mDiscarded; }
-	bool isEnabled() const			{ return mEnabled; }
-	void setEnabled( bool b )		{ b ? enable() : disable(); }
-	void enable()					{ mEnabled = true; } // TODO: for this to work it would have to update the current time stamp here
-	void disable()					{ mEnabled = false; }
-
-  private:
-	bool mDiscarded = false;
-	bool mEnabled = true;
-};
-
-//! Calls Watch::unwatch() when goes out of scope.
-// TODO: this should inherit from Watch
-// - I don't think that is happening because I return WatchRefs. Is that necessary? maybe instead a Watch can have a handle to hold info
-class MA_API ScopedWatch : private ci::Noncopyable {
-  public:
-	ScopedWatch() = default;
-#if defined( CINDER_MSW ) && ( _MSC_VER <= 1800 )
-	// can't use =default for move constructor / assignment operator until VS2015
-	ScopedWatch( ScopedWatch &&other )
-		: mWatch( std::move( other.mWatch ) )
-	{}
-	ScopedWatch& operator=( ScopedWatch &&rhs )
-	{
-		mWatch = std::move( rhs.mWatch );
-	}
-#else
-	ScopedWatch( ScopedWatch &&other ) = default;
-	ScopedWatch& operator=( ScopedWatch &&rhs ) = default;
-#endif
-	~ScopedWatch()
-	{
-		if( mWatch )
-			mWatch->unwatch();
-	}
-
-	ScopedWatch( const WatchRef &watch )
-		: mWatch( watch )
-	{}
-
-	ScopedWatch( WatchRef &&liveAsset )
-		: mWatch( std::move( liveAsset ) )
-	{}
-
-	//! Enables you to assign a WatchRef to this ScopedWatch, unwatching the previous Watch
-	ScopedWatch& operator=( const WatchRef &watch )
-	{
-		if( mWatch )
-			mWatch->unwatch();
-
-		mWatch = watch;
-		return *this;
-	}
-
-	WatchRef operator->() const
-	{
-		return mWatch;
-	}
-
-  private:
-	WatchRef mWatch;
 };
 
 //! Exception type thrown from errors within FileWatcher

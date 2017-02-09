@@ -27,7 +27,7 @@ MiscTest::MiscTest()
 
 	fs::path jsonFileName = "dictionary_test.json";
 	try {
-		mWatchDict = ma::FileWatcher::load( jsonFileName, [this] ( const fs::path &filePath ) {
+		mConnDict = ma::FileWatcher::load( jsonFileName, [this] ( const fs::path &filePath ) {
 			try {
 				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( filePath ) );
 				testDict( dict );

@@ -101,7 +101,7 @@ private:
 
 	std::vector<std::weak_ptr<AssetGroup>>  mGroups;
 
-	mason::WatchRef mWatch;
+	ci::signals::ScopedConnection mConnection;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ public:
 	//! Returns the requested texture within the provided \a updateCallback upon initial load and any time it is updated on file. Loads synchronously if the texture is not cached.
 	ci::signals::Connection getTexture( const ci::fs::path &texturePath, const std::function<void( ci::gl::Texture2dRef )> &updateCallback  );
 	//! Calls \a updateCallback whenever the file at \a path is modified and needs to be relaoded. Returns a WatchRef to handle the scope of the associated file watch (empty in deploy mode)
-	mason::WatchRef getFile( const ci::fs::path &path, const std::function<void( ci::DataSourceRef )> &updateCallback );
+	ci::signals::Connection getFile( const ci::fs::path &path, const std::function<void( ci::DataSourceRef )> &updateCallback );
 	//! Loads and returns a DataSourceRef for the file associated with \a path.
 	ci::DataSourceRef loadAsset( const ci::fs::path &path );
 
