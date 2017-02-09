@@ -54,6 +54,10 @@ class MA_API FileWatcher {
 	static ci::signals::Connection watch( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
 	//! Adds the files in \a filePaths to the watch list. Does not immediately call \a callback, but calls it whenever one of the files has been updated.
 	static ci::signals::Connection watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
+	//! Removes any watches for \a filePath
+	static void unwatch( const ci::fs::path &filePath );
+	//! Removes any watches for \a filePaths
+	static void unwatch( const std::vector<ci::fs::path> &filePaths );
 
 	//! Returns the number of Watch instances being watched.
 	const size_t	getNumWatches() const	{ return mWatchList.size(); }

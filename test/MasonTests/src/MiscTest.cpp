@@ -11,6 +11,8 @@
 using namespace ci;
 using namespace std;
 
+const fs::path JSON_FILENAME = "dictionary_test.json";
+
 MiscTest::MiscTest()
 {
 	auto nbox = make_shared<ui::NumberBox>( Rectf( 200, 360, 280, 400 ) );
@@ -24,10 +26,8 @@ MiscTest::MiscTest()
 
 	addSubview( nbox3 );
 
-
-	fs::path jsonFileName = "dictionary_test.json";
 	try {
-		mConnDict = ma::FileWatcher::load( jsonFileName, [this] ( const fs::path &filePath ) {
+		mConnDict = ma::FileWatcher::load( JSON_FILENAME, [this] ( const fs::path &filePath ) {
 			try {
 				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( filePath ) );
 				testDict( dict );
@@ -83,6 +83,20 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 void MiscTest::layout()
 {
 }
+
+bool MiscTest::keyDown( ci::app::KeyEvent &event )
+{
+	bool handled = true;
+	if( event.getChar() == 'u' ) {
+		CI_LOG_I( "unwatching " << JSON_FILENAME );
+		ma::FileWatcher::unwatch( JSON_FILENAME );
+	}
+	else
+		handled = false;
+
+	return handled;
+}
+
 
 void MiscTest::update()
 {

@@ -35,18 +35,20 @@ public:
 
 	virtual ~Watch() = default;
 
-	//! returns \a true if the asset file is up-to-date, false otherwise.
-	virtual bool checkCurrent() = 0;
-	//! Emit the signal callback
+	//! Checks if the asset file is up-to-date, emitting a signal callback if not. Also may discard the Watch if there are no more connected slots.
+	virtual void checkCurrent() = 0;
+	//! Remove any watches for \a filePath. If it is the last file associated with this Watch, discard
+	virtual void unwatch( const fs::path &filePath ) = 0;
+	//! Emit the signal callback. 
 	virtual void emitCallback() = 0;
 
+	//! Marks the Watch as discarded, will be destroyed the next update loop
+	void markDiscarded()			{ mDiscarded = true; }
+	//! Returns whether the Watch is discarded and should be destroyed.
 	bool isDiscarded() const		{ return mDiscarded; }
-	bool isEnabled() const			{ return mEnabled; }
-	void setEnabled( bool b )		{ mEnabled = b; }  // TODO: for this to work it would have to update the current time stamp here
 
-protected:
+private:
 	bool mDiscarded = false;
-	bool mEnabled = true;
 };
 
 //! Handles a single live asset
@@ -56,7 +58,8 @@ class WatchSingle : public Watch {
 
 	signals::Connection	connect( const function<void ( const ci::fs::path& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
-	bool checkCurrent() override;
+	void checkCurrent() override;
+	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
 
   protected:
@@ -72,7 +75,8 @@ class WatchMany : public Watch {
 
 	signals::Connection	connect( const function<void ( const vector<fs::path>& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
-	bool checkCurrent() override;
+	void checkCurrent() override;
+	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
 
 	size_t	getNumFiles() const	{ return mFilePaths.size(); }
@@ -113,30 +117,34 @@ WatchSingle::WatchSingle( const fs::path &filePath )
 	mTimeLastWrite = fs::last_write_time( mFilePath );
 }
 
-void WatchSingle::emitCallback()
-{
-	mSignalChanged.emit( mFilePath );
-}
-
-bool WatchSingle::checkCurrent()
+void WatchSingle::checkCurrent()
 {
 	if( ! fs::exists( mFilePath ) )
-		return false;
+		return;
 
 	// Discard when there are no more connected slots
 	if( mSignalChanged.getNumSlots() == 0 ) {
-		mDiscarded = true;
-		return false;
+		markDiscarded();
+		return;
 	}
 
 	auto timeLastWrite = fs::last_write_time( mFilePath );
 	if( mTimeLastWrite < timeLastWrite ) {
 		mTimeLastWrite = timeLastWrite;
-		return false;
+		mSignalChanged.emit( mFilePath );
 	}
-
-	return true;
 }
+
+void WatchSingle::unwatch( const fs::path &filePath ) 
+{
+	if( mFilePath == filePath )
+		markDiscarded();
+}
+
+void WatchSingle::emitCallback() 
+{ 
+	mSignalChanged.emit( mFilePath ); 
+} 
 
 // ----------------------------------------------------------------------------------------------------
 // WatchMany
@@ -153,17 +161,12 @@ WatchMany::WatchMany( const vector<fs::path> &filePaths )
 	}
 }
 
-void WatchMany::emitCallback()
-{
-	mSignalChanged.emit( mFilePaths );
-}
-
-bool WatchMany::checkCurrent()
+void WatchMany::checkCurrent()
 {
 	// Discard when there are no more connected slots
 	if( mSignalChanged.getNumSlots() == 0 ) {
-		mDiscarded = true;
-		return false;
+		markDiscarded();
+		return;
 	}
 
 	const size_t numFiles = mFilePaths.size();
@@ -174,19 +177,34 @@ bool WatchMany::checkCurrent()
 			auto &currentTimeLastWrite = mTimeStamps[i];
 			if( currentTimeLastWrite < timeLastWrite ) {
 				currentTimeLastWrite = timeLastWrite;
-				return false;
+				mSignalChanged.emit( mFilePaths );
 			}
 		}
 	}
-
-	return true;
 }
+
+void WatchMany::unwatch( const fs::path &filePath ) 
+{
+	mFilePaths.erase( remove( mFilePaths.begin(), mFilePaths.end(), filePath ), mFilePaths.end() );
+	
+	if( mFilePaths.empty() )
+		markDiscarded();
+}
+
+void WatchMany::emitCallback() 
+{ 
+	mSignalChanged.emit( mFilePaths ); 
+} 
 
 // ----------------------------------------------------------------------------------------------------
 // FileWatcher
 // ----------------------------------------------------------------------------------------------------
 
+namespace {
+
 bool	sWatchingEnabled = true;
+
+} // anonymous namespace
 
 // static
 FileWatcher* FileWatcher::instance()
@@ -275,6 +293,23 @@ signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const
 	return watch->connect( callback );
 }
 
+// static
+void FileWatcher::unwatch( const fs::path &filePath )
+{
+	for( auto &watch : instance()->mWatchList ) {
+		watch->unwatch( filePath );
+	}
+}
+
+// static
+void FileWatcher::unwatch( const vector<fs::path> &filePaths )
+{
+	for( auto &watch : instance()->mWatchList ) {
+		for( const auto &filePath : filePaths )
+			watch->unwatch( filePath );
+	}
+}
+
 void FileWatcher::update()
 {
 	// try-lock, if we fail to acquire the mutex then we skip this update
@@ -293,9 +328,7 @@ void FileWatcher::update()
 				continue;
 			}
 
-			if( watch->isEnabled() && ! watch->checkCurrent() )
-				watch->emitCallback();
-
+			watch->checkCurrent();
 			++it;
 		}
 	}

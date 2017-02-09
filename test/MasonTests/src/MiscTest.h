@@ -15,6 +15,8 @@ class MiscTest : public ui::SuiteView {
 	void update() override;
 	void draw( ui::Renderer *ren )	override;
 
+	bool keyDown( ci::app::KeyEvent &event ) override;
+
   private:
 	void testDict( const ma::Dictionary &dict );
 
