@@ -41,15 +41,11 @@ public:
 	//! returns \a true if the asset file is up-to-date, false otherwise.
 	virtual bool checkCurrent() = 0;
 
-	void unwatch();
-
 	bool isDiscarded() const		{ return mDiscarded; }
 	bool isEnabled() const			{ return mEnabled; }
-	void setEnabled( bool b )		{ b ? enable() : disable(); }
-	void enable()					{ mEnabled = true; } // TODO: for this to work it would have to update the current time stamp here
-	void disable()					{ mEnabled = false; }
+	void setEnabled( bool b )		{ mEnabled = b; }  // TODO: for this to work it would have to update the current time stamp here
 
-private:
+protected:
 	bool mDiscarded = false;
 	bool mEnabled = true;
 };
@@ -109,15 +105,6 @@ fs::path findFullFilePath( const fs::path &filePath )
 } // anonymous namespace
 
 // ----------------------------------------------------------------------------------------------------
-// Watch
-// ----------------------------------------------------------------------------------------------------
-
-void Watch::unwatch()
-{
-	mDiscarded = true;
-}
-
-// ----------------------------------------------------------------------------------------------------
 // WatchSingle
 // ----------------------------------------------------------------------------------------------------
 
@@ -136,6 +123,12 @@ bool WatchSingle::checkCurrent()
 {
 	if( ! fs::exists( mFilePath ) )
 		return false;
+
+	// Discard when there are no more connected slots
+	if( mSignalChanged.getNumSlots() == 0 ) {
+		mDiscarded = true;
+		return false;
+	}
 
 	auto timeLastWrite = fs::last_write_time( mFilePath );
 	if( mTimeLastWrite < timeLastWrite ) {
@@ -168,6 +161,12 @@ void WatchMany::reload()
 
 bool WatchMany::checkCurrent()
 {
+	// Discard when there are no more connected slots
+	if( mSignalChanged.getNumSlots() == 0 ) {
+		mDiscarded = true;
+		return false;
+	}
+
 	const size_t numFiles = mFilePaths.size();
 	for( size_t i = 0; i < numFiles; i++ ) {
 		const fs::path &fp = mFilePaths[i];
@@ -229,7 +228,6 @@ bool FileWatcher::isWatchingEnabled()
 signals::Connection FileWatcher::load( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
 	auto watch = make_shared<WatchSingle>( filePath );
-
 
 	auto fw = instance();
 	lock_guard<recursive_mutex> lock( fw->mMutex );
