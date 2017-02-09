@@ -297,7 +297,7 @@ void Hud::update()
 	mGraph->propagateUpdate();
 
 	if( mShowFps )
-		mInfoLabel->setRow( 0, { "fps:",  fmt::format( "{}", app::App::get()->getAverageFps() ) } );
+		mInfoLabel->setRow( 0, { "fps:",  fmt::format( "{0:.3f}", app::App::get()->getAverageFps() ) } );
 
 	if( ! glm::epsilonEqual( INFO_ROW_SIZE.y * mInfoLabel->getNumRows(), mInfoLabel->getHeight(), 0.01f ) )
 		resizeInfoLabel();
