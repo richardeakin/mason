@@ -44,7 +44,10 @@ void MasonTestsApp::setup()
 
 	mSuite->registerSuiteView<HudTest>( "hud" );
 	mSuite->registerSuiteView<MiscTest>( "misc" );
-	//mSuite->registerSuiteView<MotionTest>( "motion" );
+
+	mSuite->getSignalSuiteViewWillChange().connect( [this] {
+		CI_LOG_I( "selecting test: " << mSuite->getCurrentKey() );
+	} );
 
 	reload();
 }
@@ -93,6 +96,9 @@ void MasonTestsApp::resize()
 
 void MasonTestsApp::update()
 {
+	ma::hud()->showInfo( 1, { "watches: ", to_string( ma::FileWatcher::instance()->getNumWatches() ) } );
+	ma::hud()->showInfo( 2, { "watched files: ", to_string( ma::FileWatcher::instance()->getNumWatchedFiles() ) } );
+
 	{
 		CI_PROFILE( "Suite update" );
 		mSuite->update();
