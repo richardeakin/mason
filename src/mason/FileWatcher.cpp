@@ -301,17 +301,18 @@ signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const
 // static
 void FileWatcher::unwatch( const fs::path &filePath )
 {
+	auto fullPath = findFullFilePath( filePath );
+
 	for( auto &watch : instance()->mWatchList ) {
-		watch->unwatch( filePath );
+		watch->unwatch( fullPath );
 	}
 }
 
 // static
 void FileWatcher::unwatch( const vector<fs::path> &filePaths )
 {
-	for( auto &watch : instance()->mWatchList ) {
-		for( const auto &filePath : filePaths )
-			watch->unwatch( filePath );
+	for( const auto &filePath : filePaths ) {
+		unwatch( filePath );
 	}
 }
 
