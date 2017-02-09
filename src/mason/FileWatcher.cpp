@@ -31,8 +31,7 @@ namespace mason {
 
 //! Base class for Watch types, which are returned from FileWatcher::load() and watch()
 class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
-public:
-
+  public:
 	virtual ~Watch() = default;
 
 	//! Checks if the asset file is up-to-date, emitting a signal callback if not. Also may discard the Watch if there are no more connected slots.
@@ -47,7 +46,7 @@ public:
 	//! Returns whether the Watch is discarded and should be destroyed.
 	bool isDiscarded() const		{ return mDiscarded; }
 
-private:
+  private:
 	bool mDiscarded = false;
 };
 
@@ -62,7 +61,7 @@ class WatchSingle : public Watch {
 	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
 
-  protected:
+  private:
 	ci::signals::Signal<void ( const ci::fs::path& )>	mSignalChanged;
 	ci::fs::path										mFilePath;
 	ci::fs::file_time_type								mTimeLastWrite;
@@ -81,7 +80,7 @@ class WatchMany : public Watch {
 
 	size_t	getNumFiles() const	{ return mFilePaths.size(); }
 
-  protected:
+  private:
 	ci::signals::Signal<void ( const std::vector<ci::fs::path>& )>	mSignalChanged;
 
 	std::vector<ci::fs::path>			mFilePaths;
@@ -219,6 +218,10 @@ FileWatcher::FileWatcher()
 		connectUpdate();
 }
 
+FileWatcher::~FileWatcher()
+{
+}
+
 void FileWatcher::connectUpdate()
 {
 	if( app::App::get() && ! mUpdateConn.isConnected() )
@@ -244,13 +247,13 @@ bool FileWatcher::isWatchingEnabled()
 // static
 signals::Connection FileWatcher::load( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
-	auto watch = make_shared<WatchSingle>( filePath );
+	auto watch = new WatchSingle( filePath );
+	auto conn = watch->connect( callback );
 
 	auto fw = instance();
 	lock_guard<recursive_mutex> lock( fw->mMutex );
 
-	fw->mWatchList.push_back( watch );
-	auto conn = watch->connect( callback );
+	fw->mWatchList.emplace_back( watch );
 	watch->emitCallback();
 	return conn;
 }
@@ -258,13 +261,13 @@ signals::Connection FileWatcher::load( const fs::path &filePath, const function<
 // static
 signals::Connection FileWatcher::load( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
 {
-	auto watch = make_shared<WatchMany>( filePaths );
+	auto watch = new WatchMany( filePaths );
+	auto conn = watch->connect( callback );
 
 	auto fw = instance();
 	lock_guard<recursive_mutex> lock( fw->mMutex );
 
-	fw->mWatchList.push_back( watch );
-	auto conn = watch->connect( callback );
+	fw->mWatchList.emplace_back( watch );
 	watch->emitCallback();
 	return conn;
 }
@@ -272,24 +275,26 @@ signals::Connection FileWatcher::load( const vector<fs::path> &filePaths, const 
 // static
 signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
-	auto watch = make_shared<WatchSingle>( filePath );
+	auto watch = new WatchSingle( filePath );
+	auto conn = watch->connect( callback );
 
 	auto fw = instance();
 	lock_guard<recursive_mutex> lock( fw->mMutex );
 
-	fw->mWatchList.push_back( watch );
+	fw->mWatchList.emplace_back( watch );
 	return watch->connect( callback );
 }
 
 // static
 signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
 {
-	auto watch = make_shared<WatchMany>( filePaths );
+	auto watch = new WatchMany( filePaths );
+	auto conn = watch->connect( callback );
 
 	auto fw = instance();
 	lock_guard<recursive_mutex> lock( fw->mMutex );
 
-	fw->mWatchList.push_back( watch );
+	fw->mWatchList.emplace_back( watch );
 	return watch->connect( callback );
 }
 
@@ -320,8 +325,7 @@ void FileWatcher::update()
 	try {
 		auto it = mWatchList.begin();
 		while( it != mWatchList.end() ) {
-			auto watch = *it;
-			CI_ASSERT( watch );
+			const auto &watch = *it;
 
 			if( watch->isDiscarded() ) {
 				it = mWatchList.erase( it );
@@ -341,7 +345,7 @@ const size_t FileWatcher::getNumWatchedFiles() const
 {
 	size_t result = 0;
 	for( const auto &w : mWatchList ) {
-		auto many = dynamic_pointer_cast<WatchMany>( w );
+		auto many = dynamic_cast<WatchMany *>( w.get() );
 		if( many )
 			result += many->getNumFiles();
 		else

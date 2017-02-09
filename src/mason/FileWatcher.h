@@ -35,11 +35,13 @@
 
 namespace mason {
 
-typedef std::shared_ptr<class Watch>		WatchRef;
+class Watch;
 
 //! Global object for managing live-asset watching.
 class MA_API FileWatcher {
   public:
+	~FileWatcher();
+	
 	//! Returns the global instance of FileWatcher
 	static FileWatcher* instance();
 
@@ -67,15 +69,12 @@ class MA_API FileWatcher {
   private:
 	FileWatcher();
 
-	//void	addWatch( const WatchRef &watch );
 	void	connectUpdate();
 	void	update();
 
-	// TODO: if Watches are only internal, do they need a shared pointer?
-	// - if not, will need to be a unique_ptr or will need to move the list to a pimpl
-	std::list<WatchRef>			mWatchList;
-	std::recursive_mutex		mMutex;
-	ci::signals::Connection		mUpdateConn;
+	std::list<std::unique_ptr<Watch>>	mWatchList;
+	std::recursive_mutex				mMutex;
+	ci::signals::Connection				mUpdateConn;
 };
 
 //! Exception type thrown from errors within FileWatcher
