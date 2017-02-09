@@ -35,11 +35,10 @@ public:
 
 	virtual ~Watch() = default;
 
-	//! Reloads the asset and calls the callback.
-	// TODO: rename to emit()
-	virtual void reload() = 0;
 	//! returns \a true if the asset file is up-to-date, false otherwise.
 	virtual bool checkCurrent() = 0;
+	//! Emit the signal callback
+	virtual void emitCallback() = 0;
 
 	bool isDiscarded() const		{ return mDiscarded; }
 	bool isEnabled() const			{ return mEnabled; }
@@ -57,8 +56,8 @@ class WatchSingle : public Watch {
 
 	signals::Connection	connect( const function<void ( const ci::fs::path& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
-	void reload() override;
 	bool checkCurrent() override;
+	void emitCallback() override;
 
   protected:
 	ci::signals::Signal<void ( const ci::fs::path& )>	mSignalChanged;
@@ -73,8 +72,8 @@ class WatchMany : public Watch {
 
 	signals::Connection	connect( const function<void ( const vector<fs::path>& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
-	void reload() override;
 	bool checkCurrent() override;
+	void emitCallback() override;
 
 	size_t	getNumFiles() const	{ return mFilePaths.size(); }
 
@@ -114,7 +113,7 @@ WatchSingle::WatchSingle( const fs::path &filePath )
 	mTimeLastWrite = fs::last_write_time( mFilePath );
 }
 
-void WatchSingle::reload()
+void WatchSingle::emitCallback()
 {
 	mSignalChanged.emit( mFilePath );
 }
@@ -154,7 +153,7 @@ WatchMany::WatchMany( const vector<fs::path> &filePaths )
 	}
 }
 
-void WatchMany::reload()
+void WatchMany::emitCallback()
 {
 	mSignalChanged.emit( mFilePaths );
 }
@@ -234,7 +233,7 @@ signals::Connection FileWatcher::load( const fs::path &filePath, const function<
 
 	fw->mWatchList.push_back( watch );
 	auto conn = watch->connect( callback );
-	watch->reload();
+	watch->emitCallback();
 	return conn;
 }
 
@@ -248,7 +247,7 @@ signals::Connection FileWatcher::load( const vector<fs::path> &filePaths, const 
 
 	fw->mWatchList.push_back( watch );
 	auto conn = watch->connect( callback );
-	watch->reload();
+	watch->emitCallback();
 	return conn;
 }
 
@@ -295,7 +294,7 @@ void FileWatcher::update()
 			}
 
 			if( watch->isEnabled() && ! watch->checkCurrent() )
-				watch->reload();
+				watch->emitCallback();
 
 			++it;
 		}
