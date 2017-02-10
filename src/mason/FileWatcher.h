@@ -22,7 +22,6 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/Noncopyable.h"
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
 #include "cinder/Signals.h"
@@ -31,7 +30,9 @@
 
 #include <list>
 #include <vector>
+#include <atomic>
 #include <mutex>
+#include <thread>
 
 namespace mason {
 
@@ -69,11 +70,16 @@ class MA_API FileWatcher {
   private:
 	FileWatcher();
 
-	void	connectUpdate();
+	void	startWatching();
+	void	stopWatching();
+	void	threadEntry();
 	void	update();
 
 	std::list<std::unique_ptr<Watch>>	mWatchList;
 	std::recursive_mutex				mMutex;
+	std::unique_ptr<std::thread>		mThread;
+	std::atomic<bool>					mThreadShouldQuit;
+	std::atomic<double>					mThreadUpdateInterval = { 0.02 };
 	ci::signals::Connection				mUpdateConn;
 };
 

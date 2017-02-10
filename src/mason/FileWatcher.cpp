@@ -20,9 +20,13 @@
 */
 
 #include "mason/FileWatcher.h"
+#include "mason/Profiling.h"
 
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
+
+//#define LOG_UPDATE( stream )	CI_LOG_I( stream )
+#define LOG_UPDATE( stream )	( (void)( 0 ) )
 
 using namespace ci;
 using namespace std;
@@ -34,20 +38,26 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
   public:
 	virtual ~Watch() = default;
 
-	//! Checks if the asset file is up-to-date, emitting a signal callback if not. Also may discard the Watch if there are no more connected slots.
+	//! Checks if the asset file is up-to-date. Also may discard the Watch if there are no more connected slots.
 	virtual void checkCurrent() = 0;
 	//! Remove any watches for \a filePath. If it is the last file associated with this Watch, discard
 	virtual void unwatch( const fs::path &filePath ) = 0;
 	//! Emit the signal callback. 
 	virtual void emitCallback() = 0;
 
+	//! Marks the Watch as needing its callback to be emitted on the main thread.
+	void setNeedsCallback( bool b )	{ mNeedsCallback = b; }
+	//! Returns whether the Watch needs its callback emitted on the main thread.
+	bool needsCallback() const		{ return mNeedsCallback; }
 	//! Marks the Watch as discarded, will be destroyed the next update loop
 	void markDiscarded()			{ mDiscarded = true; }
 	//! Returns whether the Watch is discarded and should be destroyed.
 	bool isDiscarded() const		{ return mDiscarded; }
 
+
   private:
 	bool mDiscarded = false;
+	bool mNeedsCallback = false;
 };
 
 //! Handles a single live asset
@@ -130,7 +140,7 @@ void WatchSingle::checkCurrent()
 	auto timeLastWrite = fs::last_write_time( mFilePath );
 	if( mTimeLastWrite < timeLastWrite ) {
 		mTimeLastWrite = timeLastWrite;
-		mSignalChanged.emit( mFilePath );
+		setNeedsCallback( true );
 	}
 }
 
@@ -141,8 +151,9 @@ void WatchSingle::unwatch( const fs::path &filePath )
 }
 
 void WatchSingle::emitCallback() 
-{ 
-	mSignalChanged.emit( mFilePath ); 
+{
+	mSignalChanged.emit( mFilePath );
+	setNeedsCallback( false );
 } 
 
 // ----------------------------------------------------------------------------------------------------
@@ -176,7 +187,7 @@ void WatchMany::checkCurrent()
 			auto &currentTimeLastWrite = mTimeStamps[i];
 			if( currentTimeLastWrite < timeLastWrite ) {
 				currentTimeLastWrite = timeLastWrite;
-				mSignalChanged.emit( mFilePaths );
+				setNeedsCallback( true );
 			}
 		}
 	}
@@ -191,8 +202,9 @@ void WatchMany::unwatch( const fs::path &filePath )
 }
 
 void WatchMany::emitCallback() 
-{ 
-	mSignalChanged.emit( mFilePaths ); 
+{
+	mSignalChanged.emit( mFilePaths );
+	setNeedsCallback( false );
 } 
 
 // ----------------------------------------------------------------------------------------------------
@@ -215,27 +227,25 @@ FileWatcher* FileWatcher::instance()
 FileWatcher::FileWatcher()
 {
 	if( sWatchingEnabled )
-		connectUpdate();
+		startWatching();
 }
 
 FileWatcher::~FileWatcher()
 {
-}
-
-void FileWatcher::connectUpdate()
-{
-	if( app::App::get() && ! mUpdateConn.isConnected() )
-		mUpdateConn = app::App::get()->getSignalUpdate().connect( bind( &FileWatcher::update, this ) );
+	stopWatching();
 }
 
 // static
 void FileWatcher::setWatchingEnabled( bool enable )
 {
+	if( sWatchingEnabled == enable )
+		return;
+
 	sWatchingEnabled = enable;
 	if( enable )
-		instance()->connectUpdate();
+		instance()->startWatching();
 	else
-		instance()->mUpdateConn.disconnect();
+		instance()->stopWatching();
 }
 
 // static
@@ -316,30 +326,78 @@ void FileWatcher::unwatch( const vector<fs::path> &filePaths )
 	}
 }
 
+void FileWatcher::startWatching()
+{
+	if( app::App::get() && ! mUpdateConn.isConnected() )
+		mUpdateConn = app::App::get()->getSignalUpdate().connect( bind( &FileWatcher::update, this ) );
+
+	mThreadShouldQuit = false;
+	mThread = make_unique<thread>( std::bind( &FileWatcher::threadEntry, this ) );
+}
+
+void FileWatcher::stopWatching()
+{
+	mUpdateConn.disconnect();
+
+	mThreadShouldQuit = true;
+	if( mThread && mThread->joinable() ) {
+		mThread->join();
+		mThread = nullptr;
+	}
+}
+
+void FileWatcher::threadEntry()
+{
+	while( ! mThreadShouldQuit ) {
+		LOG_UPDATE( "elapsed seconds: " << app::getElapsedSeconds() );
+		{
+			// try-lock, if we fail to acquire the mutex then we skip this update
+			unique_lock<recursive_mutex> lock( mMutex, std::try_to_lock );
+			if( ! lock.owns_lock() )
+				continue;
+
+			LOG_UPDATE( "\t - updating watches, elapsed seconds: " << app::getElapsedSeconds() );
+
+			try {
+				for( auto it = mWatchList.begin(); it != mWatchList.end(); /* */ ) {
+					const auto &watch = *it;
+
+					if( watch->isDiscarded() ) {
+						it = mWatchList.erase( it );
+						continue;
+					}
+
+					watch->checkCurrent();
+					++it;
+				}
+			}
+			catch( fs::filesystem_error & ) {
+				// some file probably got locked by the system. Do nothing this update frame, we'll check again next
+			}
+		}
+
+		this_thread::sleep_for( chrono::duration<double>( mThreadUpdateInterval ) );
+	}
+}
+
 void FileWatcher::update()
 {
+	LOG_UPDATE( "elapsed seconds: " << app::getElapsedSeconds() );
+
 	// try-lock, if we fail to acquire the mutex then we skip this update
 	unique_lock<recursive_mutex> lock( mMutex, std::try_to_lock );
 	if( ! lock.owns_lock() )
 		return;
 
-	try {
-		auto it = mWatchList.begin();
-		while( it != mWatchList.end() ) {
-			const auto &watch = *it;
+	LOG_UPDATE( "\t - checking watches, elapsed seconds: " << app::getElapsedSeconds() );
 
-			if( watch->isDiscarded() ) {
-				it = mWatchList.erase( it );
-				continue;
-			}
+	CI_PROFILE_CPU( "FileWatcher update" );
 
-			watch->checkCurrent();
-			++it;
-		}
+	for( const auto &watch : mWatchList ) {
+		if( watch->needsCallback() )
+			watch->emitCallback();
 	}
-	catch( fs::filesystem_error & ) {
-		// some file probably got locked by the system. Do nothing this update frame, we'll check again next
-	}
+
 }
 
 const size_t FileWatcher::getNumWatchedFiles() const
