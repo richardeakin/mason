@@ -19,6 +19,7 @@ class MiscTest : public ui::SuiteView {
 
   private:
 	void testDict( const ma::Dictionary &dict );
+	void addStressTestWatches();
 
 	ci::signals::ScopedConnection		mConnDict;
 };

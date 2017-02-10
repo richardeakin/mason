@@ -80,6 +80,23 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 	CI_LOG_I( "num elements in oddNumbers: " << oddNumbers.size() << ", values: " << oddNumbersStr );
 }
 
+void MiscTest::addStressTestWatches()
+{
+	// for profiling
+	const int fileCount = 100;
+	CI_LOG_I( "adding " << fileCount << " watches." );
+
+	try {
+		for( int i = 0; i < fileCount; i++ ) {
+			ma::FileWatcher::watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+			} );
+		}
+	}
+	catch( exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
+	}
+}
+
 void MiscTest::layout()
 {
 }
@@ -90,6 +107,9 @@ bool MiscTest::keyDown( ci::app::KeyEvent &event )
 	if( event.getChar() == 'u' ) {
 		CI_LOG_I( "unwatching " << JSON_FILENAME );
 		ma::FileWatcher::unwatch( JSON_FILENAME );
+	}
+	else if( event.getChar() == 'w' ) {
+		addStressTestWatches();
 	}
 	else
 		handled = false;
