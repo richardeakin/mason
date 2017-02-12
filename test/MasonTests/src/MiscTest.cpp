@@ -111,6 +111,10 @@ bool MiscTest::keyDown( ci::app::KeyEvent &event )
 	else if( event.getChar() == 'w' ) {
 		addStressTestWatches();
 	}
+	else if( event.getChar() == 'f' ) {
+		ma::FileWatcher::setWatchingEnabled( ! ma::FileWatcher::isWatchingEnabled() );
+		CI_LOG_I( "watching enabled: " << ma::FileWatcher::isWatchingEnabled() );
+	}
 	else
 		handled = false;
 

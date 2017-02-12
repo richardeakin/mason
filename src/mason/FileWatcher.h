@@ -46,7 +46,9 @@ class MA_API FileWatcher {
 	//! Returns the global instance of FileWatcher
 	static FileWatcher* instance();
 
+	//! Globally enables or disables file watching. Must be called on the main thread.
 	static void	setWatchingEnabled( bool enable );
+	//! Returns whether file watching is enabled or disabled.
 	static bool	isWatchingEnabled();
 
 	//! Loads a single file at \a filePath and adds it to the watch list. Immediately calls \a callback with the resolved path, and also calls it whenever the file has been updated.
