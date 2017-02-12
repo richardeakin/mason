@@ -71,6 +71,8 @@ class WatchSingle : public Watch {
 	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
 
+	const fs::path&	getFilePath() const		{ return mFilePath; }
+
   private:
 	ci::signals::Signal<void ( const ci::fs::path& )>	mSignalChanged;
 	ci::fs::path										mFilePath;
@@ -215,6 +217,24 @@ namespace {
 
 bool	sWatchingEnabled = true;
 
+// Used from the debugger.
+void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
+{
+	int i = 0;
+	string str;
+	for( const auto &watch : watchList ) {
+		string needsCallback = watch->needsCallback() ? "true" : "false";
+		string discarded = watch->isDiscarded() ? "true" : "false";
+		auto watchSingle = dynamic_cast<const WatchSingle *>( watch.get() );
+		string filePath = watchSingle ? watchSingle->getFilePath().string() : "(many)";
+		str += "[" + to_string( i ) + "] needs callback: " + needsCallback + ", discarded: " + discarded + ", file: " + filePath + "\n";
+
+		i++;
+	}
+
+	app::console() << str << std::endl;
+}
+
 } // anonymous namespace
 
 // static
@@ -352,6 +372,7 @@ void FileWatcher::threadEntry()
 		LOG_UPDATE( "elapsed seconds: " << app::getElapsedSeconds() );
 		{
 			// try-lock, if we fail to acquire the mutex then we skip this update
+			// TODO: this doesn't help here, we might as well wait until we can aquire the lock
 			unique_lock<recursive_mutex> lock( mMutex, std::try_to_lock );
 			if( ! lock.owns_lock() )
 				continue;
@@ -362,12 +383,21 @@ void FileWatcher::threadEntry()
 				for( auto it = mWatchList.begin(); it != mWatchList.end(); /* */ ) {
 					const auto &watch = *it;
 
+					// erase discarded
 					if( watch->isDiscarded() ) {
 						it = mWatchList.erase( it );
 						continue;
 					}
+					// check if Watch's target has been modified and needs a callback, if not already marked.
+					if( ! watch->needsCallback() ) {
+						watch->checkCurrent();
 
-					watch->checkCurrent();
+						// If the Watch needs a callback, move it to the front of the list
+						if( watch->needsCallback() && it != mWatchList.begin() ) {							
+							mWatchList.splice( mWatchList.begin(), mWatchList, it );
+						}
+					}
+
 					++it;
 				}
 			}
@@ -393,11 +423,15 @@ void FileWatcher::update()
 
 	CI_PROFILE_CPU( "FileWatcher update" );
 
+	// Watches are sorted so that all that need a callback are in the beginning.
+	// So break when we hit the first one that doesn't need a callback
 	for( const auto &watch : mWatchList ) {
-		if( watch->needsCallback() )
-			watch->emitCallback();
-	}
 
+		if( ! watch->needsCallback() )
+			break;
+
+		watch->emitCallback();
+	}
 }
 
 const size_t FileWatcher::getNumWatchedFiles() const
