@@ -371,11 +371,7 @@ void FileWatcher::threadEntry()
 	while( ! mThreadShouldQuit ) {
 		LOG_UPDATE( "elapsed seconds: " << app::getElapsedSeconds() );
 		{
-			// try-lock, if we fail to acquire the mutex then we skip this update
-			// TODO: this doesn't help here, we might as well wait until we can aquire the lock
-			unique_lock<recursive_mutex> lock( mMutex, std::try_to_lock );
-			if( ! lock.owns_lock() )
-				continue;
+			lock_guard<recursive_mutex> lock( mMutex );
 
 			LOG_UPDATE( "\t - updating watches, elapsed seconds: " << app::getElapsedSeconds() );
 
@@ -414,7 +410,7 @@ void FileWatcher::update()
 {
 	LOG_UPDATE( "elapsed seconds: " << app::getElapsedSeconds() );
 
-	// try-lock, if we fail to acquire the mutex then we skip this update
+	// try-lock so we don't block the main thread, if we fail to acquire the mutex then we skip this update
 	unique_lock<recursive_mutex> lock( mMutex, std::try_to_lock );
 	if( ! lock.owns_lock() )
 		return;
