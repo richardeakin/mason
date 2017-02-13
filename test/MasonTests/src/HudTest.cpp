@@ -14,11 +14,6 @@ using namespace std;
 
 HudTest::HudTest()
 {
-	mCam.setPerspective( 45, app::getWindowAspectRatio(), 1.0f, 1000.0f );
-	mCam.lookAt( vec3( 0, 6.0f, 10 ), vec3( 0, 1.0f, 0 ), vec3( 0, 1, 0 ) );
-
-	mCamUi = ma::CameraFpsUi( &mCam, app::getWindow(), -1 );
-
 	loadGlsl();
 	testHudVars();
 }

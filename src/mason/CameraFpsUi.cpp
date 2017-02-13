@@ -202,6 +202,8 @@ void CameraFpsUi::mouseWheel( float increment )
 		return;	
 }
 
+// TODO: need a way to disable using up these keys
+// - also shouldn't handle if any modifier keys are down
 void CameraFpsUi::keyDown( ci::app::KeyEvent &event )
 {
 	bool handled = true;

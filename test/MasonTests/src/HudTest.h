@@ -19,9 +19,6 @@ class HudTest : public ui::SuiteView {
 	void loadGlsl();
 	void testHudVars();
 
-	mason::CameraFpsUi	mCamUi;
-	ci::CameraPersp		mCam;
-
 	ci::gl::BatchRef	mBatchRect;
 	ci::signals::ScopedConnection	mConnGlsl;
 
