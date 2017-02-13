@@ -89,6 +89,14 @@ AssetManager::AssetManager()
 	mShaderPreprocessor.setVersion( 410 );
 	mShaderPreprocessor.addDefine( "CINDER_GL_CORE" );
 #endif
+
+#if defined( CINDER_MSW )
+	auto vendor = gl::getVendorString();
+	std::transform( vendor.begin(), vendor.end(), vendor.begin(), tolower );
+	if( vendor.find( "nvidia" ) != string::npos ) {
+		mShaderPreprocessor.setUseFilenameInLineDirectiveEnabled( true );
+	}
+#endif
 }
 
 AssetManager::~AssetManager()
@@ -328,6 +336,7 @@ ci::DataSourceRef AssetManager::loadAsset( const ci::fs::path &path )
 
 void AssetManager::enableLiveAssets( bool enabled )
 {
+	// TODO: remove this, or make it block only our signals and not all of FileWatcher
 	ma::FileWatcher::setWatchingEnabled( enabled );
 }
 
