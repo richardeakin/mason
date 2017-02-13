@@ -106,7 +106,7 @@ bool MiscTest::keyDown( ci::app::KeyEvent &event )
 	bool handled = true;
 	if( event.getChar() == 'u' ) {
 		CI_LOG_I( "unwatching " << JSON_FILENAME );
-		ma::FileWatcher::unwatch( JSON_FILENAME );
+		ma::FileWatcher::instance()->unwatch( JSON_FILENAME );
 	}
 	else if( event.getChar() == 'w' ) {
 		addStressTestWatches();

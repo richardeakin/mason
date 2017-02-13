@@ -44,6 +44,8 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
 	virtual void unwatch( const fs::path &filePath ) = 0;
 	//! Emit the signal callback. 
 	virtual void emitCallback() = 0;
+	//! Enables or disables a Watch
+	virtual void setEnabled( bool enable, const fs::path &filePath ) = 0;
 
 	//! Marks the Watch as needing its callback to be emitted on the main thread.
 	void setNeedsCallback( bool b )	{ mNeedsCallback = b; }
@@ -53,10 +55,12 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
 	void markDiscarded()			{ mDiscarded = true; }
 	//! Returns whether the Watch is discarded and should be destroyed.
 	bool isDiscarded() const		{ return mDiscarded; }
+	//! Returns whether the Watch is enabled or disabled
+	bool isEnabled() const			{ return mEnabled; }
 
-
-  private:
+  protected:
 	bool mDiscarded = false;
+	bool mEnabled = true;
 	bool mNeedsCallback = false;
 };
 
@@ -70,6 +74,7 @@ class WatchSingle : public Watch {
 	void checkCurrent() override;
 	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
+	void setEnabled( bool enable, const fs::path &filePath ) override;
 
 	const fs::path&	getFilePath() const		{ return mFilePath; }
 
@@ -89,6 +94,7 @@ class WatchMany : public Watch {
 	void checkCurrent() override;
 	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
+	void setEnabled( bool enable, const fs::path &filePath ) override;
 
 	size_t	getNumFiles() const	{ return mFilePaths.size(); }
 
@@ -152,6 +158,22 @@ void WatchSingle::unwatch( const fs::path &filePath )
 		markDiscarded();
 }
 
+void WatchSingle::setEnabled( bool enable, const fs::path &filePath )
+{
+	if( mFilePath == filePath ) {
+		if( mEnabled == enable )
+			return;
+
+		mEnabled = enable;
+
+		if( mEnabled ) {
+			// update the timestamp so that any modifications while
+			// the watch was disabled don't trigger a callback
+			mTimeLastWrite =  fs::last_write_time( mFilePath );
+		}
+	}
+}
+
 void WatchSingle::emitCallback() 
 {
 	mSignalChanged.emit( mFilePath );
@@ -201,6 +223,12 @@ void WatchMany::unwatch( const fs::path &filePath )
 	
 	if( mFilePaths.empty() )
 		markDiscarded();
+}
+
+void WatchMany::setEnabled( bool enable, const fs::path &filePath )
+{
+	// FIXME: enable / disable doesn't make sense for WatchMany, since we don't know which file to disable
+	// - possible solution is 
 }
 
 void WatchMany::emitCallback() 
@@ -328,21 +356,37 @@ signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const
 	return watch->connect( callback );
 }
 
-// static
 void FileWatcher::unwatch( const fs::path &filePath )
 {
 	auto fullPath = findFullFilePath( filePath );
 
-	for( auto &watch : instance()->mWatchList ) {
+	for( auto &watch : mWatchList ) {
 		watch->unwatch( fullPath );
 	}
 }
 
-// static
 void FileWatcher::unwatch( const vector<fs::path> &filePaths )
 {
 	for( const auto &filePath : filePaths ) {
 		unwatch( filePath );
+	}
+}
+
+void FileWatcher::enable( const fs::path &filePath )
+{
+	auto fullPath = findFullFilePath( filePath );
+
+	for( auto &watch : mWatchList ) {
+		watch->setEnabled( true, fullPath );
+	}
+}
+
+void FileWatcher::disable( const fs::path &filePath )
+{
+	auto fullPath = findFullFilePath( filePath );
+
+	for( auto &watch : mWatchList ) {
+		watch->setEnabled( false, fullPath );
 	}
 }
 

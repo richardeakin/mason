@@ -30,6 +30,7 @@ class MasonTestsApp : public App {
 	void draw() override;
 
 	void reload();
+	void saveConfig();
 
 	ui::SuiteRef	mSuite;
 	bool			mDrawHud = true;
@@ -54,6 +55,7 @@ void MasonTestsApp::setup()
 
 void MasonTestsApp::reload()
 {
+	// TODO: this should work without getAssetPath() too
 	ma::assets()->getFile( app::getAssetPath( "config.json" ), [this]( DataSourceRef dataSource ) {
 		CI_LOG_I( "config.json reloaded" );
 
@@ -62,6 +64,16 @@ void MasonTestsApp::reload()
 		size_t testIndex = (size_t)ma::config()->get<int>( "app", "test" );
 		mSuite->select( testIndex );
 	} );
+}
+
+void MasonTestsApp::saveConfig()
+{
+	// first disable config.json watch, so it doesn't trigger an app reload
+	ma::FileWatcher::instance()->disable( "config.json" );
+
+	ma::config()->write();
+
+	ma::FileWatcher::instance()->enable( "config.json" );
 }
 
 void MasonTestsApp::keyDown( app::KeyEvent event )
@@ -84,8 +96,13 @@ void MasonTestsApp::keyDown( app::KeyEvent event )
 			mDrawHud = ! mDrawHud;
 			mSuite->setDrawUiEnabled( mDrawHud );
 		}
-		else if( event.getChar() == 'l' )
+		else if( event.getChar() == 'l' ) {
 			mDrawProfiling = ! mDrawProfiling;
+		}
+		else if( event.getChar() == 's' ) {
+			CI_LOG_I( "saving config.json" );
+			saveConfig();
+		}
 	}
 }
 
