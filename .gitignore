@@ -25,6 +25,7 @@ Release/
 Release_DLL/
 ipch/
 **/vc2013/enc_temp_folder/**
+**/vc2015/enc_temp_folder/**
 
 # Jetbrains IDEs
 .idea
