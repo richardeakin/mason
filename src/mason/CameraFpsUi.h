@@ -82,6 +82,11 @@ class MA_API CameraFpsUi {
 	//! Sets the size of the window in pixels when no WindowRef is supplied with connect()
 	void	setWindowSize( const ci::ivec2 &windowSizePixels ) { mWindowSize = windowSizePixels; }
 
+	//! Sets the amount of movement when a hotkey is pressed. Default is 1. Shift makes it 1/10th the movement
+	void	setMoveIncrement( float incr )	{ mMoveIncrement = incr; }
+	//! Sets the amount of movement when a hotkey is pressed. Default is 1. Shift makes it 1/10th the movement
+	float	getMoveIncrement() const		{ return mMoveIncrement;}
+
  private:
 	ci::ivec2	getWindowSize() const;
  
@@ -91,6 +96,7 @@ class MA_API CameraFpsUi {
 	bool					mLookEnabled = false;
 
 	ci::vec3				mMoveDirection, mMoveAccel, mMoveVelocity;
+	float					mMoveIncrement = 1.0f;
 
 	
 	ci::ivec2					mWindowSize; // used when mWindow is null

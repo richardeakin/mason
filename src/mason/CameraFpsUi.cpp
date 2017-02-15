@@ -207,7 +207,7 @@ void CameraFpsUi::mouseWheel( float increment )
 void CameraFpsUi::keyDown( ci::app::KeyEvent &event )
 {
 	bool handled = true;
-	float moveAmount = 1.0f;
+	float moveAmount = mMoveIncrement;
 	if( event.isShiftDown() )
 		moveAmount = 0.1f;
 
