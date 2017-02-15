@@ -69,11 +69,12 @@ void MasonTestsApp::reload()
 void MasonTestsApp::saveConfig()
 {
 	// first disable config.json watch, so it doesn't trigger an app reload
-	ma::FileWatcher::instance()->disable( "config.json" );
+	// FIXME: with disable / enable commented out, we should get a callback above. Why isn't it firing?
+//	ma::FileWatcher::instance()->disable( "config.json" );
 
 	ma::config()->write();
 
-	ma::FileWatcher::instance()->enable( "config.json" );
+//	ma::FileWatcher::instance()->enable( "config.json" );
 }
 
 void MasonTestsApp::keyDown( app::KeyEvent event )
