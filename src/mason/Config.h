@@ -132,6 +132,9 @@ public:
 
 	const Json::Value&	getGroup( const std::string &category ) const	{ return mRoot[category]; }
 
+	ci::DataTargetRef	getTarget() const	{ return mTarget; }
+	ci::fs::path		getTargetFilePath() const;
+
 private:
 	Config() : mDirty( false ) {}
 	Config( const Options &options ) : mDirty( false ), mOptions( options ) {}

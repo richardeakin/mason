@@ -72,4 +72,12 @@ bool Config::write( const DataTargetRef &target )
 	return false;
 }
 
+fs::path Config::getTargetFilePath() const
+{
+	if( ! mTarget )
+		return {};
+
+	return mTarget->getFilePath();
+}
+
 } // namespace mason
