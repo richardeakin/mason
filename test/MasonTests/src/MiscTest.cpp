@@ -89,6 +89,7 @@ void MiscTest::addStressTestWatches()
 	try {
 		for( int i = 0; i < fileCount; i++ ) {
 			ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+				// not doing anything, just watching em.
 			} );
 		}
 	}

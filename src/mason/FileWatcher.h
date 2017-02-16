@@ -24,6 +24,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
+#include "cinder/Noncopyable.h"
 #include "cinder/Signals.h"
 
 #include "mason/Export.h"
@@ -46,7 +47,7 @@ struct FileEvent {
 
 //! Global object for managing live-asset watching.
 // TODO: document that any filepath arguments affect things globally
-class MA_API FileWatcher {
+class MA_API FileWatcher : private ci::Noncopyable {
   public:
 	~FileWatcher();
 	
