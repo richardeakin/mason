@@ -312,9 +312,9 @@ ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::
 #if defined( OOBE_DEPLOY ) || defined( CINDER_ANDROID )
 		auto assetFile = findFile( path );
 		updateCallback( assetFile );
-		return mason::WatchRef();
+		return ma::WatchRef();
 #else
-		auto conn = mason::FileWatcher::load( path, [updateCallback]( const ci::fs::path &fullPath ) {
+		auto conn = ma::FileWatcher::instance()->load( path, [updateCallback]( const ci::fs::path &fullPath ) {
 			updateCallback( loadFile( fullPath ) );
 		} );
 
@@ -336,8 +336,8 @@ ci::DataSourceRef AssetManager::loadAsset( const ci::fs::path &path )
 
 void AssetManager::enableLiveAssets( bool enabled )
 {
-	// TODO: remove this, or make it block only our signals and not all of FileWatcher
-	ma::FileWatcher::setWatchingEnabled( enabled );
+	// TODO: use our own FileWatcher instance
+	ma::FileWatcher::instance()->setWatchingEnabled( enabled );
 }
 
 bool AssetManager::isLiveAssetsEnabled() const
@@ -561,7 +561,7 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 Asset::Asset( const fs::path& path, uint32_t uuid )
 	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( ASSET_INITIAL_TIME_MODIFIED )
 {
-	mConnection = mason::FileWatcher::watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
+	mConnection = ma::FileWatcher::instance()->watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
 
 Asset::~Asset()

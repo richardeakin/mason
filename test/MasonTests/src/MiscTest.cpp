@@ -27,7 +27,7 @@ MiscTest::MiscTest()
 	addSubview( nbox3 );
 
 	try {
-		mConnDict = ma::FileWatcher::load( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+		mConnDict = ma::FileWatcher::instance()->load( JSON_FILENAME, [this] ( const fs::path &filePath ) {
 			try {
 				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( filePath ) );
 				testDict( dict );
@@ -88,7 +88,7 @@ void MiscTest::addStressTestWatches()
 
 	try {
 		for( int i = 0; i < fileCount; i++ ) {
-			ma::FileWatcher::watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+			ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
 			} );
 		}
 	}
@@ -112,8 +112,8 @@ bool MiscTest::keyDown( ci::app::KeyEvent &event )
 		addStressTestWatches();
 	}
 	else if( event.getChar() == 'f' ) {
-		ma::FileWatcher::setWatchingEnabled( ! ma::FileWatcher::isWatchingEnabled() );
-		CI_LOG_I( "watching enabled: " << ma::FileWatcher::isWatchingEnabled() );
+		ma::FileWatcher::instance()->setWatchingEnabled( ! ma::FileWatcher::instance()->isWatchingEnabled() );
+		CI_LOG_I( "watching enabled: " << ma::FileWatcher::instance()->isWatchingEnabled() );
 	}
 	else
 		handled = false;

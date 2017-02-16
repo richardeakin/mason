@@ -243,8 +243,6 @@ void WatchMany::emitCallback()
 
 namespace {
 
-bool	sWatchingEnabled = true;
-
 // Used from the debugger.
 void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
 {
@@ -266,16 +264,25 @@ void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
 } // anonymous namespace
 
 // static
-FileWatcher* FileWatcher::instance()
+const FileWatcherRef& FileWatcher::instance()
 {
-	static FileWatcher sInstance;
-	return &sInstance;
+	static FileWatcherRef sInstance;
+	if( ! sInstance )
+		sInstance = create();
+
+	return sInstance;
+}
+
+// static
+FileWatcherRef FileWatcher::create()
+{
+	return FileWatcherRef( new FileWatcher );
 }
 
 FileWatcher::FileWatcher()
 {
-	if( sWatchingEnabled )
-		startWatching();
+	// TODO: consider only starting this once a watch has been added
+	startWatching();
 }
 
 FileWatcher::~FileWatcher()
@@ -283,76 +290,61 @@ FileWatcher::~FileWatcher()
 	stopWatching();
 }
 
-// static
 void FileWatcher::setWatchingEnabled( bool enable )
 {
-	if( sWatchingEnabled == enable )
+	if( mWatchingEnabled == enable )
 		return;
 
-	sWatchingEnabled = enable;
+	mWatchingEnabled = enable;
 	if( enable )
 		instance()->startWatching();
 	else
 		instance()->stopWatching();
 }
 
-// static
-bool FileWatcher::isWatchingEnabled()
-{
-	return sWatchingEnabled;
-}
-
-// static
 signals::Connection FileWatcher::load( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
 	auto watch = new WatchSingle( filePath );
 	auto conn = watch->connect( callback );
 
-	auto fw = instance();
-	lock_guard<recursive_mutex> lock( fw->mMutex );
+	lock_guard<recursive_mutex> lock( mMutex );
 
-	fw->mWatchList.emplace_back( watch );
+	mWatchList.emplace_back( watch );
 	watch->emitCallback();
 	return conn;
 }
 
-// static
 signals::Connection FileWatcher::load( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
 {
 	auto watch = new WatchMany( filePaths );
 	auto conn = watch->connect( callback );
 
-	auto fw = instance();
-	lock_guard<recursive_mutex> lock( fw->mMutex );
+	lock_guard<recursive_mutex> lock( mMutex );
 
-	fw->mWatchList.emplace_back( watch );
+	mWatchList.emplace_back( watch );
 	watch->emitCallback();
 	return conn;
 }
 
-// static
 signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void( const fs::path& )> &callback )
 {
 	auto watch = new WatchSingle( filePath );
 	auto conn = watch->connect( callback );
 
-	auto fw = instance();
-	lock_guard<recursive_mutex> lock( fw->mMutex );
+	lock_guard<recursive_mutex> lock( mMutex );
 
-	fw->mWatchList.emplace_back( watch );
+	mWatchList.emplace_back( watch );
 	return watch->connect( callback );
 }
 
-// static
 signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
 {
 	auto watch = new WatchMany( filePaths );
 	auto conn = watch->connect( callback );
 
-	auto fw = instance();
-	lock_guard<recursive_mutex> lock( fw->mMutex );
+	lock_guard<recursive_mutex> lock( mMutex );
 
-	fw->mWatchList.emplace_back( watch );
+	mWatchList.emplace_back( watch );
 	return watch->connect( callback );
 }
 
