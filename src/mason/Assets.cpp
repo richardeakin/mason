@@ -314,7 +314,7 @@ ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::
 		updateCallback( assetFile );
 		return ma::WatchRef();
 #else
-		auto conn = ma::FileWatcher::instance()->load( path, [updateCallback]( const ci::fs::path &fullPath ) {
+		auto conn = ma::FileWatcher::instance()->watch( path, [updateCallback]( const ci::fs::path &fullPath ) {
 			updateCallback( loadFile( fullPath ) );
 		} );
 
@@ -561,13 +561,11 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 Asset::Asset( const fs::path& path, uint32_t uuid )
 	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( ASSET_INITIAL_TIME_MODIFIED )
 {
-	mConnection = ma::FileWatcher::instance()->watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
+	mConnection = ma::FileWatcher::instance()->watch( path, ma::FileWatcher::Options().callOnWatch( false ), bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
 
 Asset::~Asset()
 {
-	//if( mWatch )
-	//	mWatch->unwatch();
 }
 
 bool Asset::isModified() const

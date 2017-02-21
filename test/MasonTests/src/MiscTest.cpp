@@ -27,7 +27,7 @@ MiscTest::MiscTest()
 	addSubview( nbox3 );
 
 	try {
-		mConnDict = ma::FileWatcher::instance()->load( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+		mConnDict = ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
 			try {
 				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( filePath ) );
 				testDict( dict );

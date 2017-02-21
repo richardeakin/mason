@@ -41,7 +41,7 @@ class Watch;
 typedef std::shared_ptr<class FileWatcher>	FileWatcherRef;
 
 // TODO: pass this back in callbacks
-struct FileEvent { 
+struct WatchEvent { 
 //	const fs::path& getPath() const; 
 };
 
@@ -50,26 +50,37 @@ struct FileEvent {
 class MA_API FileWatcher : private ci::Noncopyable {
   public:
 	~FileWatcher();
+
+	//! Optional parameters provided to watch()
+	struct Options {
+		//! If true (default), the callback is fired directly after the watch is added, before the call to watch() returns.
+		Options& callOnWatch( bool b )	{ mCallOnWatch = b; return *this; }
+
+	  private:
+		bool	mCallOnWatch = true;
+
+		friend class FileWatcher;
+	};
 	
 	//! Returns the global instance of FileWatcher
-	static const FileWatcherRef& instance();
+	static const FileWatcherRef&	instance();
 	//! Creates and returns a new FileWatcher within a shared_ptr.
-	static FileWatcherRef create(); 
+	static FileWatcherRef			create(); 
 
 	//! Enables or disables file watching.
 	void	setWatchingEnabled( bool enable );
 	//! Returns whether file watching is enabled or disabled.
 	bool	isWatchingEnabled() const	{ return mWatchingEnabled; }
 
-	//! Loads a single file at \a filePath and adds it to the watch list. Immediately calls \a callback with the resolved path, and also calls it whenever the file has been updated.
-	ci::signals::Connection load( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
-	//! Loads the files in \a filePaths and adds them to the watch list. Immediately calls \a callback with the resolved paths, and also calls it whenever one of the files has been updated.
-	ci::signals::Connection load( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
 	//! Adds a single file at \a filePath to the watch list. Does not immediately call \a callback, but calls it whenever the file has been updated.
 	ci::signals::Connection watch( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback );
+	//! Adds a single file at \a filePath to the watch list, with optional \a options.
+	ci::signals::Connection watch( const ci::fs::path &filePath, const Options &options, const std::function<void ( const ci::fs::path& )> &callback );
 	//! Adds the files in \a filePaths to the watch list. Does not immediately call \a callback, but calls it whenever one of the files has been updated.
 	ci::signals::Connection watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
-	
+	//! Adds the files in \a filePaths to the watch list, with optional \a options.
+	ci::signals::Connection watch( const std::vector<ci::fs::path> &filePaths, const Options &options, const std::function<void ( const std::vector<ci::fs::path> & )> &callback );
+
 	//! Removes any watches for \a filePath
 	void unwatch( const ci::fs::path &filePath );
 	//! Removes any watches for \a filePaths

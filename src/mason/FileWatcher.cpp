@@ -302,7 +302,12 @@ void FileWatcher::setWatchingEnabled( bool enable )
 		instance()->stopWatching();
 }
 
-signals::Connection FileWatcher::load( const fs::path &filePath, const function<void( const fs::path& )> &callback )
+ci::signals::Connection FileWatcher::watch( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback )
+{ 
+	return watch( filePath, Options(), callback );
+}
+
+signals::Connection FileWatcher::watch( const fs::path &filePath, const Options &options, const function<void( const fs::path& )> &callback )
 {
 	auto watch = new WatchSingle( filePath );
 	auto conn = watch->connect( callback );
@@ -310,34 +315,19 @@ signals::Connection FileWatcher::load( const fs::path &filePath, const function<
 	lock_guard<recursive_mutex> lock( mMutex );
 
 	mWatchList.emplace_back( watch );
-	watch->emitCallback();
-	return conn;
-}
 
-signals::Connection FileWatcher::load( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
-{
-	auto watch = new WatchMany( filePaths );
-	auto conn = watch->connect( callback );
+	if( options.mCallOnWatch )
+		watch->emitCallback();
 
-	lock_guard<recursive_mutex> lock( mMutex );
-
-	mWatchList.emplace_back( watch );
-	watch->emitCallback();
-	return conn;
-}
-
-signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void( const fs::path& )> &callback )
-{
-	auto watch = new WatchSingle( filePath );
-	auto conn = watch->connect( callback );
-
-	lock_guard<recursive_mutex> lock( mMutex );
-
-	mWatchList.emplace_back( watch );
 	return watch->connect( callback );
 }
 
-signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const vector<fs::path>& )> &callback )
+ci::signals::Connection FileWatcher::watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback )
+{ 
+	return watch( filePaths, Options(), callback );
+}
+
+signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const Options &options, const function<void ( const vector<fs::path>& )> &callback )
 {
 	auto watch = new WatchMany( filePaths );
 	auto conn = watch->connect( callback );
@@ -345,6 +335,10 @@ signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const
 	lock_guard<recursive_mutex> lock( mMutex );
 
 	mWatchList.emplace_back( watch );
+
+	if( options.mCallOnWatch )
+		watch->emitCallback();
+
 	return watch->connect( callback );
 }
 
