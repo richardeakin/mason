@@ -27,9 +27,9 @@ MiscTest::MiscTest()
 	addSubview( nbox3 );
 
 	try {
-		mConnDict = ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+		mConnDict = ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const ma::WatchEvent &event ) {
 			try {
-				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( filePath ) );
+				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( event.getFile() ) );
 				testDict( dict );
 
 				CI_LOG_I( "testDict completed." );
@@ -88,7 +88,7 @@ void MiscTest::addStressTestWatches()
 
 	try {
 		for( int i = 0; i < fileCount; i++ ) {
-			ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const fs::path &filePath ) {
+			ma::FileWatcher::instance()->watch( JSON_FILENAME, [this] ( const ma::WatchEvent &event ) {
 				// not doing anything, just watching em.
 			} );
 		}

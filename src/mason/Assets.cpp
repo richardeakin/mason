@@ -314,8 +314,8 @@ ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::
 		updateCallback( assetFile );
 		return ma::WatchRef();
 #else
-		auto conn = ma::FileWatcher::instance()->watch( path, [updateCallback]( const ci::fs::path &fullPath ) {
-			updateCallback( loadFile( fullPath ) );
+		auto conn = ma::FileWatcher::instance()->watch( path, [updateCallback]( const WatchEvent &event ) {
+			updateCallback( loadFile( event.getFile() ) );
 		} );
 
 		return conn;
@@ -495,11 +495,11 @@ ci::DataSourceRef AssetManager::findFile( const ci::fs::path &filePath )
 #endif
 }
 
-void AssetManager::onFileChanged( const fs::path &path )
+void AssetManager::onFileChanged( const WatchEvent &event )
 {
 	// Flag groups as modified if asset was modified since the last check.
 	// Groups remain modified until they are reloaded, so we only need to flag them once.
-	auto asset = getAssetRef( path );
+	auto asset = getAssetRef( event.getFile() );
 	if( asset /* && asset->isModified() */ ) {
 		// Assumes groups never delete themselves from the asset on the main thread.
 		bool inUse = false;

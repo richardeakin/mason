@@ -210,7 +210,7 @@ private:
 
 	friend class Asset;
 
-	void onFileChanged( const ci::fs::path &path );
+	void onFileChanged(  const WatchEvent &event );
 
 	std::map<uint32_t, std::weak_ptr<ci::gl::GlslProg>>   mShaders;
 	std::map<uint32_t, std::weak_ptr<ci::gl::Texture2d>>  mTextures;
@@ -221,9 +221,6 @@ private:
 	std::map<uint32_t, AssetGroupRef>    mGroups;
 	std::map<uint32_t, AssetRef>         mAssets;
 	std::vector<uint32_t>                mAssetIds;
-
-//	mutable std::mutex                   mGroupsLock;
-//	mutable std::mutex                   mAssetsLock;
 
 	std::map<uint32_t, bool>             mAssetErrors;
 

@@ -38,6 +38,8 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
   public:
 	virtual ~Watch() = default;
 
+	signals::Connection	connect( const function<void ( const WatchEvent& )> &callback )	{ return mSignalChanged.connect( callback ); }
+
 	//! Checks if the asset file is up-to-date. Also may discard the Watch if there are no more connected slots.
 	virtual void checkCurrent() = 0;
 	//! Remove any watches for \a filePath. If it is the last file associated with this Watch, discard
@@ -62,14 +64,14 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
 	bool mDiscarded = false;
 	bool mEnabled = true;
 	bool mNeedsCallback = false;
+
+	ci::signals::Signal<void ( const WatchEvent& )>	mSignalChanged;
 };
 
 //! Handles a single live asset
 class WatchSingle : public Watch {
   public:
 	WatchSingle( const ci::fs::path &filePath );
-
-	signals::Connection	connect( const function<void ( const ci::fs::path& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
 	void checkCurrent() override;
 	void unwatch( const fs::path &filePath ) override;
@@ -79,7 +81,6 @@ class WatchSingle : public Watch {
 	const fs::path&	getFilePath() const		{ return mFilePath; }
 
   private:
-	ci::signals::Signal<void ( const ci::fs::path& )>	mSignalChanged;
 	ci::fs::path										mFilePath;
 	ci::fs::file_time_type								mTimeLastWrite;
 };
@@ -89,8 +90,6 @@ class WatchMany : public Watch {
   public:
 	WatchMany( const std::vector<ci::fs::path> &filePaths );
 
-	signals::Connection	connect( const function<void ( const vector<fs::path>& )> &callback )	{ return mSignalChanged.connect( callback ); }
-
 	void checkCurrent() override;
 	void unwatch( const fs::path &filePath ) override;
 	void emitCallback() override;
@@ -99,9 +98,7 @@ class WatchMany : public Watch {
 	size_t	getNumFiles() const	{ return mFilePaths.size(); }
 
   private:
-	ci::signals::Signal<void ( const std::vector<ci::fs::path>& )>	mSignalChanged;
-
-	std::vector<ci::fs::path>			mFilePaths;
+	std::vector<ci::fs::path>			mFilePaths, mModifiedFilePaths;
 	std::vector<ci::fs::file_time_type>	mTimeStamps;
 };
 
@@ -176,7 +173,10 @@ void WatchSingle::setEnabled( bool enable, const fs::path &filePath )
 
 void WatchSingle::emitCallback() 
 {
-	mSignalChanged.emit( mFilePath );
+	vector<fs::path> modifiedFiles = { mFilePath };
+	WatchEvent event( modifiedFiles );
+
+	mSignalChanged.emit( event );
 	setNeedsCallback( false );
 } 
 
@@ -204,6 +204,7 @@ void WatchMany::checkCurrent()
 	}
 
 	const size_t numFiles = mFilePaths.size();
+	mModifiedFilePaths.clear();
 	for( size_t i = 0; i < numFiles; i++ ) {
 		const fs::path &fp = mFilePaths[i];
 		if( fs::exists( fp ) ) {
@@ -211,6 +212,7 @@ void WatchMany::checkCurrent()
 			auto &currentTimeLastWrite = mTimeStamps[i];
 			if( currentTimeLastWrite < timeLastWrite ) {
 				currentTimeLastWrite = timeLastWrite;
+				mModifiedFilePaths.push_back( fp );
 				setNeedsCallback( true );
 			}
 		}
@@ -233,7 +235,9 @@ void WatchMany::setEnabled( bool enable, const fs::path &filePath )
 
 void WatchMany::emitCallback() 
 {
-	mSignalChanged.emit( mFilePaths );
+	WatchEvent event( mModifiedFilePaths );
+
+	mSignalChanged.emit( event );
 	setNeedsCallback( false );
 } 
 
@@ -302,12 +306,12 @@ void FileWatcher::setWatchingEnabled( bool enable )
 		instance()->stopWatching();
 }
 
-ci::signals::Connection FileWatcher::watch( const ci::fs::path &filePath, const std::function<void ( const ci::fs::path& )> &callback )
+ci::signals::Connection FileWatcher::watch( const ci::fs::path &filePath, const std::function<void ( const WatchEvent& )> &callback )
 { 
 	return watch( filePath, Options(), callback );
 }
 
-signals::Connection FileWatcher::watch( const fs::path &filePath, const Options &options, const function<void( const fs::path& )> &callback )
+signals::Connection FileWatcher::watch( const fs::path &filePath, const Options &options, const function<void( const WatchEvent& )> &callback )
 {
 	auto watch = new WatchSingle( filePath );
 	auto conn = watch->connect( callback );
@@ -322,12 +326,12 @@ signals::Connection FileWatcher::watch( const fs::path &filePath, const Options 
 	return watch->connect( callback );
 }
 
-ci::signals::Connection FileWatcher::watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const std::vector<ci::fs::path> & )> &callback )
+ci::signals::Connection FileWatcher::watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const WatchEvent& )> &callback )
 { 
 	return watch( filePaths, Options(), callback );
 }
 
-signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const Options &options, const function<void ( const vector<fs::path>& )> &callback )
+signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const Options &options, const function<void ( const WatchEvent& )> &callback )
 {
 	auto watch = new WatchMany( filePaths );
 	auto conn = watch->connect( callback );
