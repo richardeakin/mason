@@ -34,20 +34,20 @@ using namespace std;
 namespace mason {
 
 //! Base class for Watch types, which are returned from FileWatcher::load() and watch()
-class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyable {
+class Watch : public std::enable_shared_from_this<Watch>, private Noncopyable {
   public:
-	virtual ~Watch() = default;
+	Watch( const std::vector<fs::path> &filePaths, bool needsCallback );
 
 	signals::Connection	connect( const function<void ( const WatchEvent& )> &callback )	{ return mSignalChanged.connect( callback ); }
 
 	//! Checks if the asset file is up-to-date. Also may discard the Watch if there are no more connected slots.
-	virtual void checkCurrent() = 0;
+	void checkCurrent();
 	//! Remove any watches for \a filePath. If it is the last file associated with this Watch, discard
-	virtual void unwatch( const fs::path &filePath ) = 0;
+	void unwatch( const fs::path &filePath );
 	//! Emit the signal callback. 
-	virtual void emitCallback() = 0;
+	void emitCallback();
 	//! Enables or disables a Watch
-	virtual void setEnabled( bool enable, const fs::path &filePath ) = 0;
+	void setEnabled( bool enable, const fs::path &filePath );
 
 	//! Marks the Watch as needing its callback to be emitted on the main thread.
 	void setNeedsCallback( bool b )	{ mNeedsCallback = b; }
@@ -57,49 +57,24 @@ class Watch : public std::enable_shared_from_this<Watch>, private ci::Noncopyabl
 	void markDiscarded()			{ mDiscarded = true; }
 	//! Returns whether the Watch is discarded and should be destroyed.
 	bool isDiscarded() const		{ return mDiscarded; }
-	//! Returns whether the Watch is enabled or disabled
-	bool isEnabled() const			{ return mEnabled; }
 
-  protected:
+	struct WatchItem {
+		fs::path			mFilePath;
+		fs::file_time_type	mTimeStamp;
+		bool				mEnabled;
+	};
+
+	const std::vector<WatchItem>&	getItems() const	{ return mWatchItems; }
+
+  private:
 	bool mDiscarded = false;
 	bool mEnabled = true;
 	bool mNeedsCallback = false;
 
-	ci::signals::Signal<void ( const WatchEvent& )>	mSignalChanged;
-};
+	std::vector<WatchItem>				mWatchItems;
+	std::vector<fs::path>				mModifiedFilePaths;
 
-//! Handles a single live asset
-class WatchSingle : public Watch {
-  public:
-	WatchSingle( const ci::fs::path &filePath );
-
-	void checkCurrent() override;
-	void unwatch( const fs::path &filePath ) override;
-	void emitCallback() override;
-	void setEnabled( bool enable, const fs::path &filePath ) override;
-
-	const fs::path&	getFilePath() const		{ return mFilePath; }
-
-  private:
-	ci::fs::path										mFilePath;
-	ci::fs::file_time_type								mTimeLastWrite;
-};
-
-//! Handles multiple live assets. Takes a vector of fs::paths as argument, result function gets an array of resolved filepaths.
-class WatchMany : public Watch {
-  public:
-	WatchMany( const std::vector<ci::fs::path> &filePaths );
-
-	void checkCurrent() override;
-	void unwatch( const fs::path &filePath ) override;
-	void emitCallback() override;
-	void setEnabled( bool enable, const fs::path &filePath ) override;
-
-	size_t	getNumFiles() const	{ return mFilePaths.size(); }
-
-  private:
-	std::vector<ci::fs::path>			mFilePaths, mModifiedFilePaths;
-	std::vector<ci::fs::file_time_type>	mTimeStamps;
+	signals::Signal<void ( const WatchEvent& )>	mSignalChanged;
 };
 
 namespace {
@@ -125,6 +100,7 @@ fs::path findFullFilePath( const fs::path &filePath )
 // WatchSingle
 // ----------------------------------------------------------------------------------------------------
 
+#if 0
 WatchSingle::WatchSingle( const fs::path &filePath )
 {
 	mFilePath = findFullFilePath( filePath );
@@ -180,22 +156,31 @@ void WatchSingle::emitCallback()
 	setNeedsCallback( false );
 } 
 
+#endif
+
 // ----------------------------------------------------------------------------------------------------
 // WatchMany
 // ----------------------------------------------------------------------------------------------------
 
-WatchMany::WatchMany( const vector<fs::path> &filePaths )
+Watch::Watch( const vector<fs::path> &filePaths, bool needsCallback )
 {
-	mFilePaths.reserve( filePaths.size() );
-	mTimeStamps.reserve( filePaths.size() );
+	mWatchItems.reserve( filePaths.size() );
 	for( const auto &fp : filePaths ) {
 		auto fullPath = findFullFilePath( fp );
-		mFilePaths.push_back( fullPath );
-		mTimeStamps.push_back( fs::last_write_time( fullPath ) );
+		mWatchItems.push_back( { fullPath, fs::last_write_time( fullPath ), true } );
 	}
+
+	if( needsCallback ) {
+		// mark all files as modified, using the full path we just resolved.
+		for( const auto &item : mWatchItems )
+			mModifiedFilePaths.push_back( item.mFilePath );
+
+		setNeedsCallback( true );
+	}
+
 }
 
-void WatchMany::checkCurrent()
+void Watch::checkCurrent()
 {
 	// Discard when there are no more connected slots
 	if( mSignalChanged.getNumSlots() == 0 ) {
@@ -203,37 +188,45 @@ void WatchMany::checkCurrent()
 		return;
 	}
 
-	const size_t numFiles = mFilePaths.size();
 	mModifiedFilePaths.clear();
-	for( size_t i = 0; i < numFiles; i++ ) {
-		const fs::path &fp = mFilePaths[i];
-		if( fs::exists( fp ) ) {
-			auto timeLastWrite = fs::last_write_time( fp );
-			auto &currentTimeLastWrite = mTimeStamps[i];
-			if( currentTimeLastWrite < timeLastWrite ) {
-				currentTimeLastWrite = timeLastWrite;
-				mModifiedFilePaths.push_back( fp );
+	for( auto &item : mWatchItems ) {
+		if( item.mEnabled && fs::exists( item.mFilePath ) ) {
+			auto timeLastWrite = fs::last_write_time( item.mFilePath );
+			if( item.mTimeStamp < timeLastWrite ) {
+				item.mTimeStamp = timeLastWrite;
+				mModifiedFilePaths.push_back( item.mFilePath );
 				setNeedsCallback( true );
 			}
 		}
 	}
 }
 
-void WatchMany::unwatch( const fs::path &filePath ) 
+void Watch::unwatch( const fs::path &filePath ) 
 {
-	mFilePaths.erase( remove( mFilePaths.begin(), mFilePaths.end(), filePath ), mFilePaths.end() );
+	mWatchItems.erase( remove_if( mWatchItems.begin(), mWatchItems.end(),
+		[&filePath]( const WatchItem &item ) {
+			return item.mFilePath == filePath;
+		} ),
+		mWatchItems.end() );
 	
-	if( mFilePaths.empty() )
+	if( mWatchItems.empty() )
 		markDiscarded();
 }
 
-void WatchMany::setEnabled( bool enable, const fs::path &filePath )
+void Watch::setEnabled( bool enable, const fs::path &filePath )
 {
-	// FIXME: enable / disable doesn't make sense for WatchMany, since we don't know which file to disable
-	// - possible solution is 
+	for( auto &item : mWatchItems ) {
+		if( item.mFilePath == filePath ) {
+			item.mEnabled = enable;
+
+			// update the timestamp so that any modifications while
+			// the watch was disabled don't trigger a callback
+			item.mTimeStamp = fs::last_write_time( item.mFilePath );
+		}
+	}
 }
 
-void WatchMany::emitCallback() 
+void Watch::emitCallback() 
 {
 	WatchEvent event( mModifiedFilePaths );
 
@@ -255,9 +248,13 @@ void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
 	for( const auto &watch : watchList ) {
 		string needsCallback = watch->needsCallback() ? "true" : "false";
 		string discarded = watch->isDiscarded() ? "true" : "false";
-		auto watchSingle = dynamic_cast<const WatchSingle *>( watch.get() );
-		string filePath = watchSingle ? watchSingle->getFilePath().string() : "(many)";
-		str += "[" + to_string( i ) + "] needs callback: " + needsCallback + ", discarded: " + discarded + ", file: " + filePath + "\n";
+
+		const auto &items = watch->getItems();
+		string filePathStr = items.front().mFilePath.string();
+		if( items.size() > 1 )
+			filePathStr += " ...(" + to_string( items.size() ) + " files)";
+
+		str += "[" + to_string( i ) + "] needs callback: " + needsCallback + ", discarded: " + discarded + ", file: " + filePathStr + "\n";
 
 		i++;
 	}
@@ -285,7 +282,6 @@ FileWatcherRef FileWatcher::create()
 
 FileWatcher::FileWatcher()
 {
-	// TODO: consider only starting this once a watch has been added
 	startWatching();
 }
 
@@ -306,34 +302,26 @@ void FileWatcher::setWatchingEnabled( bool enable )
 		instance()->stopWatching();
 }
 
-ci::signals::Connection FileWatcher::watch( const ci::fs::path &filePath, const std::function<void ( const WatchEvent& )> &callback )
+signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void ( const WatchEvent& )> &callback )
 { 
-	return watch( filePath, Options(), callback );
+	vector<fs::path> filePaths = { filePath };
+	return watch( filePaths, Options(), callback );
 }
 
 signals::Connection FileWatcher::watch( const fs::path &filePath, const Options &options, const function<void( const WatchEvent& )> &callback )
 {
-	auto watch = new WatchSingle( filePath );
-	auto conn = watch->connect( callback );
-
-	lock_guard<recursive_mutex> lock( mMutex );
-
-	mWatchList.emplace_back( watch );
-
-	if( options.mCallOnWatch )
-		watch->emitCallback();
-
-	return watch->connect( callback );
+	vector<fs::path> filePaths = { filePath };
+	return watch( filePaths, options, callback );
 }
 
-ci::signals::Connection FileWatcher::watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const WatchEvent& )> &callback )
+signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const WatchEvent& )> &callback )
 { 
 	return watch( filePaths, Options(), callback );
 }
 
 signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const Options &options, const function<void ( const WatchEvent& )> &callback )
 {
-	auto watch = new WatchMany( filePaths );
+	auto watch = new Watch( filePaths, options.mCallOnWatch );
 	auto conn = watch->connect( callback );
 
 	lock_guard<recursive_mutex> lock( mMutex );
@@ -468,11 +456,7 @@ const size_t FileWatcher::getNumWatchedFiles() const
 {
 	size_t result = 0;
 	for( const auto &w : mWatchList ) {
-		auto many = dynamic_cast<WatchMany *>( w.get() );
-		if( many )
-			result += many->getNumFiles();
-		else
-			result += 1;
+		result += w->getItems().size();
 	}
 
 	return result;
