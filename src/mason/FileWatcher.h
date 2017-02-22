@@ -40,6 +40,7 @@ namespace mason {
 class Watch;
 typedef std::shared_ptr<class FileWatcher>	FileWatcherRef;
 
+//! Event type returned in callbacks when one more watched files have been modified.
 class WatchEvent {
   public:
 	WatchEvent( const std::vector<ci::fs::path> &filePaths )
@@ -58,8 +59,15 @@ class WatchEvent {
 	std::vector<ci::fs::path>	mModifiedFiles;
 };
 
-//! Global object for managing live-asset watching.
-// TODO: document that any filepath arguments affect things globally
+//! FileMonitor provides a system for monitoring the filesystem for changes at runtime using callbacks.
+//!
+//! Performs file watching asynchronously, however all callbacks will be emitted on the main thread. It is advisable to capture
+//! the resulting signals::Connection with with some sort of scope controlling to ensure that your callbacks are disconnected
+//! when your object is destroyed. \see signals::ScopedConnection, signals::ConnectionList.
+//!
+//! \note any argument that takes an `fs::path` considers that operation to be global, that is any and all watches in place that
+//! include that file with be affected (examples are unwatch() and disable()). If you want to disable a single instance of a watch
+//! on a specific file, you can use the returned Connection's disable() or disconnect() methods.
 class MA_API FileWatcher : private ci::Noncopyable {
   public:
 	~FileWatcher();
