@@ -71,6 +71,8 @@ void MasonTestsApp::saveConfig()
 	// first disable config.json watch, so it doesn't trigger an app reload
 	ma::FileWatcher::instance()->disable( ma::config()->getTargetFilePath() );
 
+	ma::config()->set<int>( "app", "test", mSuite->getCurrentIndex() );
+
 	ma::config()->write();
 
 	ma::FileWatcher::instance()->enable( ma::config()->getTargetFilePath() );
