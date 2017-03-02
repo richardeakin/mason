@@ -242,6 +242,16 @@ inline bool Config::getValue<std::string>( const Json::Value &value, std::string
 }
 
 template<>
+inline bool Config::getValue<ci::fs::path>( const Json::Value &value, ci::fs::path *result )
+{
+	if( ! value.isString() )
+		return false;
+
+	*result = ci::fs::path( value.asString() );
+	return true;
+}
+
+template<>
 inline bool Config::getValue<ci::ivec2>( const Json::Value &value, ci::ivec2 *result )
 {
 	if( ! value.isArray() || value.size() < 2 )
@@ -469,6 +479,12 @@ inline bool Config::set<ci::ColorA>( const std::string &category, const std::str
 }
 
 template<>
+inline bool Config::set<ci::fs::path>( const std::string &category, const std::string &key, const ci::fs::path &value )
+{
+	return set( category, key, value.string() );
+}
+
+template<>
 inline bool Config::set<std::vector<std::string>>( const std::string &category, const std::string &key, const std::vector<std::string> &value )
 {
 	Json::Value array( Json::arrayValue );
@@ -494,6 +510,6 @@ std::vector<T> Config::getList( const std::string &category )
 	return result;
 }
 
-static inline Config* config() { return Config::instance(); }
+inline Config* config() { return Config::instance(); }
 
 } // namespace mason
