@@ -82,21 +82,6 @@ AssetManager* AssetManager::instance()
 
 AssetManager::AssetManager()
 {
-#if defined( CINDER_GL_ES )
-	mShaderPreprocessor.setVersion( 300 );
-	mShaderPreprocessor.addDefine( "CINDER_GL_ES" );
-#else
-	mShaderPreprocessor.setVersion( 410 );
-	mShaderPreprocessor.addDefine( "CINDER_GL_CORE" );
-#endif
-
-#if defined( CINDER_MSW )
-	auto vendor = gl::getVendorString();
-	std::transform( vendor.begin(), vendor.end(), vendor.begin(), tolower );
-	if( vendor.find( "nvidia" ) != string::npos ) {
-		mShaderPreprocessor.setUseFilenameInLineDirectiveEnabled( true );
-	}
-#endif
 }
 
 AssetManager::~AssetManager()
@@ -189,17 +174,35 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const f
 	return conn;
 }
 
-//string AssetManager::parseShaderSource( const fs::path &shaderPath, const AssetGroupRef &group )
-//{
-//	auto vertPath = format.getVertexPath();
-//	group->addAsset( getAssetRef( shaderPath ) );
-//
-//	return mShaderPreprocessor.parse( format.getVertex(), vertPath, &stageIncludedFiles );
-//}
+void AssetManager::initShaderPreprocessorLazy()
+{
+	if( mShaderPreprocessor )
+		return;
+		
+	mShaderPreprocessor = make_unique<gl::ShaderPreprocessor>();
+
+#if defined( CINDER_GL_ES )
+	mShaderPreprocessor->setVersion( 300 );
+	mShaderPreprocessor->addDefine( "CINDER_GL_ES" );
+#else
+	mShaderPreprocessor->setVersion( 410 );
+	mShaderPreprocessor->addDefine( "CINDER_GL_CORE" );
+#endif
+
+#if defined( CINDER_MSW )
+	auto vendor = gl::getVendorString();
+	std::transform( vendor.begin(), vendor.end(), vendor.begin(), tolower );
+	if( vendor.find( "nvidia" ) != string::npos ) {
+		mShaderPreprocessor->setUseFilenameInLineDirectiveEnabled( true );
+	}
+#endif
+}
 
 ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format, const AssetGroupRef &group, uint32_t hash )
 {
-	format.setPreprocessingEnabled( false ); // we use our own, pre-configured ShaderPreprocessor
+	initShaderPreprocessorLazy();
+
+	format.preprocess( false ); // we use our own preprocessor and pull out included files to watch them at each stage.
 
 	std::vector<std::pair<ci::fs::path, std::string>>	sources;
 
@@ -214,7 +217,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		auto shaderPath = format.getVertexPath();
 		group->addAsset( getAssetRef( shaderPath ) );
 
-		string parsedShader = mShaderPreprocessor.parse( format.getVertex(), shaderPath, &stageIncludedFiles );
+		string parsedShader = mShaderPreprocessor->parse( format.getVertex(), shaderPath, &stageIncludedFiles );
 		format.vertex( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
@@ -224,7 +227,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		group->addAsset( getAssetRef( shaderPath ) );
 
 		stageIncludedFiles.clear();
-		string parsedShader = mShaderPreprocessor.parse( format.getFragment(), shaderPath, &stageIncludedFiles );
+		string parsedShader = mShaderPreprocessor->parse( format.getFragment(), shaderPath, &stageIncludedFiles );
 		format.fragment( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
@@ -234,7 +237,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		group->addAsset( getAssetRef( shaderPath ) );
 
 		stageIncludedFiles.clear();
-		string parsedShader = mShaderPreprocessor.parse( format.getCompute(), shaderPath, &stageIncludedFiles );
+		string parsedShader = mShaderPreprocessor->parse( format.getCompute(), shaderPath, &stageIncludedFiles );
 		format.compute( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
