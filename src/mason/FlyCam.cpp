@@ -1,18 +1,16 @@
 /*
- Copyright (c) 2015, The Cinder Project: http://libcinder.org All rights reserved.
- This code is intended for use with the Cinder C++ library: http://libcinder.org
-
- Portions of this code (C) Paul Houx
- All rights reserved.
-
+ Copyright (c) 2015, The Cinder Project
+ 
+ This code is intended to be used with the Cinder C++ library, http://libcinder.org
+ 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
-
+ 
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
+ 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -23,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "mason/CameraFpsUi.h"
+#include "mason/FlyCam.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/Log.h"
 
@@ -32,18 +30,18 @@ using namespace std;
 
 namespace mason {
 
-CameraFpsUi::CameraFpsUi()
+FlyCam::FlyCam()
 	: mCamera( nullptr ), mWindowSize( 640, 480 ), mEnabled( true )
 {
 }
 
-CameraFpsUi::CameraFpsUi( CameraPersp *camera, const app::WindowRef &window, int signalPriority )
+FlyCam::FlyCam( CameraPersp *camera, const app::WindowRef &window, int signalPriority )
 	: mCamera( camera ), mInitialCam( *camera ), mWindowSize( 640, 480 ), mEnabled( true )
 {
 	connect( window, signalPriority );
 }
 
-CameraFpsUi::CameraFpsUi( const CameraFpsUi &rhs )
+FlyCam::FlyCam( const FlyCam &rhs )
 	: mCamera( rhs.mCamera ), mInitialCam( *rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
 		mWindow( rhs.mWindow ), mSignalPriority( rhs.mSignalPriority ),
 		mEnabled( rhs.mEnabled )
@@ -51,12 +49,12 @@ CameraFpsUi::CameraFpsUi( const CameraFpsUi &rhs )
 	connect( mWindow, mSignalPriority );
 }
 
-CameraFpsUi::~CameraFpsUi()
+FlyCam::~FlyCam()
 {
 	disconnect();
 }
 
-CameraFpsUi& CameraFpsUi::operator=( const CameraFpsUi &rhs )
+FlyCam& FlyCam::operator=( const FlyCam &rhs )
 {
 	mCamera = rhs.mCamera;
 	mInitialCam = *rhs.mCamera;
@@ -69,7 +67,7 @@ CameraFpsUi& CameraFpsUi::operator=( const CameraFpsUi &rhs )
 }
 
 //! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
-void CameraFpsUi::connect( const app::WindowRef &window, int signalPriority )
+void FlyCam::connect( const app::WindowRef &window, int signalPriority )
 {
 	if( ! mEventConnections.empty() ) {
 		for( auto &conn : mEventConnections )
@@ -107,7 +105,7 @@ void CameraFpsUi::connect( const app::WindowRef &window, int signalPriority )
 }
 
 //! Disconnects all signal handlers
-void CameraFpsUi::disconnect()
+void FlyCam::disconnect()
 {
 	for( auto &conn : mEventConnections )
 		conn.disconnect();
@@ -115,17 +113,17 @@ void CameraFpsUi::disconnect()
 	mWindow.reset();
 }
 
-bool CameraFpsUi::isConnected() const
+bool FlyCam::isConnected() const
 {
 	return mWindow != nullptr;
 }
 
-signals::Signal<void()>& CameraFpsUi::getSignalCameraChange()
+signals::Signal<void()>& FlyCam::getSignalCameraChange()
 {
 	return mSignalCameraChange;
 }
 
-void CameraFpsUi::mouseDown( app::MouseEvent &event )
+void FlyCam::mouseDown( app::MouseEvent &event )
 {
 	if( ! mEnabled )
 		return;
@@ -134,7 +132,7 @@ void CameraFpsUi::mouseDown( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraFpsUi::mouseUp( app::MouseEvent &event )
+void FlyCam::mouseUp( app::MouseEvent &event )
 {
 	if( ! mEnabled )
 		return;
@@ -143,7 +141,7 @@ void CameraFpsUi::mouseUp( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraFpsUi::mouseWheel( app::MouseEvent &event )
+void FlyCam::mouseWheel( app::MouseEvent &event )
 {
 	if( ! mEnabled )
 		return;
@@ -152,7 +150,7 @@ void CameraFpsUi::mouseWheel( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraFpsUi::mouseDrag( app::MouseEvent &event )
+void FlyCam::mouseDrag( app::MouseEvent &event )
 {
 	if( ! mEnabled )
 		return;
@@ -168,7 +166,7 @@ void CameraFpsUi::mouseDrag( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraFpsUi::mouseDown( const vec2 &mousePos )
+void FlyCam::mouseDown( const vec2 &mousePos )
 {
 	if( ! mCamera || ! mEnabled )
 		return;
@@ -178,14 +176,14 @@ void CameraFpsUi::mouseDown( const vec2 &mousePos )
 	mInitialCam = *mCamera;
 }
 
-void CameraFpsUi::mouseUp( const vec2 &mousePos )
+void FlyCam::mouseUp( const vec2 &mousePos )
 {
 	mLookEnabled = false;
 	mLookDelta = vec2( 0 );
 	mInitialCam = *mCamera;
 }
 
-void CameraFpsUi::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
+void FlyCam::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
 {
 	if( ! mCamera || ! mEnabled )
 		return;
@@ -196,7 +194,7 @@ void CameraFpsUi::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDow
 	mSignalCameraChange.emit();
 }
 
-void CameraFpsUi::mouseWheel( float increment )
+void FlyCam::mouseWheel( float increment )
 {
 	if( ! mCamera || ! mEnabled )
 		return;	
@@ -204,7 +202,7 @@ void CameraFpsUi::mouseWheel( float increment )
 
 // TODO: need a way to disable using up these keys
 // - also shouldn't handle if any modifier keys are down
-void CameraFpsUi::keyDown( ci::app::KeyEvent &event )
+void FlyCam::keyDown( ci::app::KeyEvent &event )
 {
 	bool handled = true;
 	float moveAmount = mMoveIncrement;
@@ -237,7 +235,7 @@ void CameraFpsUi::keyDown( ci::app::KeyEvent &event )
 	event.setHandled( handled );
 }
 
-void CameraFpsUi::keyUp( ci::app::KeyEvent &event )
+void FlyCam::keyUp( ci::app::KeyEvent &event )
 {
 	bool handled = true;
 	const char c = tolower( event.getChar() );
@@ -259,7 +257,7 @@ void CameraFpsUi::keyUp( ci::app::KeyEvent &event )
 	event.setHandled( handled );
 }
 
-void CameraFpsUi::update()
+void FlyCam::update()
 {
 	if( ! mCamera )
 		return;
@@ -296,7 +294,7 @@ void CameraFpsUi::update()
 	mCamera->setEyePoint( eye );
 }
 
-ivec2 CameraFpsUi::getWindowSize() const
+ivec2 FlyCam::getWindowSize() const
 {
 	if( mWindow )
 		return mWindow->getSize();

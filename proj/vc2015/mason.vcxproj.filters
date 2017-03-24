@@ -40,9 +40,6 @@
     <ClCompile Include="..\..\src\mason\Assets.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\mason\CameraFpsUi.cpp">
-      <Filter>Source Files\mason</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\mason\Common.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
@@ -130,12 +127,12 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\fmt\format.cc">
       <Filter>Blocks\Cinder-View\src\fmt</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\FlyCam.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
-      <Filter>Source Files\mason</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\mason\CameraFpsUi.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\Common.h">
@@ -247,6 +244,9 @@
       <Filter>Blocks\Cinder-View\src\fmt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\Export.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\FlyCam.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>

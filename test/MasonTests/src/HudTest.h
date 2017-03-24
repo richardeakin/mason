@@ -3,7 +3,7 @@
 #include "ui/Suite.h"
 
 #include "mason/Mason.h"
-#include "mason/CameraFpsUi.h"
+#include "mason/FlyCam.h"
 #include "mason/Var.h"
 
 class HudTest : public ui::SuiteView {

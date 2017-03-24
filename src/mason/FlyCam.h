@@ -1,14 +1,15 @@
 /*
- Copyright (c) 2010, The Cinder Project, All rights reserved.
- This code is intended for use with the Cinder C++ library: http://libcinder.org
+ Copyright (c) 2015, The Cinder Project
+
+ This code is intended to be used with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -32,15 +33,15 @@
 namespace mason {
 
 //! Enables user interaction with a CameraPersp via the mouse
-class MA_API CameraFpsUi {
+class MA_API FlyCam {
  public:
-	CameraFpsUi();
+	FlyCam();
 	//! Constructs a CameraFpsUi which manipulates \a camera directly (and consequently expects its pointer to remain valid). Optionally attaches to mouse/window signals of \a window, with priority \a signalPriority.
-	CameraFpsUi( ci::CameraPersp *camera, const ci::app::WindowRef &window = nullptr, int signalPriority = 0 );
-	CameraFpsUi( const CameraFpsUi &rhs );
-	~CameraFpsUi();
+	FlyCam( ci::CameraPersp *camera, const ci::app::WindowRef &window = nullptr, int signalPriority = 0 );
+	FlyCam( const FlyCam &rhs );
+	~FlyCam();
 	
-	CameraFpsUi& operator=( const CameraFpsUi &rhs );
+	FlyCam& operator=( const FlyCam &rhs );
 
 	//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
 	void connect( const ci::app::WindowRef &window, int signalPriority = 0 );
