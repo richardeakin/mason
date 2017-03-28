@@ -35,7 +35,7 @@ namespace mason {
 
 //! Base class for Watch types, which are returned from FileWatcher::load() and watch()
 class Watch : public std::enable_shared_from_this<Watch>, private Noncopyable {
-  public:
+public:
 	Watch( const std::vector<fs::path> &filePaths, bool needsCallback );
 
 	signals::Connection	connect( const function<void ( const WatchEvent& )> &callback )	{ return mSignalChanged.connect( callback ); }
@@ -66,7 +66,7 @@ class Watch : public std::enable_shared_from_this<Watch>, private Noncopyable {
 
 	const std::vector<WatchItem>&	getItems() const	{ return mWatchItems; }
 
-  private:
+private:
 	bool mDiscarded = false;
 	bool mEnabled = true;
 	bool mNeedsCallback = false;
@@ -93,73 +93,33 @@ fs::path findFullFilePath( const fs::path &filePath )
 
 	return resolvedAssetPath;
 }
-	
+
+// Used from the debugger.
+void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
+{
+	int i = 0;
+	string str;
+	for( const auto &watch : watchList ) {
+		string needsCallback = watch->needsCallback() ? "true" : "false";
+		string discarded = watch->isDiscarded() ? "true" : "false";
+
+		const auto &items = watch->getItems();
+		string filePathStr = items.front().mFilePath.string();
+		if( items.size() > 1 )
+			filePathStr += " ...(" + to_string( items.size() ) + " files)";
+
+		str += "[" + to_string( i ) + "] needs callback: " + needsCallback + ", discarded: " + discarded + ", file: " + filePathStr + "\n";
+
+		i++;
+	}
+
+	app::console() << str << std::endl;
+}
+
 } // anonymous namespace
 
 // ----------------------------------------------------------------------------------------------------
-// WatchSingle
-// ----------------------------------------------------------------------------------------------------
-
-#if 0
-WatchSingle::WatchSingle( const fs::path &filePath )
-{
-	mFilePath = findFullFilePath( filePath );
-	mTimeLastWrite = fs::last_write_time( mFilePath );
-}
-
-void WatchSingle::checkCurrent()
-{
-	if( ! fs::exists( mFilePath ) )
-		return;
-
-	// Discard when there are no more connected slots
-	if( mSignalChanged.getNumSlots() == 0 ) {
-		markDiscarded();
-		return;
-	}
-
-	auto timeLastWrite = fs::last_write_time( mFilePath );
-	if( mTimeLastWrite < timeLastWrite ) {
-		mTimeLastWrite = timeLastWrite;
-		setNeedsCallback( true );
-	}
-}
-
-void WatchSingle::unwatch( const fs::path &filePath ) 
-{
-	if( mFilePath == filePath )
-		markDiscarded();
-}
-
-void WatchSingle::setEnabled( bool enable, const fs::path &filePath )
-{
-	if( mFilePath == filePath ) {
-		if( mEnabled == enable )
-			return;
-
-		mEnabled = enable;
-
-		if( mEnabled ) {
-			// update the timestamp so that any modifications while
-			// the watch was disabled don't trigger a callback
-			mTimeLastWrite =  fs::last_write_time( mFilePath );
-		}
-	}
-}
-
-void WatchSingle::emitCallback() 
-{
-	vector<fs::path> modifiedFiles = { mFilePath };
-	WatchEvent event( modifiedFiles );
-
-	mSignalChanged.emit( event );
-	setNeedsCallback( false );
-} 
-
-#endif
-
-// ----------------------------------------------------------------------------------------------------
-// WatchMany
+// Watch
 // ----------------------------------------------------------------------------------------------------
 
 Watch::Watch( const vector<fs::path> &filePaths, bool needsCallback )
@@ -237,32 +197,6 @@ void Watch::emitCallback()
 // ----------------------------------------------------------------------------------------------------
 // FileWatcher
 // ----------------------------------------------------------------------------------------------------
-
-namespace {
-
-// Used from the debugger.
-void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
-{
-	int i = 0;
-	string str;
-	for( const auto &watch : watchList ) {
-		string needsCallback = watch->needsCallback() ? "true" : "false";
-		string discarded = watch->isDiscarded() ? "true" : "false";
-
-		const auto &items = watch->getItems();
-		string filePathStr = items.front().mFilePath.string();
-		if( items.size() > 1 )
-			filePathStr += " ...(" + to_string( items.size() ) + " files)";
-
-		str += "[" + to_string( i ) + "] needs callback: " + needsCallback + ", discarded: " + discarded + ", file: " + filePathStr + "\n";
-
-		i++;
-	}
-
-	app::console() << str << std::endl;
-}
-
-} // anonymous namespace
 
 // static
 const FileWatcherRef& FileWatcher::instance()

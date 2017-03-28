@@ -19,7 +19,9 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined( MASON_EXPORT )
+#pragma once
+
+#if defined( MASON_SHARED_BUILD )
 	#define MA_API __declspec(dllexport)
 #elif defined( MASON_SHARED )
 	#define MA_API __declspec(dllimport)
