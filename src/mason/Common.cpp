@@ -134,15 +134,15 @@ void initialize( const fs::path &masonRootDir )
 }
 
 
-void initRand( bool randomSeed )
+void initRand( bool randomizeSeed, uint32_t seed )
 {
-	if( randomSeed ) {
+	if( randomizeSeed ) {
 		auto now = std::chrono::system_clock::now().time_since_epoch();
 		auto seconds = std::chrono::duration_cast<std::chrono::seconds>( now ).count();
 		sRand.seed( (int32_t)seconds );
 	}
 	else
-		sRand.seed( 21837219 );
+		sRand.seed( seed );
 }
 
 Rand* rand()

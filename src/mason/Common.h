@@ -58,7 +58,7 @@ MA_API ci::Timeline*	timeline();
 MA_API double			currentTime();
 
 // TODO: move these to mason/Rand.h
-MA_API void			initRand( bool randomSeed = false );
+MA_API void			initRand( bool randomizeSeed = false, uint32_t seed = 21837219 );
 MA_API ci::Rand*	rand();
 MA_API ci::vec3		randVec3( const ci::AxisAlignedBox &box );
 MA_API ci::Color	randColor();
