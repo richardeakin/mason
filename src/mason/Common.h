@@ -38,34 +38,34 @@
 #include <memory>
 #include <string>
 
-// For temporary ConnectionList
+// For temporary ConnectionList TODO: remove
 #include "cinder/Signals.h"
 
 namespace mason {
 
 //! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
-void					initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
+MA_API void				initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
 //! Returns the path the current repositories root folder (walks up from the executable until '.git' is found.
-const ci::fs::path&		getRepoRootPath();
+MA_API const ci::fs::path&		getRepoRootPath();
 //! Returns a resolved a file path, removing any '..'s if they exist.
-ci::fs::path			normalizePath( const ci::fs::path &path );
+MA_API ci::fs::path			normalizePath( const ci::fs::path &path );
 //! Sends a global notification that a resource has been loaded. If Hud is in use, this causes the border to flash green.
-void					notifyResourceReloaded();
+MA_API void					notifyResourceReloaded();
 
 //! Returns a pointer the global Timeline instance
-ci::Timeline*	timeline();
+MA_API ci::Timeline*	timeline();
 //! Returns the current time since the app was started
-double			currentTime();
+MA_API double			currentTime();
 
 // TODO: move these to mason/Rand.h
-void		initRand( bool randomSeed = false );
-ci::Rand*	rand();
-ci::vec3	randVec3( const ci::AxisAlignedBox &box );
-ci::Color	randColor();
+MA_API void			initRand( bool randomizeSeed = false, uint32_t seed = 21837219 );
+MA_API ci::Rand*	rand();
+MA_API ci::vec3		randVec3( const ci::AxisAlignedBox &box );
+MA_API ci::Color	randColor();
 
-bool epsilonEqual( const ci::Rectf &r1, const ci::Rectf &r2, float epsilon );
+MA_API bool epsilonEqual( const ci::Rectf &r1, const ci::Rectf &r2, float epsilon );
 
 //! Returns a stringified stack trace ready for logging. TODO: move to cinder core
-std::string stackTraceAsString( size_t startingFrame = 0, size_t count = 0, bool skipPlatformFrames = true );
+MA_API std::string stackTraceAsString( size_t startingFrame = 0, size_t count = 0, bool skipPlatformFrames = true );
 
 } // namespace mason

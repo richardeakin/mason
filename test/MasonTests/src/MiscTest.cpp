@@ -11,6 +11,8 @@
 using namespace ci;
 using namespace std;
 
+const fs::path JSON_FILENAME = "dictionary_test.json";
+
 MiscTest::MiscTest()
 {
 	auto nbox = make_shared<ui::NumberBox>( Rectf( 200, 360, 280, 400 ) );
@@ -24,12 +26,10 @@ MiscTest::MiscTest()
 
 	addSubview( nbox3 );
 
-
-	fs::path jsonFileName = "dictionary_test.json";
 	try {
-		mWatchDict = ma::FileWatcher::load( jsonFileName, [this] ( const fs::path &filePath ) {
+		mConnDict = FileWatcher::instance().watch( JSON_FILENAME, [this] ( const WatchEvent &event ) {
 			try {
-				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( filePath ) );
+				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( event.getFile() ) );
 				testDict( dict );
 
 				CI_LOG_I( "testDict completed." );
@@ -80,9 +80,48 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 	CI_LOG_I( "num elements in oddNumbers: " << oddNumbers.size() << ", values: " << oddNumbersStr );
 }
 
+void MiscTest::addStressTestWatches()
+{
+	// for profiling
+	const int fileCount = 100;
+	CI_LOG_I( "adding " << fileCount << " watches." );
+
+	try {
+		for( int i = 0; i < fileCount; i++ ) {
+			FileWatcher::instance().watch( JSON_FILENAME, [this] ( const WatchEvent &event ) {
+				// not doing anything, just watching em.
+			} );
+		}
+	}
+	catch( exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
+	}
+}
+
 void MiscTest::layout()
 {
 }
+
+bool MiscTest::keyDown( ci::app::KeyEvent &event )
+{
+	bool handled = true;
+	if( event.getChar() == 'u' ) {
+		CI_LOG_I( "unwatching " << JSON_FILENAME );
+		FileWatcher::instance().unwatch( JSON_FILENAME );
+	}
+	else if( event.getChar() == 'w' ) {
+		addStressTestWatches();
+	}
+	else if( event.getChar() == 'f' ) {
+		FileWatcher::instance().setWatchingEnabled( ! FileWatcher::instance().isWatchingEnabled() );
+		CI_LOG_I( "watching enabled: " << FileWatcher::instance().isWatchingEnabled() );
+	}
+	else
+		handled = false;
+
+	return handled;
+}
+
 
 void MiscTest::update()
 {

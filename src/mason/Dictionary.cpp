@@ -179,7 +179,7 @@ any parseJsonAny( const Json::Value &value )
 
 // static
 template<>
-Dictionary Dictionary::convert<Json::Value>( const Json::Value &data )
+MA_API Dictionary Dictionary::convert<Json::Value>( const Json::Value &data )
 {
 	Dictionary result =	parseJsonDict( data );
 	return result;
@@ -187,7 +187,7 @@ Dictionary Dictionary::convert<Json::Value>( const Json::Value &data )
 
 // static
 template<>
-Dictionary Dictionary::convert<Json::Value>( const DataSourceRef &dataSource )
+MA_API Dictionary Dictionary::convert<Json::Value>( const DataSourceRef &dataSource )
 {
 	string dataString = loadString( dataSource );
 

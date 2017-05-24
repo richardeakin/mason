@@ -43,7 +43,7 @@ namespace mason {
 // - still want it to be able to create its own ui::Graph if one doesn't exist
 // - could also perhaps inherit from Graph
 //    - this is problematic as it means that Hud inherits all of Graph's public api, which isn't very nice
-class Hud : public VarOwner {
+class MA_API Hud : public VarOwner {
   public:
 	enum class ViewPositioning {
 		RELATIVE,
@@ -188,7 +188,7 @@ bool Hud::getAttribValue( const std::string &label, T *result ) const
 				*result = *boost::any_cast<T*>( attrib.mAnyValue );
 				return true;
 			}
-			catch( boost::bad_any_cast &exc ) {
+			catch( boost::bad_any_cast & ) {
 				// keep trying..
 			}
 		}
@@ -198,6 +198,6 @@ bool Hud::getAttribValue( const std::string &label, T *result ) const
 }
 
 //! Returns a pointer to the global Hud instance
-Hud* hud();
+MA_API Hud* hud();
 
 } // namespace mason

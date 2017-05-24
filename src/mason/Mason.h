@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "mason/Export.h"
+
 namespace mason {
 }
 

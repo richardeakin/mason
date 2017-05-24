@@ -3,7 +3,7 @@
 #include "ui/Suite.h"
 
 #include "mason/Mason.h"
-#include "mason/CameraFpsUi.h"
+#include "mason/FlyCam.h"
 #include "mason/Var.h"
 
 class HudTest : public ui::SuiteView {
@@ -18,9 +18,6 @@ class HudTest : public ui::SuiteView {
   private:
 	void loadGlsl();
 	void testHudVars();
-
-	mason::CameraFpsUi	mCamUi;
-	ci::CameraPersp		mCam;
 
 	ci::gl::BatchRef	mBatchRect;
 	ci::signals::ScopedConnection	mConnGlsl;

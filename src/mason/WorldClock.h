@@ -30,7 +30,7 @@ namespace mason {
 
 //! Handles managing the world clock in a manner suitable for things like physics simulations.
 //! Uses a fixed timestep by default.
-class WorldClock {
+class MA_API WorldClock {
   public:
 	WorldClock();
 

@@ -31,12 +31,14 @@
 
 #include <boost/any.hpp>
 
+#include "mason/Mason.h"
+
 namespace mason {
 
 typedef std::shared_ptr<class Dictionary> DictionaryRef;
 
 //! Object for storing dynamic data in a hierarchical form, key = string, value = any.
-class Dictionary {
+class MA_API Dictionary {
   public:
 	//! Constructs an empty Dictionary on the stack
 	Dictionary();
@@ -90,14 +92,14 @@ class Dictionary {
 	std::map<std::string, boost::any>	mData;
 };
 
-class DictionaryExc : public ci::Exception {
+class MA_API DictionaryExc : public ci::Exception {
   public:
 	DictionaryExc( const std::string &description )
 			: Exception( description )
 	{ }
 };
 
-class DictionaryBadTypeExc : public DictionaryExc {
+class MA_API DictionaryBadTypeExc : public DictionaryExc {
   public:
 	DictionaryBadTypeExc( const std::string &key, const boost::any &value, const std::type_info &typeInfo )
 		: DictionaryExc( "" )
@@ -114,6 +116,7 @@ class DictionaryBadTypeExc : public DictionaryExc {
 // ----------------------------------------------------------------------------------------------------
 
 namespace detail {
+// TODO: move getValue() to private Dictionary::getValue() for clarity
 
 template<typename T>
 bool getValue( const boost::any &value, T *result )
@@ -142,9 +145,9 @@ bool getValue( const boost::any &value, std::vector<T> *result )
 	return true;
 }
 
-bool getValue( const boost::any &value, float *result );
-bool getValue( const boost::any &value, double *result );
-bool getValue( const boost::any &value, std::vector<boost::any> *result );
+bool MA_API getValue( const boost::any &value, float *result );
+bool MA_API getValue( const boost::any &value, double *result );
+bool MA_API getValue( const boost::any &value, std::vector<boost::any> *result );
 
 } // namespace mason::detail
 

@@ -30,6 +30,7 @@ class MasonTestsApp : public App {
 	void draw() override;
 
 	void reload();
+	void saveConfig();
 
 	ui::SuiteRef	mSuite;
 	bool			mDrawHud = true;
@@ -44,13 +45,17 @@ void MasonTestsApp::setup()
 
 	mSuite->registerSuiteView<HudTest>( "hud" );
 	mSuite->registerSuiteView<MiscTest>( "misc" );
-	//mSuite->registerSuiteView<MotionTest>( "motion" );
+
+	mSuite->getSignalSuiteViewWillChange().connect( [this] {
+		CI_LOG_I( "selecting test: " << mSuite->getCurrentKey() );
+	} );
 
 	reload();
 }
 
 void MasonTestsApp::reload()
 {
+	// TODO: this should work without getAssetPath() too
 	ma::assets()->getFile( app::getAssetPath( "config.json" ), [this]( DataSourceRef dataSource ) {
 		CI_LOG_I( "config.json reloaded" );
 
@@ -59,6 +64,18 @@ void MasonTestsApp::reload()
 		size_t testIndex = (size_t)ma::config()->get<int>( "app", "test" );
 		mSuite->select( testIndex );
 	} );
+}
+
+void MasonTestsApp::saveConfig()
+{
+	// first disable config.json watch, so it doesn't trigger an app reload
+	FileWatcher::instance().disable( ma::config()->getTargetFilePath() );
+
+	ma::config()->set<size_t>( "app", "test", mSuite->getCurrentIndex() );
+
+	ma::config()->write();
+
+	FileWatcher::instance().enable( ma::config()->getTargetFilePath() );
 }
 
 void MasonTestsApp::keyDown( app::KeyEvent event )
@@ -81,8 +98,13 @@ void MasonTestsApp::keyDown( app::KeyEvent event )
 			mDrawHud = ! mDrawHud;
 			mSuite->setDrawUiEnabled( mDrawHud );
 		}
-		else if( event.getChar() == 'l' )
+		else if( event.getChar() == 'l' ) {
 			mDrawProfiling = ! mDrawProfiling;
+		}
+		else if( event.getChar() == 's' ) {
+			CI_LOG_I( "saving config.json" );
+			saveConfig();
+		}
 	}
 }
 
@@ -93,8 +115,11 @@ void MasonTestsApp::resize()
 
 void MasonTestsApp::update()
 {
+	ma::hud()->showInfo( 1, { "watches: ", to_string( FileWatcher::instance().getNumWatches() ) } );
+	ma::hud()->showInfo( 2, { "watched files: ", to_string( FileWatcher::instance().getNumWatchedFiles() ) } );
+
 	{
-		CI_PROFILE_CPU( "Suite update" );
+		CI_PROFILE( "Suite update" );
 		mSuite->update();
 	}
 
@@ -106,17 +131,17 @@ void MasonTestsApp::update()
 
 void MasonTestsApp::draw()
 {
-	CI_PROFILE_CPU( "main draw" );
+	CI_PROFILE( "main draw" );
 
 	gl::clear();
 
 	{
-		CI_PROFILE_CPU( "Suite draw" );
+		CI_PROFILE( "Suite draw" );
 		mSuite->draw();
 	}
 
 	if( mDrawHud ) {
-		CI_PROFILE_CPU( "Hud draw" );
+		CI_PROFILE( "Hud draw" );
 		ma::hud()->draw();
 	}
 
@@ -144,9 +169,9 @@ void prepareSettings( App::Settings *settings )
 	}
 	else {
 #if defined( CINDER_MAC )
-		vec2 windowPos = { 0, 0 };
+		ivec2 windowPos = { 0, 0 };
 #else
-		vec2 windowPos = { 0, 24 };
+		ivec2 windowPos = { 0, 24 };
 #endif
 		settings->setWindowPos( windowPos.x, windowPos.y );
 		settings->setWindowSize( 960, 565 );

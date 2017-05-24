@@ -29,14 +29,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Signals.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/gl/ShaderPreprocessor.h"
+#include "cinder/gl/ShaderPreprocessor.h" // TODO: forward declare
 
-//#include "tools/AssetArchiver.h"
-#include "mason/FileWatcher.h"
+#include "mason/Mason.h"
+//#include "mason/AssetArchiver.h"
+#include "cinder/FileWatcher.h"
 
 #include <map>
 
 //! If \c true, attempts to replace image data on reload without modifying the texture.
+// TODO: remove or make option
 #define USE_DEEP_LOADING		1
 
 namespace mason {
@@ -53,7 +55,7 @@ public:
 	virtual uint32_t uuid() const = 0;
 	//! Adds a path to the asset's file list.
 	virtual IAsset& add( const ci::fs::path &path ) = 0;
-	//! Loads the asset(s) synchronously and returns TRUE if successfull.
+	//! Loads the asset(s) synchronously and returns TRUE if successful.
 	virtual bool load() = 0;
 	//! Returns a string describing the last error.
 	virtual const std::string& what() const = 0;
@@ -96,11 +98,11 @@ private:
 
 	bool                mInUse;
 
-	mutable time_t      mTimeModified;
+	mutable ci::fs::file_time_type	mTimeModified;
 
 	std::vector<std::weak_ptr<AssetGroup>>  mGroups;
 
-	mason::WatchRef mWatch;
+	ci::signals::ScopedConnection mConnection;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -137,7 +139,7 @@ private:
 
 typedef ci::signals::Signal<void( const ci::gl::GlslProgRef &, const std::vector<std::pair<ci::fs::path, std::string>> & )>	SignalShaderLoaded;
 
-class AssetManager {
+class MA_API AssetManager {
 public:
 	static const int kSeed = 9213;
 
@@ -157,7 +159,7 @@ public:
 	//! Returns the requested texture within the provided \a updateCallback upon initial load and any time it is updated on file. Loads synchronously if the texture is not cached.
 	ci::signals::Connection getTexture( const ci::fs::path &texturePath, const std::function<void( ci::gl::Texture2dRef )> &updateCallback  );
 	//! Calls \a updateCallback whenever the file at \a path is modified and needs to be relaoded. Returns a WatchRef to handle the scope of the associated file watch (empty in deploy mode)
-	mason::WatchRef getFile( const ci::fs::path &path, const std::function<void( ci::DataSourceRef )> &updateCallback );
+	ci::signals::Connection getFile( const ci::fs::path &path, const std::function<void( ci::DataSourceRef )> &updateCallback );
 	//! Loads and returns a DataSourceRef for the file associated with \a path.
 	ci::DataSourceRef loadAsset( const ci::fs::path &path );
 
@@ -194,11 +196,12 @@ public:
 	//!
 	void readArchive( const ci::DataSourceRef &dataSource );
 
-	ci::gl::ShaderPreprocessor*	getShaderPreprocessor()	{ return &mShaderPreprocessor; }
+	ci::gl::ShaderPreprocessor*	getShaderPreprocessor()	{ initShaderPreprocessorLazy(); return mShaderPreprocessor.get(); }
 
 private:
 	AssetManager();
 
+	void				initShaderPreprocessorLazy();
 	//! \note: will modify format
 	ci::gl::GlslProgRef reloadShader( ci::gl::GlslProg::Format &format, const AssetGroupRef &group, uint32_t hash );
 
@@ -209,20 +212,17 @@ private:
 
 	friend class Asset;
 
-	void onFileChanged( const ci::fs::path &path );
+	void onFileChanged(  const ci::WatchEvent &event );
 
 	std::map<uint32_t, std::weak_ptr<ci::gl::GlslProg>>   mShaders;
 	std::map<uint32_t, std::weak_ptr<ci::gl::Texture2d>>  mTextures;
 
-	ci::gl::ShaderPreprocessor			 mShaderPreprocessor;
-	SignalShaderLoaded					 mSignalShaderLoaded;
+	std::unique_ptr<ci::gl::ShaderPreprocessor>			mShaderPreprocessor;
+	SignalShaderLoaded									mSignalShaderLoaded;
 
 	std::map<uint32_t, AssetGroupRef>    mGroups;
 	std::map<uint32_t, AssetRef>         mAssets;
 	std::vector<uint32_t>                mAssetIds;
-
-//	mutable std::mutex                   mGroupsLock;
-//	mutable std::mutex                   mAssetsLock;
 
 	std::map<uint32_t, bool>             mAssetErrors;
 

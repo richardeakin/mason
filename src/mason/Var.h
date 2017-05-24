@@ -53,12 +53,12 @@ class VarBase {
 			mOwner->removeTarget( mVoidPtr );
 	}
 
-//	void set( const VarBase &rhs )
-//	{
-//		mOwner = rhs.mOwner;
-//		if( mOwner )
-//			mOwner->cloneAndReplaceTarget( rhs.mVoidPtr, mVoidPtr );
-//	}
+	void set( const VarBase &rhs )
+	{
+		mOwner = rhs.mOwner;
+		if( mOwner )
+			mOwner->cloneAndReplaceTarget( rhs.mVoidPtr, mVoidPtr );
+	}
 
 	void*			mVoidPtr;
 	VarOwner*		mOwner;

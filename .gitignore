@@ -20,10 +20,12 @@ build/
 *.VC.db
 *.opensdf
 Debug/
+Debug_Shared/
 Release/
-RelWithDebInfo
+Release_Shared/
 ipch/
 **/vc2013/enc_temp_folder/**
+**/vc2015/enc_temp_folder/**
 
 # Jetbrains IDEs
 .idea

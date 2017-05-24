@@ -82,13 +82,6 @@ AssetManager* AssetManager::instance()
 
 AssetManager::AssetManager()
 {
-#if defined( CINDER_GL_ES )
-	mShaderPreprocessor.setVersion( 300 );
-	mShaderPreprocessor.addDefine( "CINDER_GL_ES" );
-#else
-	mShaderPreprocessor.setVersion( 410 );
-	mShaderPreprocessor.addDefine( "CINDER_GL_CORE" );
-#endif
 }
 
 AssetManager::~AssetManager()
@@ -181,17 +174,35 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const f
 	return conn;
 }
 
-//string AssetManager::parseShaderSource( const fs::path &shaderPath, const AssetGroupRef &group )
-//{
-//	auto vertPath = format.getVertexPath();
-//	group->addAsset( getAssetRef( shaderPath ) );
-//
-//	return mShaderPreprocessor.parse( format.getVertex(), vertPath, &stageIncludedFiles );
-//}
+void AssetManager::initShaderPreprocessorLazy()
+{
+	if( mShaderPreprocessor )
+		return;
+		
+	mShaderPreprocessor = make_unique<gl::ShaderPreprocessor>();
+
+#if defined( CINDER_GL_ES )
+	mShaderPreprocessor->setVersion( 300 );
+	mShaderPreprocessor->addDefine( "CINDER_GL_ES" );
+#else
+	mShaderPreprocessor->setVersion( 410 );
+	mShaderPreprocessor->addDefine( "CINDER_GL_CORE" );
+#endif
+
+#if defined( CINDER_MSW )
+	auto vendor = gl::getVendorString();
+	std::transform( vendor.begin(), vendor.end(), vendor.begin(), tolower );
+	if( vendor.find( "nvidia" ) != string::npos ) {
+		mShaderPreprocessor->setUseFilenameInLineDirectiveEnabled( true );
+	}
+#endif
+}
 
 ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format, const AssetGroupRef &group, uint32_t hash )
 {
-	format.setPreprocessingEnabled( false ); // we use our own, pre-configured ShaderPreprocessor
+	initShaderPreprocessorLazy();
+
+	format.preprocess( false ); // we use our own preprocessor and pull out included files to watch them at each stage.
 
 	std::vector<std::pair<ci::fs::path, std::string>>	sources;
 
@@ -206,7 +217,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		auto shaderPath = format.getVertexPath();
 		group->addAsset( getAssetRef( shaderPath ) );
 
-		string parsedShader = mShaderPreprocessor.parse( format.getVertex(), shaderPath, &stageIncludedFiles );
+		string parsedShader = mShaderPreprocessor->parse( format.getVertex(), shaderPath, &stageIncludedFiles );
 		format.vertex( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
@@ -216,7 +227,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		group->addAsset( getAssetRef( shaderPath ) );
 
 		stageIncludedFiles.clear();
-		string parsedShader = mShaderPreprocessor.parse( format.getFragment(), shaderPath, &stageIncludedFiles );
+		string parsedShader = mShaderPreprocessor->parse( format.getFragment(), shaderPath, &stageIncludedFiles );
 		format.fragment( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
@@ -226,7 +237,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		group->addAsset( getAssetRef( shaderPath ) );
 
 		stageIncludedFiles.clear();
-		string parsedShader = mShaderPreprocessor.parse( format.getCompute(), shaderPath, &stageIncludedFiles );
+		string parsedShader = mShaderPreprocessor->parse( format.getCompute(), shaderPath, &stageIncludedFiles );
 		format.compute( parsedShader );
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
@@ -298,48 +309,27 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 	return connection;
 }
 
-/*
-signals::Connection AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
-{
-	uint32_t hash = uuid( path.generic_string() );
-	auto assetIt = mAssets.find( hash );
-	if( assetIt != mAssets.end() && ! assetIt->second->isModified() ) {
-		// TODO: this should return a DataSourceRef stored on Asset, which is possibly our custom one that looks up in bin stream.
-		updateCallback( loadFile( assetIt->second->getPath() ) );
-
-		// TODO: how to return connection here?
-		return ci::signals::Connection();
-	}
-	else {
-		auto assetFile = findFile( path );
-		auto group = getAssetGroupRef( hash );
-		group->addAsset( getAssetRef( path ) );
-	}
-
-	return ci::signals::Connection();
-}
-*/
-
-mason::WatchRef AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
+ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
 {
 	try {
 #if defined( OOBE_DEPLOY ) || defined( CINDER_ANDROID )
 		auto assetFile = findFile( path );
 		updateCallback( assetFile );
-		return mason::WatchRef();
+		return ma::WatchRef();
 #else
-		auto watch = mason::FileWatcher::load( path, [updateCallback]( const ci::fs::path &fullPath ) {
-			updateCallback( loadFile( fullPath ) );
+		auto conn = FileWatcher::instance().watch( path, [updateCallback]( const WatchEvent &event ) {
+			updateCallback( loadFile( event.getFile() ) );
 		} );
 
-		return watch;
+		return conn;
 #endif
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load file for path: " << path, exc );
 		CI_LOG_E( "stacktrace:\n" << ma::stackTraceAsString( 0, 4 ) );
-		return mason::WatchRef();
 	}
+
+	return {};
 }
 
 ci::DataSourceRef AssetManager::loadAsset( const ci::fs::path &path )
@@ -349,7 +339,8 @@ ci::DataSourceRef AssetManager::loadAsset( const ci::fs::path &path )
 
 void AssetManager::enableLiveAssets( bool enabled )
 {
-	ma::FileWatcher::setWatchingEnabled( enabled );
+	// TODO: use our own FileWatcher instance
+	FileWatcher::instance().setWatchingEnabled( enabled );
 }
 
 bool AssetManager::isLiveAssetsEnabled() const
@@ -507,11 +498,11 @@ ci::DataSourceRef AssetManager::findFile( const ci::fs::path &filePath )
 #endif
 }
 
-void AssetManager::onFileChanged( const fs::path &path )
+void AssetManager::onFileChanged( const WatchEvent &event )
 {
 	// Flag groups as modified if asset was modified since the last check.
 	// Groups remain modified until they are reloaded, so we only need to flag them once.
-	auto asset = getAssetRef( path );
+	auto asset = getAssetRef( event.getFile() );
 	if( asset /* && asset->isModified() */ ) {
 		// Assumes groups never delete themselves from the asset on the main thread.
 		bool inUse = false;
@@ -564,22 +555,26 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 // Asset
 // ----------------------------------------------------------------------------------------------------
 
+#if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
+#define ASSET_INITIAL_TIME_MODIFIED std::chrono::system_clock::now()
+#else
+#define ASSET_INITIAL_TIME_MODIFIED std::time_t( 0 )
+#endif
+
 Asset::Asset( const fs::path& path, uint32_t uuid )
-	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( 0 )
+	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( ASSET_INITIAL_TIME_MODIFIED )
 {
-	mWatch = mason::FileWatcher::watch( path, bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
+	mConnection = FileWatcher::instance().watch( path, FileWatcher::Options().callOnWatch( false ), bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
 
 Asset::~Asset()
 {
-	if( mWatch )
-		mWatch->unwatch();
 }
 
 bool Asset::isModified() const
 {
 	if( fs::exists( mPath ) ) {
-		time_t modified = fs::last_write_time( mPath );
+		auto modified = fs::last_write_time( mPath );
 		if( modified != mTimeModified ) {
 			mTimeModified = modified;
 			return true;
