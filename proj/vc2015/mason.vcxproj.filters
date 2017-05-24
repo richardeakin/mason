@@ -55,12 +55,6 @@
     <ClCompile Include="..\..\src\mason\WorldClock.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\mason\ui\Controls.cpp">
-      <Filter>Source Files\mason\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
@@ -86,12 +80,6 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ScrollView.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Selector.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Slider.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Suite.cpp">
@@ -127,6 +115,9 @@
     <ClCompile Include="..\..\src\mason\FlyCam.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.cpp">
+      <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -153,17 +144,11 @@
     <ClInclude Include="..\..\src\mason\WorldClock.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\mason\ui\Controls.h">
-      <Filter>Source Files\mason\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\mason\ui\ShaderControls.h">
       <Filter>Source Files\mason\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h">
       <Filter>Blocks\Cinder-View\src\mason</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
@@ -190,12 +175,6 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ScrollView.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Selector.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Slider.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Suite.h">
@@ -242,6 +221,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\FlyCam.h">
       <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Debug.h">
+      <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.h">
+      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

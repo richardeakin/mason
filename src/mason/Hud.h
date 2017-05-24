@@ -23,13 +23,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "mason/Mason.h"
 #include "mason/Var.h"
-#include "mason/ui/Controls.h"
 #include "mason/ui/ShaderControls.h"
 
 #include "ui/Graph.h"
 #include "ui/Label.h"
-#include "ui/Button.h"
-#include "ui/Slider.h"
+#include "ui/Control.h"
 
 #include "cinder/gl/GlslProg.h"
 

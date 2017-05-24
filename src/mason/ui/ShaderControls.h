@@ -21,11 +21,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "ui/Button.h"
-#include "ui/Slider.h"
-
+#include "ui/Control.h"
 #include "mason/Mason.h"
-#include "mason/ui/Controls.h"
 
 
 namespace mason {

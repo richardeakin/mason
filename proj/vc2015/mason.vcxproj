@@ -21,9 +21,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\blocks\Cinder-Profiler\src\Profiler.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\fmt\format.cc" />
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Filter.cpp" />
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Graph.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Image.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ImageView.cpp" />
@@ -33,8 +33,6 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layout.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Renderer.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ScrollView.cpp" />
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Selector.cpp" />
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Slider.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Suite.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\TextManager.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\View.cpp" />
@@ -46,7 +44,6 @@
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp" />
-    <ClCompile Include="..\..\src\mason\ui\Controls.cpp" />
     <ClCompile Include="..\..\src\mason\VisualMonitor.cpp" />
     <ClCompile Include="..\..\src\mason\WorldClock.cpp" />
   </ItemGroup>
@@ -54,10 +51,11 @@
     <ClInclude Include="..\..\blocks\Cinder-Profiler\src\Profiler.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\fmt\format.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h" />
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Debug.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Export.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Filter.h" />
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Graph.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Image.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ImageView.h" />
@@ -67,8 +65,6 @@
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layout.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Renderer.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ScrollView.h" />
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Selector.h" />
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Slider.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Suite.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\TextManager.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ui.h" />
@@ -84,7 +80,6 @@
     <ClInclude Include="..\..\src\mason\Notifications.h" />
     <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h" />
     <ClInclude Include="..\..\src\mason\Profiling.h" />
-    <ClInclude Include="..\..\src\mason\ui\Controls.h" />
     <ClInclude Include="..\..\src\mason\ui\ShaderControls.h" />
     <ClInclude Include="..\..\src\mason\Var.h" />
     <ClInclude Include="..\..\src\mason\VisualMonitor.h" />
