@@ -3,7 +3,7 @@
 #include "ui/Suite.h"
 
 #include "mason/Mason.h"
-#include "mason/FileWatcher.h"
+#include "cinder/FileWatcher.h"
 #include "mason/Dictionary.h"
 #include "mason/ui/Controls.h"
 

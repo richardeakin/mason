@@ -43,7 +43,6 @@
     <ClCompile Include="..\..\src\mason\Common.cpp" />
     <ClCompile Include="..\..\src\mason\Config.cpp" />
     <ClCompile Include="..\..\src\mason\Dictionary.cpp" />
-    <ClCompile Include="..\..\src\mason\FileWatcher.cpp" />
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp" />
@@ -80,7 +79,6 @@
     <ClInclude Include="..\..\src\mason\Config.h" />
     <ClInclude Include="..\..\src\mason\Dictionary.h" />
     <ClInclude Include="..\..\src\mason\Export.h" />
-    <ClInclude Include="..\..\src\mason\FileWatcher.h" />
     <ClInclude Include="..\..\src\mason\Hud.h" />
     <ClInclude Include="..\..\src\mason\Mason.h" />
     <ClInclude Include="..\..\src\mason\Notifications.h" />

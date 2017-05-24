@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "mason/Mason.h"
 //#include "mason/AssetArchiver.h"
-#include "mason/FileWatcher.h"
+#include "cinder/FileWatcher.h"
 
 #include <map>
 
@@ -212,7 +212,7 @@ private:
 
 	friend class Asset;
 
-	void onFileChanged(  const WatchEvent &event );
+	void onFileChanged(  const ci::WatchEvent &event );
 
 	std::map<uint32_t, std::weak_ptr<ci::gl::GlslProg>>   mShaders;
 	std::map<uint32_t, std::weak_ptr<ci::gl::Texture2d>>  mTextures;

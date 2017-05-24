@@ -69,13 +69,13 @@ void MasonTestsApp::reload()
 void MasonTestsApp::saveConfig()
 {
 	// first disable config.json watch, so it doesn't trigger an app reload
-	ma::FileWatcher::instance()->disable( ma::config()->getTargetFilePath() );
+	FileWatcher::instance().disable( ma::config()->getTargetFilePath() );
 
-	ma::config()->set<int>( "app", "test", mSuite->getCurrentIndex() );
+	ma::config()->set<size_t>( "app", "test", mSuite->getCurrentIndex() );
 
 	ma::config()->write();
 
-	ma::FileWatcher::instance()->enable( ma::config()->getTargetFilePath() );
+	FileWatcher::instance().enable( ma::config()->getTargetFilePath() );
 }
 
 void MasonTestsApp::keyDown( app::KeyEvent event )
@@ -115,8 +115,8 @@ void MasonTestsApp::resize()
 
 void MasonTestsApp::update()
 {
-	ma::hud()->showInfo( 1, { "watches: ", to_string( ma::FileWatcher::instance()->getNumWatches() ) } );
-	ma::hud()->showInfo( 2, { "watched files: ", to_string( ma::FileWatcher::instance()->getNumWatchedFiles() ) } );
+	ma::hud()->showInfo( 1, { "watches: ", to_string( FileWatcher::instance().getNumWatches() ) } );
+	ma::hud()->showInfo( 2, { "watched files: ", to_string( FileWatcher::instance().getNumWatchedFiles() ) } );
 
 	{
 		CI_PROFILE( "Suite update" );

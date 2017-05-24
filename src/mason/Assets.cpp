@@ -317,7 +317,7 @@ ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::
 		updateCallback( assetFile );
 		return ma::WatchRef();
 #else
-		auto conn = ma::FileWatcher::instance()->watch( path, [updateCallback]( const WatchEvent &event ) {
+		auto conn = FileWatcher::instance().watch( path, [updateCallback]( const WatchEvent &event ) {
 			updateCallback( loadFile( event.getFile() ) );
 		} );
 
@@ -340,7 +340,7 @@ ci::DataSourceRef AssetManager::loadAsset( const ci::fs::path &path )
 void AssetManager::enableLiveAssets( bool enabled )
 {
 	// TODO: use our own FileWatcher instance
-	ma::FileWatcher::instance()->setWatchingEnabled( enabled );
+	FileWatcher::instance().setWatchingEnabled( enabled );
 }
 
 bool AssetManager::isLiveAssetsEnabled() const
@@ -564,7 +564,7 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 Asset::Asset( const fs::path& path, uint32_t uuid )
 	: mPath( path ), mUuid( uuid ), mInUse( false ), mTimeModified( ASSET_INITIAL_TIME_MODIFIED )
 {
-	mConnection = ma::FileWatcher::instance()->watch( path, ma::FileWatcher::Options().callOnWatch( false ), bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
+	mConnection = FileWatcher::instance().watch( path, FileWatcher::Options().callOnWatch( false ), bind( &AssetManager::onFileChanged, AssetManager::instance(), placeholders::_1 ) );
 }
 
 Asset::~Asset()
