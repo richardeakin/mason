@@ -95,17 +95,16 @@ class MA_API FlyCam {
 	ci::CameraPersp			mInitialCam;
 	ci::CameraPersp			*mCamera;
 	bool					mLookEnabled = false;
-
 	ci::vec3				mMoveDirection, mMoveAccel, mMoveVelocity;
 	float					mMoveIncrement = 1.0f;
-
 	
-	ci::ivec2					mWindowSize; // used when mWindow is null
-	ci::app::WindowRef			mWindow;
-	bool						mEnabled;
-	int							mSignalPriority;
-	std::vector<ci::signals::Connection>	mEventConnections;
-	ci::signals::Signal<void()>				mSignalCameraChange;
+	ci::ivec2				mWindowSize; // used when mWindow is null
+	ci::app::WindowRef		mWindow;
+	bool					mEnabled;
+	int						mSignalPriority;
+
+	ci::signals::ConnectionList		mEventConnections;
+	ci::signals::Signal<void()>		mSignalCameraChange;
 };
 
 }; // namespace mason

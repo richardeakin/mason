@@ -69,36 +69,32 @@ FlyCam& FlyCam::operator=( const FlyCam &rhs )
 //! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
 void FlyCam::connect( const app::WindowRef &window, int signalPriority )
 {
-	if( ! mEventConnections.empty() ) {
-		for( auto &conn : mEventConnections )
-			conn.disconnect();
-	}
-
+	mEventConnections.clear();
 	mWindow = window;
 	mSignalPriority = signalPriority;
 	if( window ) {
-		mEventConnections.push_back( window->getSignalMouseDown().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDown( event ); } ) );
-		mEventConnections.push_back( window->getSignalMouseUp().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseUp( event ); } ) );
-		mEventConnections.push_back( window->getSignalMouseDrag().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDrag( event ); } ) );
-		mEventConnections.push_back( window->getSignalMouseWheel().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseWheel( event ); } ) );
-		mEventConnections.push_back( window->getSignalKeyDown().connect( signalPriority,
-			[this]( app::KeyEvent &event ) { keyDown( event ); } ) );
-		mEventConnections.push_back( window->getSignalKeyUp().connect( signalPriority,
-			[this]( app::KeyEvent &event ) { keyUp( event ); } ) );
-		mEventConnections.push_back( window->getSignalResize().connect( signalPriority,
+		mEventConnections += window->getSignalMouseDown().connect( signalPriority,
+			[this]( app::MouseEvent &event ) { mouseDown( event ); } );
+		mEventConnections += window->getSignalMouseUp().connect( signalPriority,
+			[this]( app::MouseEvent &event ) { mouseUp( event ); } );
+		mEventConnections += window->getSignalMouseDrag().connect( signalPriority,
+			[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
+		mEventConnections += window->getSignalMouseWheel().connect( signalPriority,
+			[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
+		mEventConnections += window->getSignalKeyDown().connect( signalPriority,
+			[this]( app::KeyEvent &event ) { keyDown( event ); } );
+		mEventConnections += window->getSignalKeyUp().connect( signalPriority,
+			[this]( app::KeyEvent &event ) { keyUp( event ); } );
+		mEventConnections += window->getSignalResize().connect( signalPriority,
 			[this]() {
 				setWindowSize( mWindow->getSize() );
 				if( mCamera )
 					mCamera->setAspectRatio( mWindow->getAspectRatio() );
 			}
-		) );
+		);
 
-		mEventConnections.push_back( app::AppBase::get()->getSignalUpdate().connect( signalPriority,
-			[this] { update(); } ) );
+		mEventConnections += app::AppBase::get()->getSignalUpdate().connect( signalPriority,
+			[this] { update(); } );
 	}
 	else
 		disconnect();
@@ -107,10 +103,9 @@ void FlyCam::connect( const app::WindowRef &window, int signalPriority )
 //! Disconnects all signal handlers
 void FlyCam::disconnect()
 {
-	for( auto &conn : mEventConnections )
-		conn.disconnect();
+	mEventConnections.clear();
 
-	mWindow.reset();
+	mWindow = nullptr;
 }
 
 bool FlyCam::isConnected() const
