@@ -90,6 +90,16 @@ float fbm4( vec2 p )
 	return f;
 }
 
+bool epsilonEquals( float a, float b, float epsilon )
+{
+    return abs( a - b ) < epsilon;
+}
+
+bool epsilonEquals( float a, float b )
+{
+    return epsilonEquals( a, b, 0.001 );
+}
+
 // some mapping utils
 
 float impulse( float k, float x )
