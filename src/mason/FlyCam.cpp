@@ -196,9 +196,12 @@ void FlyCam::mouseWheel( float increment )
 }
 
 // TODO: need a way to disable using up these keys
-// - also shouldn't handle if any modifier keys are down
 void FlyCam::keyDown( ci::app::KeyEvent &event )
 {
+	// skip if any modifier key is being pressed, except shift which is used to decrease speed.
+	if( event.isAltDown() || event.isControlDown() || event.isMetaDown() )
+		return;
+
 	bool handled = true;
 	float moveAmount = mMoveIncrement;
 	if( event.isShiftDown() )
