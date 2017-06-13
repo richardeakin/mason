@@ -343,8 +343,9 @@ void Hud::updateNotificationBorder()
 // ----------------------------------------------------------------------------------------------------
 
 namespace {
-const Rectf DEFAULT_SLIDER_BOUNDS = Rectf( 0, 0, 190, 40 );
-const Rectf DEFAULT_CHECKBOX_BOUNDS = Rectf( 0, 0, 100, 40 );
+const Rectf DEFAULT_SLIDER_BOUNDS = Rectf( 0, 0, 190, 30 );
+const Rectf DEFAULT_NUMBOX_BOUNDS = Rectf( 0, 0, 190, 40 );
+const Rectf DEFAULT_CHECKBOX_BOUNDS = Rectf( 0, 0, 100, 30 );
 }
 
 ui::HSliderRef Hud::slider( float *x, const std::string &label, Options options )
@@ -529,7 +530,7 @@ shared_ptr<ui::NumberBoxT<T>> Hud::findOrMakeNumberBoxN( const T &initialValue, 
 	const auto &view = findView( label );
 	auto nbox = dynamic_pointer_cast<ui::NumberBoxT<T>>( view );
 	if( ! nbox ) {
-		nbox = make_shared<ui::NumberBoxT<T>>( DEFAULT_SLIDER_BOUNDS );
+		nbox = make_shared<ui::NumberBoxT<T>>( DEFAULT_NUMBOX_BOUNDS );
 		nbox->setTitle( label );
 		nbox->getBackground()->setColor( ColorA::gray( 0, 0.6f ) );
 		nbox->setValue( initialValue );
