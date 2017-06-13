@@ -282,6 +282,9 @@ void Hud::layout()
 
 void Hud::update()
 {
+	if( mGraph->isHidden() )
+		return;
+
 	// remove any ShaderControlGroups that have an expired shader
 	mShaderControlGroups.erase( remove_if( mShaderControlGroups.begin(), mShaderControlGroups.end(),
 							[]( const ShaderControlGroup &group ) {
