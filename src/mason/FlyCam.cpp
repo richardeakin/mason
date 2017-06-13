@@ -192,7 +192,9 @@ void FlyCam::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, bo
 void FlyCam::mouseWheel( float increment )
 {
 	if( ! mCamera || ! mEnabled )
-		return;	
+		return;
+
+	mMoveDirection.y = mMoveIncrement * increment * 0.1f;
 }
 
 // TODO: need a way to disable using up these keys
@@ -205,7 +207,7 @@ void FlyCam::keyDown( ci::app::KeyEvent &event )
 	bool handled = true;
 	float moveAmount = mMoveIncrement;
 	if( event.isShiftDown() )
-		moveAmount = 0.1f;
+		moveAmount *= 0.1f;
 
 	const char c = tolower( event.getChar() );
 
@@ -271,7 +273,7 @@ void FlyCam::update()
 
 	mMoveAccel += mMoveDirection;
 
-	const float maxVelocity = 5;
+	const float maxVelocity = mMoveIncrement * 5;
 
 	vec3 targetVelocity = glm::clamp( mMoveAccel * 0.3f, vec3( -maxVelocity ), vec3( maxVelocity ) );
 	mMoveVelocity = lerp( mMoveVelocity, targetVelocity, 0.3f );
@@ -290,6 +292,9 @@ void FlyCam::update()
 	eye += up * mMoveVelocity.z;
 
 	mCamera->setEyePoint( eye );
+
+	const float drag = 0.2f;
+	mMoveAccel *= 1 - drag;
 }
 
 ivec2 FlyCam::getWindowSize() const
