@@ -35,23 +35,18 @@ FlyCam::FlyCam()
 {
 }
 
-FlyCam::FlyCam( CameraPersp *camera, const app::WindowRef &window, int signalPriority )
+FlyCam::FlyCam( CameraPersp *camera, const app::WindowRef &window, const EventOptions &options )
 	: mCamera( camera ), mInitialCam( *camera ), mWindowSize( 640, 480 ), mEnabled( true )
 {
-	connect( window, signalPriority );
+	connect( window, options );
 }
 
 FlyCam::FlyCam( const FlyCam &rhs )
 	: mCamera( rhs.mCamera ), mInitialCam( *rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
-		mWindow( rhs.mWindow ), mSignalPriority( rhs.mSignalPriority ),
-		mEnabled( rhs.mEnabled )
+		mWindow( rhs.mWindow ), mEventOptions( rhs.mEventOptions ),	mEnabled( rhs.mEnabled ),
+	mMoveIncrement( rhs.mMoveIncrement )
 {
-	connect( mWindow, mSignalPriority );
-}
-
-FlyCam::~FlyCam()
-{
-	disconnect();
+	connect( mWindow, mEventOptions );
 }
 
 FlyCam& FlyCam::operator=( const FlyCam &rhs )
@@ -60,41 +55,54 @@ FlyCam& FlyCam::operator=( const FlyCam &rhs )
 	mInitialCam = *rhs.mCamera;
 	mWindowSize = rhs.mWindowSize;
 	mWindow = rhs.mWindow;
-	mSignalPriority = rhs.mSignalPriority;
+	mEventOptions = rhs.mEventOptions;
+	mMoveIncrement = rhs.mMoveIncrement;
 	mEnabled = rhs.mEnabled;
-	connect( mWindow, mSignalPriority );
+	connect( mWindow, mEventOptions );
 	return *this;
 }
 
+FlyCam::~FlyCam()
+{
+	disconnect();
+}
+
 //! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
-void FlyCam::connect( const app::WindowRef &window, int signalPriority )
+void FlyCam::connect( const app::WindowRef &window, const EventOptions &options )
 {
 	mEventConnections.clear();
 	mWindow = window;
-	mSignalPriority = signalPriority;
+	mEventOptions = options;
 	if( window ) {
-		mEventConnections += window->getSignalMouseDown().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDown( event ); } );
-		mEventConnections += window->getSignalMouseUp().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseUp( event ); } );
-		mEventConnections += window->getSignalMouseDrag().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
-		mEventConnections += window->getSignalMouseWheel().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
-		mEventConnections += window->getSignalKeyDown().connect( signalPriority,
-			[this]( app::KeyEvent &event ) { keyDown( event ); } );
-		mEventConnections += window->getSignalKeyUp().connect( signalPriority,
-			[this]( app::KeyEvent &event ) { keyUp( event ); } );
-		mEventConnections += window->getSignalResize().connect( signalPriority,
-			[this]() {
-				setWindowSize( mWindow->getSize() );
-				if( mCamera )
-					mCamera->setAspectRatio( mWindow->getAspectRatio() );
-			}
-		);
-
-		mEventConnections += app::AppBase::get()->getSignalUpdate().connect( signalPriority,
-			[this] { update(); } );
+		if( options.mMouse ) {
+			mEventConnections += window->getSignalMouseDown().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseDown( event ); } );
+			mEventConnections += window->getSignalMouseUp().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseUp( event ); } );
+			mEventConnections += window->getSignalMouseDrag().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
+			mEventConnections += window->getSignalMouseWheel().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
+			mEventConnections += window->getSignalKeyDown().connect( options.mPriority,
+				[this]( app::KeyEvent &event ) { keyDown( event ); } );
+		}
+		if( options.mKeyboard ) {
+			mEventConnections += window->getSignalKeyUp().connect( options.mPriority,
+				[this]( app::KeyEvent &event ) { keyUp( event ); } );
+		}
+		if( options.mResize ) {
+			mEventConnections += window->getSignalResize().connect( options.mPriority,
+				[this]() {
+					setWindowSize( mWindow->getSize() );
+					if( mCamera )
+						mCamera->setAspectRatio( mWindow->getAspectRatio() );
+				}
+			);
+		}		
+		if( options.mUpdate && app::AppBase::get() ) {
+			mEventConnections += app::AppBase::get()->getSignalUpdate().connect( options.mPriority,
+				[this] { update(); } );
+		}
 	}
 	else
 		disconnect();
