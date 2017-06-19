@@ -104,8 +104,6 @@ void FlyCam::connect( const app::WindowRef &window, const EventOptions &options 
 				[this] { update(); } );
 		}
 	}
-	else
-		disconnect();
 }
 
 //! Disconnects all signal handlers
