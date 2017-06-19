@@ -83,6 +83,9 @@ bool getValue( const boost::any &value, float *result )
 	else if( value.type() == typeid( double ) ) {
 		*result = static_cast<float>( boost::any_cast<double>( value ) );
 	}
+	else if( value.type() == typeid( int ) ) {
+		*result = static_cast<float>( boost::any_cast<int>( value ) );
+	}
 	else {
 		return false;
 	}
@@ -97,6 +100,9 @@ bool getValue( const boost::any &value, double *result )
 	}
 	else if( value.type() == typeid( float ) ) {
 		*result = static_cast<double>( boost::any_cast<float>( value ) );
+	}
+	else if( value.type() == typeid( int ) ) {
+		*result = static_cast<double>( boost::any_cast<int>( value ) );
 	}
 	else {
 		return false;
