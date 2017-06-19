@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "jsoncpp/json.h"
 
 #include "mason/Mason.h"
+#include "mason/Dictionary.h"
 
 namespace mason {
 
@@ -228,6 +229,13 @@ inline bool Config::getValue<double>( const Json::Value &value, double *result )
 		return false;
 
 	*result = value.asDouble();
+	return true;
+}
+
+template<>
+inline bool Config::getValue<Dictionary>( const Json::Value &value, Dictionary *result )
+{
+	*result = Dictionary::convert( value );
 	return true;
 }
 
