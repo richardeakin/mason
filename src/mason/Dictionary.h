@@ -62,11 +62,19 @@ class MA_API Dictionary {
 	void		set( const std::string &key, const T &value );
 
 	//! Returns a copy of the value associated with T. Some type conversions are allowed (like double -> float), hency why a copy is necessary.
+	//! A DictionaryExc is thrown if the key doesn't exist or it can't be converted to type T.
 	template<typename T>
 	T	get( const std::string &key ) const;
+	//! Same as above but will return \a defaultValue if the key doesn't exist.
+	//! A DictionaryExc is thrown if the key exists but can't be converted to type T.
+	template<typename T>
+	T	get( const std::string &key, const T &defaultValue ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly.
 	template<typename T>
 	const T&	getStrict( const std::string &key ) const;
+	//! Returns a reference to the value associated with T. The typeid must match exactly. Returns \a defaultValue if the key doesn't exist.
+	template<typename T>
+	const T&	getStrict( const std::string &key, const T &defaultValue ) const;
 
 	const std::type_info&   getType( const std::string &key ) const;
 
@@ -176,11 +184,46 @@ T Dictionary::get( const std::string &key ) const
 }
 
 template<typename T>
+T Dictionary::get( const std::string &key, const T &defaultValue ) const
+{
+	auto it = mData.find( key );
+	if( it == mData.end() ) {
+		return defaultValue;
+	}
+
+	T result;
+	const auto &value = it->second;
+
+	if( ! detail::getValue( value, &result ) ) {
+		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+	}
+
+	return result;
+}
+
+template<typename T>
 const T& Dictionary::getStrict( const std::string &key ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
 		throw DictionaryExc( "no key named '" + key + "'" );
+	}
+
+	const auto &value = it->second;
+
+	if( value.type() != typeid( T ) ) {
+		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+	}
+
+	return boost::any_cast<const T&>( value );
+}
+
+template<typename T>
+const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) const
+{
+	auto it = mData.find( key );
+	if( it == mData.end() ) {
+		return defaultValue;
 	}
 
 	const auto &value = it->second;
