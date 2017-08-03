@@ -80,4 +80,15 @@ fs::path Config::getTargetFilePath() const
 	return mTarget->getFilePath();
 }
 
+ma::Dictionary Config::getGroupAsDictionary( const std::string &category ) const
+{
+	if( ! mRoot.isMember( category ) ) {
+		throw ConfigExc( "no category with name: " + category );
+	}
+
+	const auto &group = getGroup( category );
+	return Dictionary::convert( group );
+}
+
+
 } // namespace mason

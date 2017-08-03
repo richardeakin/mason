@@ -131,7 +131,10 @@ public:
 	template<typename T>
 	std::vector<T>	getList( const std::string &category );
 
+	//! Returns a group as a Json::Value
 	const Json::Value&	getGroup( const std::string &category ) const	{ return mRoot[category]; }
+	//! Returns a group as a Dictionary
+	ma::Dictionary		getGroupAsDictionary( const std::string &category ) const;
 
 	ci::DataTargetRef	getTarget() const	{ return mTarget; }
 	ci::fs::path		getTargetFilePath() const;
