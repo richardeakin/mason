@@ -155,6 +155,7 @@ bool getValue( const boost::any &value, std::vector<T> *result )
 
 bool MA_API getValue( const boost::any &value, float *result );
 bool MA_API getValue( const boost::any &value, double *result );
+bool MA_API getValue( const boost::any &value, ci::fs::path *result );
 bool MA_API getValue( const boost::any &value, std::vector<boost::any> *result );
 
 } // namespace mason::detail
