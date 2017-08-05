@@ -111,6 +111,16 @@ bool getValue( const boost::any &value, double *result )
 	return true;
 }
 
+bool getValue( const boost::any &value, size_t *result )
+{
+	if( value.type() != typeid( int ) ) {
+		return false;
+	}
+
+	*result = (size_t)boost::any_cast<int>( value );
+	return true;
+}
+
 bool getValue( const boost::any &value, ci::fs::path *result )
 {
 	if( value.type() != typeid( std::string ) )
