@@ -121,6 +121,60 @@ bool getValue( const boost::any &value, size_t *result )
 	return true;
 }
 
+bool getValue( const boost::any &value, vec2 *result )
+{
+	// First cast to vector<any>
+	const auto valueVector = boost::any_cast<std::vector<boost::any>>( &value );
+	if( ! valueVector || valueVector->size() < 2 )
+		return false;
+
+	// Then get result's values from vector
+	if( ! getValue( (*valueVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*valueVector)[1], &result->y ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, vec3 *result )
+{
+	// First cast to vector<any>
+	const auto valueVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! valueVector || valueVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*valueVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*valueVector)[1], &result->y ) )
+		return false;
+	if( ! getValue( (*valueVector)[2], &result->z ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, vec4 *result )
+{
+	// First cast to vector<any>
+	const auto valueVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! valueVector || valueVector->size() < 4 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*valueVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*valueVector)[1], &result->y ) )
+		return false;
+	if( ! getValue( (*valueVector)[2], &result->z ) )
+		return false;
+	if( ! getValue( (*valueVector)[3], &result->w ) )
+		return false;
+
+	return true;
+}
+
 bool getValue( const boost::any &value, ci::fs::path *result )
 {
 	if( value.type() != typeid( std::string ) )
