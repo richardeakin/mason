@@ -141,14 +141,13 @@ bool getValue( const boost::any &value, T *result )
 template<typename T>
 bool getValue( const boost::any &value, std::vector<T> *result )
 {
-	if( value.type() != typeid( std::vector<boost::any> ) ) {
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector )
 		return false;
-	}
-
-	auto anyVec = boost::any_cast<std::vector<boost::any>>( value );
-	result->resize( anyVec.size() );
-	for( int i = 0; i < anyVec.size(); i++ ) {
-		getValue( anyVec[i], &( (*result)[i] ) );
+	
+	result->resize( castedVector->size() );
+	for( size_t i = 0; i < result->size(); i++ ) {
+		getValue( (*castedVector)[i], &( (*result)[i] ) );
 	}
 
 	return true;
