@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Color.h"
 #include "cinder/Noncopyable.h"
 #include "cinder/CinderAssert.h"
-
+#include "cinder/Log.h"
 #include "jsoncpp/json.h"
 
 #include "mason/Mason.h"
@@ -57,18 +57,22 @@ typedef std::shared_ptr<class Config> ConfigRef;
 class MA_API Config : private ci::Noncopyable {
 public:
 	class Options {
-		friend class Config;
 	public:
-		Options() : mSetIfDefault( false ), mWriteIfSet( false ) {}
+		Options() {}
 
 		//! If \a enabled, add the default value to the configuration file if the key was not found.
 		Options& setIfDefault( bool enabled = true ) { mSetIfDefault = enabled; return *this; }
+		//! If \a enabled, will log a warning when a value wasn't found and the default is used instead.
+		Options& logSetIfDefault( bool enabled = true ) { mLogSetIfDefault = enabled; return *this; }
 		//! If \a enabled, write the config file immediately after setting the new value.
 		Options& writeIfSet( bool enabled = true ) { mWriteIfSet = enabled; return *this; }
 
 	private:
-		bool  mSetIfDefault;
-		bool  mWriteIfSet;
+		bool  mSetIfDefault = false;
+		bool  mLogSetIfDefault = false;
+		bool  mWriteIfSet = false;
+
+		friend class Config;
 	};
 
 public:
@@ -105,8 +109,12 @@ public:
 		if( ! getValue( value, &result ) ) {
 			result = defaultValue;
 
-			if( mOptions.mSetIfDefault )
+			if( mOptions.mSetIfDefault ) {
+				if( mOptions.mLogSetIfDefault ) {
+					CI_LOG_W( "key not found for category: " << category << ", key: " << key << ". Using default value instead." );
+				}
 				set( category, key, defaultValue );
+			}
 		}
 
 		return result;
