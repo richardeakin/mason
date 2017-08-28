@@ -282,7 +282,7 @@ void Hud::layout()
 
 void Hud::update()
 {
-	if( mGraph->isHidden() )
+	if( isHidden() )
 		return;
 
 	// remove any ShaderControlGroups that have an expired shader
@@ -310,6 +310,9 @@ void Hud::update()
 
 void Hud::draw()
 {
+	if( isHidden() )
+		return;
+
 	clearViewsMarkedForRemoval();
 
 	mGraph->propagateDraw();

@@ -119,6 +119,9 @@ class MA_API Hud : public VarOwner {
 	void showFps( bool show = true )	{ mShowFps = show; }
 	//! Displays a set of strings at the provided row index.
 	void showInfo( size_t rowIndex, const std::vector<std::string> &textColumns );
+	//! Hides the Hud, it will still update but not be drawn
+	void	setHidden( bool hidden = true )			{ mGraph->setHidden( hidden ); }
+	bool	isHidden() const						{ return mGraph->isHidden(); }
 
 	// VarOwner implementation. TODO: make private or protected if possible
 	void removeTarget( void *target ) override;
