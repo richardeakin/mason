@@ -173,8 +173,8 @@ public:
 	// Returns a signal that is emitted whenever a shader is parsed. Useful for adding UI based on that shader's params. args: 1) shader path, 2) shader source.
 	SignalShaderLoaded&	getSignalShaderLoaded()		{ return mSignalShaderLoaded; }
 
-	//! Removes weak references to assets that are no longer in use. Not required for normal operation. This is a potentially slow operation, use with care.
-	void cleanup();
+	//! Clears cached assets.
+	void clear();
 
 	//! Returns the total number of different shaders loaded, including expired ones. Call cleanup() first if you want to exclude expired shaders.
 	size_t getShaderCount() const { return mShaders.size(); }
@@ -226,7 +226,7 @@ private:
 
 	std::map<uint32_t, bool>             mAssetErrors;
 
-	ci::signals::Connection              mConnection;
+	//ci::signals::Connection              mConnection;
 
 	//std::unique_ptr<AssetArchiver>		mArchiver;
 };

@@ -348,71 +348,15 @@ bool AssetManager::isLiveAssetsEnabled() const
 	return true;
 }
 
-void AssetManager::cleanup()
+void AssetManager::clear()
 {
-	// Gather stats.
-	size_t numGroups = mGroups.size();
-	size_t numShaders = mShaders.size();
-	size_t numTextures = mTextures.size();
-	size_t numAssets = mAssets.size();
+	CI_LOG_I( "Clearing: " << mGroups.size() << " groups, " << mAssets.size() << " assets, " << mShaders.size() << " shaders, " <<  mTextures.size() << " textures." );
 
-	// Remove empty weak pointers to expired shaders. Also remove corresponding groups.
-	for( auto itr = mShaders.begin(); itr != mShaders.end(); ) {
-		auto shader = itr->second.lock();
-		if( ! shader ) {
-			mGroups.erase( itr->first );
-			itr = mShaders.erase( itr );
-		}
-		else
-			++itr;
-	}
-
-	// Remove empty weak pointers to expired textures. Also remove corresponding groups.
-	for( auto itr = mTextures.begin(); itr != mTextures.end(); ) {
-		auto texture = itr->second.lock();
-		if( ! texture ) {
-			mGroups.erase( itr->first );
-			itr = mTextures.erase( itr );
-		}
-		else
-			++itr;
-	}
-
-	// Remove all assets that do not belong to a group. We can't rely on live assets being active, so update use state here.
-//	mAssetsLock.lock();
-
-	for( auto itr = mAssets.begin(); itr != mAssets.end(); ) {
-		auto asset = itr->second;
-
-		if( asset->isInUse() ) {
-			asset->setInUse( false );
-			for( auto &gref : asset->mGroups ) {
-				auto group = gref.lock();
-				if( group ) {
-					asset->setInUse( true );
-					break;
-				}
-			}
-		}
-
-		if( ! asset->isInUse() ) {
-			// Remove both the asset and its id.
-			mAssetIds.erase( remove( mAssetIds.begin(), mAssetIds.end(), itr->first ), mAssetIds.end() );
-			itr = mAssets.erase( itr );
-		}
-		else
-			++itr;
-	}
-
-//	mAssetsLock.unlock();
-
-	// Log stats.
-	numGroups -= mGroups.size();
-	numShaders -= mShaders.size();
-	numTextures -= mTextures.size();
-	numAssets -= mAssets.size();
-
-	CI_LOG_I( "Cleaned up assets: removed " << numGroups << " assets (" << numTextures << " textures, " << numShaders << " shaders) and " << numAssets << " files." );
+	mGroups.clear();
+	mAssets.clear();
+	mAssetIds.clear();
+	mShaders.clear();
+	mTextures.clear();
 }
 
 void AssetManager::getFilesInUse( vector<fs::path> *paths ) const

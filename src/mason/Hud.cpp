@@ -730,7 +730,7 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			// If we find a line that says 'hud: disable', then disregard controls for the entire shader (accounting for '// ' string
 			// TODO: this should only disregard controls for the current source file
 			if( posHudStr <= 3 && line.find( "hud: disable" ) <= 3 ) {
-				LOG_SHADER_CTL( "shader controls disabled" );
+				LOG_SHADER_CTL( "shader controls disabled for shader: " << sp.first );
 				return;
 			}
 
