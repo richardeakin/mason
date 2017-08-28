@@ -111,6 +111,11 @@ double currentTime()
 	return app::getElapsedSeconds();
 }
 
+uint64_t currentFrame()
+{
+	return app::getElapsedFrames();
+}
+
 void notifyResourceReloaded()
 {
 	NotificationCenter::post( NOTIFY_RESOURCE_RELOADED );
