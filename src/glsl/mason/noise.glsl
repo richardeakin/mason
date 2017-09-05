@@ -36,7 +36,6 @@ float noise( in vec3 x )
 float fbm( vec2 p )
 {
 	const mat2 m = mat2( 0.80,  0.60, -0.60,  0.80 );
-
 	float f = 0;
 	f += 0.50000 * noise( p ); p *= m * 2.02;
 	f += 0.25000 * noise( p ); p *= m * 2.03;
@@ -47,28 +46,58 @@ float fbm( vec2 p )
 	return f;
 }
 
-float fbm4( vec2 p )
-{
-	const mat2 m = mat2( 0.8, 0.6, -0.6, 0.8 );
-	
-	float f = 0;
-	f += 0.50000 * noise( p ); p *= m * 2.02;
-	f += 0.25000 * noise( p ); p *= m * 2.03;
-	f += 0.12500 * noise( p ); p *= m;
-    f /= 0.875;
-	return f;
-}
-
 float fbm( vec3 p )
 {
+	const mat3 m = mat3( 0.00,  0.80,  0.60, -0.80,  0.36, -0.48, -0.60, -0.48,  0.64 );
     float f = 0;
-    f += 0.50000 * noise( p ); p *= 2.02;
-    f += 0.25000 * noise( p ); p *= 2.03;
-    f += 0.12500 * noise( p ); p *= 2.01;
-    f += 0.06250 * noise( p ); p *= 2.04;
-    f += 0.03125 * noise( p );
-    f /= 0.984375;
-    return f;
+	f += 0.50000 * noise( p ); p *= m * 2.02;
+	f += 0.25000 * noise( p ); p *= m * 2.03;
+	f += 0.12500 * noise( p ); p *= m * 2.01;
+	f += 0.06250 * noise( p ); p *= m * 2.04;
+	f += 0.03125 * noise( p );    
+    return f / 0.984375;
+}
+
+float fbm4( vec2 p )
+{
+	const mat2 m = mat2( 0.8, 0.6, -0.6, 0.8 );	
+	float f = 0;
+	f += 0.5000 * noise( p );	p = m * p * 2.02;
+	f += 0.2500 * noise( p );	p = m * p * 2.03;
+	f += 0.1250 * noise( p );	p = m * p * 2.01;
+	f += 0.0625 * noise( p );
+	return f / 0.9375;
+}
+
+float fbm4( vec3 p )
+{
+	const mat3 m = mat3( 0.00,  0.80,  0.60, -0.80,  0.36, -0.48, -0.60, -0.48,  0.64 );
+	float f = 0.0;
+	f += 0.5000 * noise( p );	p = m * p * 2.02;
+	f += 0.2500 * noise( p );	p = m * p * 2.03;
+	f += 0.1250 * noise( p );	p = m * p * 2.01;
+	f += 0.0625 * noise( p );
+	return f / 0.9375;
+}
+
+float fbm3( vec2 p )
+{
+	const mat2 m = mat2( 0.8, 0.6, -0.6, 0.8 );
+	float f = 0;
+	f += 0.50000 * noise( p );	p *= m * 2.02;
+	f += 0.25000 * noise( p );	p *= m * 2.03;
+	f += 0.12500 * noise( p );
+	return f / 0.875;
+}
+
+float fbm3( vec3 p )
+{
+	const mat3 m = mat3( 0.00,  0.80,  0.60, -0.80,  0.36, -0.48, -0.60, -0.48,  0.64 );
+	float f = 0;
+	f += 0.50000 * noise( p );	p *= m * 2.02;
+	f += 0.25000 * noise( p );	p *= m * 2.03;
+	f += 0.12500 * noise( p );
+	return f / 0.875;
 }
 
 #endif // MASON_NOISE_GLSL
