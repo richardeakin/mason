@@ -48,6 +48,7 @@ struct ShaderControlBase {
 	std::weak_ptr<ci::gl::GlslProg>		mShader;
 	std::string							mUniformName;
 	std::string							mShaderLine; // this is used to determine if the uniform control params have changed between reloads
+	bool								mActive = true; // If inactive, no unform() command will called, to avoid the annoying warning.
 	ci::signals::ScopedConnection		mConnValueChanged;
 };
 
@@ -85,7 +86,9 @@ template <typename T>
 void ShaderControl<T>::updateUniform()
 {
 	mValue = mControl->getValue();
-	getShader()->uniform( mUniformName, mValue() );
+	if( mActive ) {
+		getShader()->uniform( mUniformName, mValue() );
+	}
 }
 
 }

@@ -757,6 +757,15 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			size_t posUniformNameEnd = line.find_first_of( whitespaceChars + ";", posUniformNameBegin + 1 );
 			string uniformName = line.substr( posUniformNameBegin, posUniformNameEnd - posUniformNameBegin );
 
+			// mark whether uniform is inactive - we'll still leave a control so that it's value persist but it won't do anything
+			bool active = false;
+			for( const auto &uniform : shader->getActiveUniforms() ) {
+				if( uniform.getName() == uniformName ) {
+					active = true;
+					break;
+				}
+			}
+
 			// parse param label, which directly follows 'hud:" in quotes
 			size_t posLabelBegin = line.find( "\"", posFoundUniformStr );
 			size_t posLabelEnd = line.find( "\"", posLabelBegin + 1 );
@@ -855,6 +864,7 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			shaderControl->mShader = shader;
 			shaderControl->mUniformName = uniformName;
 			shaderControl->mShaderLine = line;
+			shaderControl->mActive = active;
 			shaderControl->updateUniform();
 
 			group.mShaderControls.push_back( shaderControl );
