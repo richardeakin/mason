@@ -27,14 +27,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace mason {
 
-//! Maps a ui Control to a data type \t T.
-template<typename T> struct ControlType {};
+//! Maps a ui Control to a data type \t T. \t V is used when there are variations of a ControlType<T> to ui::Control mapping.
+template<typename T, int V> struct ControlType {};
 
-template<> struct ControlType<bool>			{ typedef ui::CheckBox TYPE; };
-template<> struct ControlType<float>		{ typedef ui::HSlider TYPE; };
-template<> struct ControlType<ci::vec2>		{ typedef ui::NumberBox2 TYPE; };
-template<> struct ControlType<ci::vec3>		{ typedef ui::NumberBox3 TYPE; };
-template<> struct ControlType<ci::vec4>		{ typedef ui::NumberBox4 TYPE; };
+template<> struct ControlType<bool, 0>			{ typedef ui::CheckBox TYPE; };
+template<> struct ControlType<float, 0>			{ typedef ui::NumberBox1 TYPE; };
+template<> struct ControlType<float, 1>			{ typedef ui::HSlider TYPE; };
+template<> struct ControlType<ci::vec2, 0>		{ typedef ui::NumberBox2 TYPE; };
+template<> struct ControlType<ci::vec3, 0>		{ typedef ui::NumberBox3 TYPE; };
+template<> struct ControlType<ci::vec4, 0>		{ typedef ui::NumberBox4 TYPE; };
 
 struct ShaderControlGroup;
 
@@ -52,7 +53,7 @@ struct ShaderControlBase {
 	ci::signals::ScopedConnection		mConnValueChanged;
 };
 
-template<typename T>
+template<typename T, int V = 0>
 struct ShaderControl : public ShaderControlBase {
 	ShaderControl( const T &initialValue )
 		: mValue( initialValue )
@@ -63,7 +64,7 @@ struct ShaderControl : public ShaderControlBase {
 	Var<T>*		getVar()			{ return &mValue; }
 	const T&	getValue() const	{ return mValue.value(); }
 
-	typedef typename ControlType<T>::TYPE	ControlT;
+	typedef typename ControlType<T, V>::TYPE	ControlT;
 
 	std::shared_ptr<ControlT>	mControl;
 
@@ -82,8 +83,8 @@ struct ShaderControlGroup {
 	std::weak_ptr<ci::gl::GlslProg>		mShader; // used to tell when we should remove the control group
 };
 
-template <typename T>
-void ShaderControl<T>::updateUniform()
+template <typename T, int V>
+void ShaderControl<T, V>::updateUniform()
 {
 	mValue = mControl->getValue();
 	if( mActive ) {

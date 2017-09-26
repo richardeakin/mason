@@ -809,7 +809,6 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			}
 
 			// make persistent controls based on uniform type
-			// TODO: Try to make this templated. only part I don't know about yet is the methods checkBox, slider, etc.
 			ShaderControlBaseRef shaderControl;
 			if( paramType == "bool" ) {
 				bool initialValue = defaultValue == "true" ? true : false;
@@ -821,11 +820,24 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			}
 			else if( paramType == "float" ) {
 				float initialValue = ( ! defaultValue.empty() ) ? stof( defaultValue ) : 0;
-				auto floatShaderControl = make_shared<ShaderControl<float>>( initialValue );
-				shaderControl = floatShaderControl;
+	
+				// TODO: parse out a "type = slider" string, and if that exists use a slider instead of numbox
+				string controlType = "";
+				//controlType = "slider";
+				if( controlType == "slider" ) {
+					auto floatControl = make_shared<ShaderControl<float, 1>>( initialValue );
+					shaderControl = floatControl;
 
-				floatShaderControl->mControl = slider( floatShaderControl->getVar(), paramLabel, controlOptions );
-				shaderControl->mConnValueChanged = floatShaderControl->mControl->getSignalValueChanged().connect( -1, signals::slot( floatShaderControl.get(), &ShaderControl<float>::updateUniform ) );
+					floatControl->mControl = slider( floatControl->getVar(), paramLabel, controlOptions );
+					shaderControl->mConnValueChanged = floatControl->mControl->getSignalValueChanged().connect( -1, signals::slot( floatControl.get(), &ShaderControl<float, 1>::updateUniform ) );
+				}
+				else {
+					auto floatControl = make_shared<ShaderControl<float>>( initialValue );
+					shaderControl = floatControl;
+
+					floatControl->mControl = numBox( floatControl->getVar(), paramLabel, controlOptions );
+					shaderControl->mConnValueChanged = floatControl->mControl->getSignalValueChanged().connect( -1, signals::slot( floatControl.get(), &ShaderControl<float>::updateUniform ) );
+				}
 			}
 			else if( paramType == "vec2" ) {
 				vec2 initialValue;
