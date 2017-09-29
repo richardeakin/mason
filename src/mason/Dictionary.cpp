@@ -185,6 +185,51 @@ bool getValue( const boost::any &value, vec4 *result )
 	return true;
 }
 
+bool getValue( const boost::any &value, Color *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->r ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->g ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->b ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, ColorA *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->r ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->g ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->b ) )
+		return false;
+
+	// alpha channel is optional
+	if( castedVector->size() >= 4 ) {
+		if( ! getValue( (*castedVector)[3], &result->a ) )
+			return false;
+	}
+	else {
+		result->a = 1.0;
+	}
+
+	return true;
+}
+
 bool getValue( const boost::any &value, ci::fs::path *result )
 {
 	const auto castedString = boost::any_cast<std::string>( &value );

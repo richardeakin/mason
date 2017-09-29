@@ -26,6 +26,7 @@
 #include "cinder/Exception.h"
 #include "cinder/System.h"
 #include "cinder/Vector.h"
+#include "cinder/Color.h"
 
 #include <memory>
 #include <map>
@@ -159,6 +160,8 @@ bool MA_API getValue( const boost::any &value, size_t *result );
 bool MA_API getValue( const boost::any &value, ci::vec2 *result );
 bool MA_API getValue( const boost::any &value, ci::vec3 *result );
 bool MA_API getValue( const boost::any &value, ci::vec4 *result );
+bool MA_API getValue( const boost::any &value, ci::Color *result );
+bool MA_API getValue( const boost::any &value, ci::ColorA *result );
 bool MA_API getValue( const boost::any &value, ci::fs::path *result );
 bool MA_API getValue( const boost::any &value, std::vector<boost::any> *result );
 
