@@ -312,7 +312,7 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
 {
 	try {
-#if defined( OOBE_DEPLOY ) || defined( CINDER_ANDROID )
+#if defined( MASON_DEPLOY ) || defined( CINDER_ANDROID )
 		auto assetFile = findFile( path );
 		updateCallback( assetFile );
 		return ma::WatchRef();
@@ -326,7 +326,7 @@ ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load file for path: " << path, exc );
-		CI_LOG_E( "stacktrace:\n" << ma::stackTraceAsString( 0, 4 ) );
+		CI_LOG_E( "stacktrace:\n" << ma::stackTraceAsString( 0, 7 ) );
 	}
 
 	return {};
@@ -421,7 +421,7 @@ ci::DataSourceRef AssetManager::findFile( const ci::fs::path &filePath )
 #if defined( CINDER_ANDROID )
 	// assets are handled specially for android, they need to be routed through AAssetManager
 	return DataSourceAndroidAsset::create( filePath );
-#elif defined( OOBE_DEPLOY )
+#elif defined( MASON_DEPLOY )
 	// on other platforms, route through AssetArchiver for deploy mode
 	if( ! mArchiver )
 		throw AssetManagerExc( "no AssetArchiver present, needed for deploy mode." );

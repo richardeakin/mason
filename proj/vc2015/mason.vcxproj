@@ -80,7 +80,7 @@
     <ClInclude Include="..\..\src\mason\Notifications.h" />
     <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h" />
     <ClInclude Include="..\..\src\mason\Profiling.h" />
-    <ClInclude Include="..\..\src\mason\ui\ShaderControls.h" />
+    <ClInclude Include="..\..\src\mason\ShaderControls.h" />
     <ClInclude Include="..\..\src\mason\Var.h" />
     <ClInclude Include="..\..\src\mason\VisualMonitor.h" />
     <ClInclude Include="..\..\src\mason\WorldClock.h" />

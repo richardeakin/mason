@@ -8,9 +8,6 @@
     <Filter Include="Source Files\mason">
       <UniqueIdentifier>{a1d73082-e27a-4e00-9d55-5c4639ed148c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\mason\ui">
-      <UniqueIdentifier>{60f3c8d2-949e-4e76-8b32-cf8b2bd4b2be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Blocks">
       <UniqueIdentifier>{3952f237-d382-4e85-8697-0782f745884d}</UniqueIdentifier>
     </Filter>
@@ -144,9 +141,6 @@
     <ClInclude Include="..\..\src\mason\WorldClock.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\mason\ui\ShaderControls.h">
-      <Filter>Source Files\mason\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h">
       <Filter>Blocks\Cinder-View\src\mason</Filter>
     </ClInclude>
@@ -227,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ShaderControls.h">
+      <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
