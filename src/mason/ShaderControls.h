@@ -24,7 +24,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "ui/Control.h"
 #include "mason/Mason.h"
 
-
 namespace mason {
 
 //! Maps a ui Control to a data type \t T. \t V is used when there are variations of a ControlType<T> to ui::Control mapping.

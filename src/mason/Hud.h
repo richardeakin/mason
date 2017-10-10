@@ -23,7 +23,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "mason/Mason.h"
 #include "mason/Var.h"
-#include "mason/ui/ShaderControls.h"
+#include "mason/ShaderControls.h"
 
 #include "ui/Graph.h"
 #include "ui/Label.h"
