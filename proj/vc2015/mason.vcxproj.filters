@@ -115,6 +115,9 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\LUT.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -223,6 +226,9 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\ShaderControls.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\LUT.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>
