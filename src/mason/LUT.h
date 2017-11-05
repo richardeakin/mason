@@ -21,7 +21,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "mason/Export.h"
+#include "mason/Mason.h"
 
 #include "cinder/Color.h"
 #include "cinder/Surface.h"
@@ -30,33 +30,39 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace mason {
 
-class MA_API ColorLUT {
+template <typename ColorT>
+class ColorLUT {
   public:
 
 	struct Stop {
-		Stop( float percent, const ci::Colorf &color )
+		Stop( float percent, const ColorT &color )
 			: percent( percent ), color( color )
 		{}
 
 		float		percent = 0;
-		ci::Colorf	color = ci::Colorf::black();
+		ColorT		color;
 	};
 
 	ColorLUT() = default;
 	ColorLUT( size_t size, const std::vector<Stop> &stops );
 	ColorLUT( const ci::ImageSourceRef &imageSource );
 
-	const ci::Colorf& lookup( float f );
+	const ColorT& lookup( float f );
 
-	ci::Surface32f	makeSurface32f();
+	ci::Surface32f	makeSurface32();
+	ci::Surface32f	makeSurface32a();
 
   private:
+
 	void sortStops();
 
 	void fillTable();
 
 	std::vector<Stop>		mStops;
-	std::vector<ci::Colorf>	mLUT;
+	std::vector<ColorT>		mLUT;
 };
+
+typedef ColorLUT<ci::Colorf>	ColorLUTf;
+typedef ColorLUT<ci::ColorAf>	ColorLUTAf;
 
 } // namespace mason

@@ -20,6 +20,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mason/LUT.h"
+#include "mason/Export.h"
 
 using namespace ci;
 using namespace std;
@@ -27,14 +28,16 @@ using namespace std;
 
 namespace mason {
 
-ColorLUT::ColorLUT( size_t size, const std::vector<Stop> &stops )
+template <typename ColorT>
+ColorLUT<ColorT>::ColorLUT( size_t size, const std::vector<Stop> &stops )
 	: mLUT( size ), mStops( stops )
 {
 	sortStops();
 	fillTable();
 }
 
-ColorLUT::ColorLUT( const ci::ImageSourceRef &imageSource )
+template <typename ColorT>
+ColorLUT<ColorT>::ColorLUT( const ci::ImageSourceRef &imageSource )
 {
 	ci::Surface32f surface( imageSource );
 	assert( surface.getHeight() == 1 );
@@ -44,34 +47,54 @@ ColorLUT::ColorLUT( const ci::ImageSourceRef &imageSource )
 		mLUT[i] = Colorf( surface.getPixel( ivec2( i, 0 ) ) );
 }
 
-const Colorf& ColorLUT::lookup( float f )
+template <typename ColorT>
+const ColorT& ColorLUT<ColorT>::lookup( float f )
 {
 	size_t i = clamp<size_t>( (size_t)round( f * (float)mLUT.size() ), 0, mLUT.size() - 1 );
 	return mLUT[i];
 }
 
-Surface32f ColorLUT::makeSurface32f()
+template <typename ColorT>
+Surface32f ColorLUT<ColorT>::makeSurface32()
 {
 	auto surface = Surface32f( mLUT.size(), 1, false );
 	for( size_t i = 0; i < mLUT.size(); i++ ) {
-		surface.setPixel( ivec2( i, 0 ), mLUT[i] );
+		const auto &lut = mLUT[i];
+		auto pixel = Colorf( CHANTRAIT<float>::convert( lut.r ), CHANTRAIT<float>::convert( lut.g ), CHANTRAIT<float>::convert( lut.b ) );
+		surface.setPixel( ivec2( i, 0 ), pixel );
 	}
 
 	return surface;
 }
 
-void ColorLUT::sortStops()
+template <typename ColorT>
+Surface32f ColorLUT<ColorT>::makeSurface32a()
+{
+	auto surface = Surface32f( mLUT.size(), 1, true );
+	for( size_t i = 0; i < mLUT.size(); i++ ) {
+		const auto &lut = mLUT[i];
+		//auto pixel = ColorAf( CHANTRAIT<float>::convert( lut.r ), CHANTRAIT<float>::convert( lut.g ), CHANTRAIT<float>::convert( lut.b ) );
+		auto pixel = ColorAf( lut );
+		surface.setPixel( ivec2( i, 0 ), pixel );
+	}
+
+	return surface;
+}
+
+template <typename ColorT>
+void ColorLUT<ColorT>::sortStops()
 {
 	stable_sort( mStops.begin(), mStops.end(),
 		[]( const Stop &a, const Stop &b ) { return a.percent < b.percent; }
 	);
 }
 
-void ColorLUT::fillTable()
+template <typename ColorT>
+void ColorLUT<ColorT>::fillTable()
 {
 	if( mStops.size() < 2 ) {
 		// fill with only first stop if size = 1, or black if 0
-		Colorf col = mStops.size() == 1 ? mStops[0].color : Colorf::black();
+		ColorT col = mStops.size() == 1 ? mStops[0].color : Colorf::black();
 		std::fill( mLUT.begin(), mLUT.end(), col );
 		return;
 	}
@@ -101,5 +124,10 @@ void ColorLUT::fillTable()
 		}
 	}
 }
+
+template class MA_API ColorLUT<Color8u>;
+template class MA_API ColorLUT<Colorf>;
+template class MA_API ColorLUT<ColorA8u>;
+template class MA_API ColorLUT<ColorAf>;
 
 } // namespace mason
