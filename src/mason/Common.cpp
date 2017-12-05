@@ -125,7 +125,6 @@ void initialize( const fs::path &masonRootDir )
 {
 	initRand();
 	log::makeOrGetLogger<ma::LoggerNotification>();
-	ma::assets()->getSignalShaderLoaded().connect( ci::signals::slot( ma::hud(), &ma::Hud::addShaderControls ) );
 
 	if( ! masonRootDir.empty() ) {
 		fs::path glslDir = masonRootDir / "src/glsl";

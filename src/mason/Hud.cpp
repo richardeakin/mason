@@ -20,6 +20,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mason/Hud.h"
+#include "mason/Assets.h"
 #include "mason/Notifications.h"
 
 #include "cinder/app/App.h"
@@ -84,6 +85,8 @@ void Hud::registerSignals()
 	mGraph->getWindow()->getSignalResize().connect( [this] {
 		layout();
 	} );
+
+	assets()->getSignalShaderLoaded().connect( ci::signals::slot( this, &Hud::addShaderControls ) );
 
 	app::App::get()->getSignalUpdate().connect( [] { hud()->update(); } );
 #if defined( MASON_CLEANUP_AT_SHUTDOWN )
