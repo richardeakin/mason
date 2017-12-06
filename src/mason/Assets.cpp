@@ -53,8 +53,10 @@ void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::F
 		format->vertex( shaderFile );
 	else if( suffix == ".frag" )
 		format->fragment( shaderFile );
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 	else if( suffix == ".comp" )
 		format->compute( shaderFile );
+#endif
 	else if( suffix == ".geom" )
 		format->geometry( shaderFile );
 	else if( suffix == ".tesc" )
@@ -232,6 +234,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
 	}
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 	if( ! format.getComputePath().empty() ) {
 		auto shaderPath = format.getComputePath();
 		group->addAsset( getAssetRef( shaderPath ) );
@@ -242,7 +245,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
 	}
-
+#endif
 	// all included files before trying to create the shader, so that in the case of an error we are still watching those files too.
 	for( const auto &includeFile : includedFiles ) {
 		group->addAsset( getAssetRef( includeFile ) );
