@@ -32,6 +32,9 @@
     <Filter Include="Blocks\Cinder-View\src\fmt">
       <UniqueIdentifier>{6c2fcfa5-4821-4602-b4a5-5a5720e84072}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\mason\audio">
+      <UniqueIdentifier>{1c99687e-39a2-48ee-86e5-ef29529ceea6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mason\Assets.cpp">
@@ -117,6 +120,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\mason\LUT.cpp">
       <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\AudioAnalyzer.cpp">
+      <Filter>Source Files\mason\audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +236,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\LUT.h">
       <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\AudioAnalyzer.h">
+      <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

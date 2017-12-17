@@ -53,6 +53,7 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\TextManager.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\View.cpp" />
     <ClCompile Include="..\..\src\mason\Assets.cpp" />
+    <ClCompile Include="..\..\src\mason\audio\AudioAnalyzer.cpp" />
     <ClCompile Include="..\..\src\mason\FlyCam.cpp" />
     <ClCompile Include="..\..\src\mason\Common.cpp" />
     <ClCompile Include="..\..\src\mason\Config.cpp" />
@@ -87,6 +88,7 @@
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ui.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\View.h" />
     <ClInclude Include="..\..\src\mason\Assets.h" />
+    <ClInclude Include="..\..\src\mason\audio\AudioAnalyzer.h" />
     <ClInclude Include="..\..\src\mason\FlyCam.h" />
     <ClInclude Include="..\..\src\mason\Common.h" />
     <ClInclude Include="..\..\src\mason\Config.h" />
