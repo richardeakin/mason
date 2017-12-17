@@ -22,16 +22,12 @@ POSSIBILITY OF SUCH DAMAGE.
 //
 //  ============================================================
 //  Hotkeys
-//  - everything for AudioAnalyzer requires Control to be held down
+//  - everything for AudioAnalyzer requires Shift to be held down
 //
 //  - /: toggle context (enables or disables entire audio graph)
-//  - m: toggle microphone or sample input
-//  - s: test seek
 //  - p: print track info
-//  - d: toggle draw UI
-//  - 1-5: select a Track to be edited
-//  - 0: select all tracks to be edited
-//  - Up / Down: adjust gain
+//  - d: print devices
+//  - + / -: adjust master gain
 //
 //  ============================================================
 
