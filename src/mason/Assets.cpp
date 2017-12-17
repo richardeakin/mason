@@ -53,8 +53,10 @@ void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::F
 		format->vertex( shaderFile );
 	else if( suffix == ".frag" )
 		format->fragment( shaderFile );
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 	else if( suffix == ".comp" )
 		format->compute( shaderFile );
+#endif
 	else if( suffix == ".geom" )
 		format->geometry( shaderFile );
 	else if( suffix == ".tesc" )
@@ -232,6 +234,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
 	}
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 	if( ! format.getComputePath().empty() ) {
 		auto shaderPath = format.getComputePath();
 		group->addAsset( getAssetRef( shaderPath ) );
@@ -242,7 +245,7 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 		sources.push_back( { shaderPath, parsedShader } );
 		includedFiles.insert( includedFiles.end(), stageIncludedFiles.begin(), stageIncludedFiles.end() );
 	}
-
+#endif
 	// all included files before trying to create the shader, so that in the case of an error we are still watching those files too.
 	for( const auto &includeFile : includedFiles ) {
 		group->addAsset( getAssetRef( includeFile ) );
@@ -312,7 +315,7 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::function<void( DataSourceRef )> &updateCallback )
 {
 	try {
-#if defined( OOBE_DEPLOY ) || defined( CINDER_ANDROID )
+#if defined( MASON_DEPLOY ) || defined( CINDER_ANDROID )
 		auto assetFile = findFile( path );
 		updateCallback( assetFile );
 		return ma::WatchRef();
@@ -326,7 +329,7 @@ ci::signals::Connection AssetManager::getFile( const fs::path &path, const std::
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load file for path: " << path, exc );
-		CI_LOG_E( "stacktrace:\n" << ma::stackTraceAsString( 0, 4 ) );
+		CI_LOG_E( "stacktrace:\n" << ma::stackTraceAsString( 0, 7 ) );
 	}
 
 	return {};
@@ -348,71 +351,15 @@ bool AssetManager::isLiveAssetsEnabled() const
 	return true;
 }
 
-void AssetManager::cleanup()
+void AssetManager::clear()
 {
-	// Gather stats.
-	size_t numGroups = mGroups.size();
-	size_t numShaders = mShaders.size();
-	size_t numTextures = mTextures.size();
-	size_t numAssets = mAssets.size();
+	CI_LOG_I( "Clearing: " << mGroups.size() << " groups, " << mAssets.size() << " assets, " << mShaders.size() << " shaders, " <<  mTextures.size() << " textures." );
 
-	// Remove empty weak pointers to expired shaders. Also remove corresponding groups.
-	for( auto itr = mShaders.begin(); itr != mShaders.end(); ) {
-		auto shader = itr->second.lock();
-		if( ! shader ) {
-			mGroups.erase( itr->first );
-			itr = mShaders.erase( itr );
-		}
-		else
-			++itr;
-	}
-
-	// Remove empty weak pointers to expired textures. Also remove corresponding groups.
-	for( auto itr = mTextures.begin(); itr != mTextures.end(); ) {
-		auto texture = itr->second.lock();
-		if( ! texture ) {
-			mGroups.erase( itr->first );
-			itr = mTextures.erase( itr );
-		}
-		else
-			++itr;
-	}
-
-	// Remove all assets that do not belong to a group. We can't rely on live assets being active, so update use state here.
-//	mAssetsLock.lock();
-
-	for( auto itr = mAssets.begin(); itr != mAssets.end(); ) {
-		auto asset = itr->second;
-
-		if( asset->isInUse() ) {
-			asset->setInUse( false );
-			for( auto &gref : asset->mGroups ) {
-				auto group = gref.lock();
-				if( group ) {
-					asset->setInUse( true );
-					break;
-				}
-			}
-		}
-
-		if( ! asset->isInUse() ) {
-			// Remove both the asset and its id.
-			mAssetIds.erase( remove( mAssetIds.begin(), mAssetIds.end(), itr->first ), mAssetIds.end() );
-			itr = mAssets.erase( itr );
-		}
-		else
-			++itr;
-	}
-
-//	mAssetsLock.unlock();
-
-	// Log stats.
-	numGroups -= mGroups.size();
-	numShaders -= mShaders.size();
-	numTextures -= mTextures.size();
-	numAssets -= mAssets.size();
-
-	CI_LOG_I( "Cleaned up assets: removed " << numGroups << " assets (" << numTextures << " textures, " << numShaders << " shaders) and " << numAssets << " files." );
+	mGroups.clear();
+	mAssets.clear();
+	mAssetIds.clear();
+	mShaders.clear();
+	mTextures.clear();
 }
 
 void AssetManager::getFilesInUse( vector<fs::path> *paths ) const
@@ -477,7 +424,7 @@ ci::DataSourceRef AssetManager::findFile( const ci::fs::path &filePath )
 #if defined( CINDER_ANDROID )
 	// assets are handled specially for android, they need to be routed through AAssetManager
 	return DataSourceAndroidAsset::create( filePath );
-#elif defined( OOBE_DEPLOY )
+#elif defined( MASON_DEPLOY )
 	// on other platforms, route through AssetArchiver for deploy mode
 	if( ! mArchiver )
 		throw AssetManagerExc( "no AssetArchiver present, needed for deploy mode." );

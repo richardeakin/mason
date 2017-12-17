@@ -8,9 +8,6 @@
     <Filter Include="Source Files\mason">
       <UniqueIdentifier>{a1d73082-e27a-4e00-9d55-5c4639ed148c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\mason\ui">
-      <UniqueIdentifier>{60f3c8d2-949e-4e76-8b32-cf8b2bd4b2be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Blocks">
       <UniqueIdentifier>{3952f237-d382-4e85-8697-0782f745884d}</UniqueIdentifier>
     </Filter>
@@ -35,6 +32,12 @@
     <Filter Include="Blocks\Cinder-View\src\fmt">
       <UniqueIdentifier>{6c2fcfa5-4821-4602-b4a5-5a5720e84072}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\mason\audio">
+      <UniqueIdentifier>{1c99687e-39a2-48ee-86e5-ef29529ceea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mason\ui">
+      <UniqueIdentifier>{f032c0a5-e36a-4d0e-acb2-d3bf82809aa7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mason\Assets.cpp">
@@ -54,12 +57,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\mason\WorldClock.cpp">
       <Filter>Source Files\mason</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\mason\ui\Controls.cpp">
-      <Filter>Source Files\mason\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Button.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
@@ -86,12 +83,6 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ScrollView.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Selector.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Slider.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Suite.cpp">
@@ -127,6 +118,24 @@
     <ClCompile Include="..\..\src\mason\FlyCam.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.cpp">
+      <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\LUT.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\AudioAnalyzer.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\AudioAnalyzerView.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\DraggableView.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\OfflineContext.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -153,17 +162,8 @@
     <ClInclude Include="..\..\src\mason\WorldClock.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\mason\ui\Controls.h">
-      <Filter>Source Files\mason\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\mason\ui\ShaderControls.h">
-      <Filter>Source Files\mason\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h">
       <Filter>Blocks\Cinder-View\src\mason</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Button.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
@@ -190,12 +190,6 @@
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ScrollView.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Selector.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Slider.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Suite.h">
@@ -242,6 +236,30 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\FlyCam.h">
       <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Debug.h">
+      <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.h">
+      <Filter>Blocks\Cinder-View\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ShaderControls.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\LUT.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\AudioAnalyzer.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\AudioAnalyzerView.h">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\DraggableView.h">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\OfflineContext.h">
+      <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

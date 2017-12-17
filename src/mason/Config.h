@@ -33,10 +33,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Color.h"
 #include "cinder/Noncopyable.h"
 #include "cinder/CinderAssert.h"
-
+#include "cinder/Log.h"
 #include "jsoncpp/json.h"
 
 #include "mason/Mason.h"
+#include "mason/Dictionary.h"
 
 namespace mason {
 
@@ -56,18 +57,22 @@ typedef std::shared_ptr<class Config> ConfigRef;
 class MA_API Config : private ci::Noncopyable {
 public:
 	class Options {
-		friend class Config;
 	public:
-		Options() : mSetIfDefault( false ), mWriteIfSet( false ) {}
+		Options() {}
 
 		//! If \a enabled, add the default value to the configuration file if the key was not found.
 		Options& setIfDefault( bool enabled = true ) { mSetIfDefault = enabled; return *this; }
+		//! If \a enabled, will log a warning when a value wasn't found and the default is used instead.
+		Options& logSetIfDefault( bool enabled = true ) { mLogSetIfDefault = enabled; return *this; }
 		//! If \a enabled, write the config file immediately after setting the new value.
 		Options& writeIfSet( bool enabled = true ) { mWriteIfSet = enabled; return *this; }
 
 	private:
-		bool  mSetIfDefault;
-		bool  mWriteIfSet;
+		bool  mSetIfDefault = false;
+		bool  mLogSetIfDefault = false;
+		bool  mWriteIfSet = false;
+
+		friend class Config;
 	};
 
 public:
@@ -104,8 +109,12 @@ public:
 		if( ! getValue( value, &result ) ) {
 			result = defaultValue;
 
-			if( mOptions.mSetIfDefault )
+			if( mOptions.mSetIfDefault ) {
+				if( mOptions.mLogSetIfDefault ) {
+					CI_LOG_W( "key not found for category: " << category << ", key: " << key << ". Using default value instead." );
+				}
 				set( category, key, defaultValue );
+			}
 		}
 
 		return result;
@@ -130,7 +139,10 @@ public:
 	template<typename T>
 	std::vector<T>	getList( const std::string &category );
 
+	//! Returns a group as a Json::Value
 	const Json::Value&	getGroup( const std::string &category ) const	{ return mRoot[category]; }
+	//! Returns a group as a Dictionary
+	ma::Dictionary		getGroupAsDictionary( const std::string &category ) const;
 
 	ci::DataTargetRef	getTarget() const	{ return mTarget; }
 	ci::fs::path		getTargetFilePath() const;
@@ -228,6 +240,13 @@ inline bool Config::getValue<double>( const Json::Value &value, double *result )
 		return false;
 
 	*result = value.asDouble();
+	return true;
+}
+
+template<>
+inline bool Config::getValue<Dictionary>( const Json::Value &value, Dictionary *result )
+{
+	*result = Dictionary::convert( value );
 	return true;
 }
 

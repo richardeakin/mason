@@ -25,6 +25,8 @@
 #include "cinder/DataSource.h"
 #include "cinder/Exception.h"
 #include "cinder/System.h"
+#include "cinder/Vector.h"
+#include "cinder/Color.h"
 
 #include <memory>
 #include <map>
@@ -62,11 +64,19 @@ class MA_API Dictionary {
 	void		set( const std::string &key, const T &value );
 
 	//! Returns a copy of the value associated with T. Some type conversions are allowed (like double -> float), hency why a copy is necessary.
+	//! A DictionaryExc is thrown if the key doesn't exist or it can't be converted to type T.
 	template<typename T>
 	T	get( const std::string &key ) const;
+	//! Same as above but will return \a defaultValue if the key doesn't exist.
+	//! A DictionaryExc is thrown if the key exists but can't be converted to type T.
+	template<typename T>
+	T	get( const std::string &key, const T &defaultValue ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly.
 	template<typename T>
 	const T&	getStrict( const std::string &key ) const;
+	//! Returns a reference to the value associated with T. The typeid must match exactly. Returns \a defaultValue if the key doesn't exist.
+	template<typename T>
+	const T&	getStrict( const std::string &key, const T &defaultValue ) const;
 
 	const std::type_info&   getType( const std::string &key ) const;
 
@@ -132,14 +142,13 @@ bool getValue( const boost::any &value, T *result )
 template<typename T>
 bool getValue( const boost::any &value, std::vector<T> *result )
 {
-	if( value.type() != typeid( std::vector<boost::any> ) ) {
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector )
 		return false;
-	}
-
-	auto anyVec = boost::any_cast<std::vector<boost::any>>( value );
-	result->resize( anyVec.size() );
-	for( int i = 0; i < anyVec.size(); i++ ) {
-		getValue( anyVec[i], &( (*result)[i] ) );
+	
+	result->resize( castedVector->size() );
+	for( size_t i = 0; i < result->size(); i++ ) {
+		getValue( (*castedVector)[i], &( (*result)[i] ) );
 	}
 
 	return true;
@@ -147,6 +156,13 @@ bool getValue( const boost::any &value, std::vector<T> *result )
 
 bool MA_API getValue( const boost::any &value, float *result );
 bool MA_API getValue( const boost::any &value, double *result );
+bool MA_API getValue( const boost::any &value, size_t *result );
+bool MA_API getValue( const boost::any &value, ci::vec2 *result );
+bool MA_API getValue( const boost::any &value, ci::vec3 *result );
+bool MA_API getValue( const boost::any &value, ci::vec4 *result );
+bool MA_API getValue( const boost::any &value, ci::Color *result );
+bool MA_API getValue( const boost::any &value, ci::ColorA *result );
+bool MA_API getValue( const boost::any &value, ci::fs::path *result );
 bool MA_API getValue( const boost::any &value, std::vector<boost::any> *result );
 
 } // namespace mason::detail
@@ -176,11 +192,46 @@ T Dictionary::get( const std::string &key ) const
 }
 
 template<typename T>
+T Dictionary::get( const std::string &key, const T &defaultValue ) const
+{
+	auto it = mData.find( key );
+	if( it == mData.end() ) {
+		return defaultValue;
+	}
+
+	T result;
+	const auto &value = it->second;
+
+	if( ! detail::getValue( value, &result ) ) {
+		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+	}
+
+	return result;
+}
+
+template<typename T>
 const T& Dictionary::getStrict( const std::string &key ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
 		throw DictionaryExc( "no key named '" + key + "'" );
+	}
+
+	const auto &value = it->second;
+
+	if( value.type() != typeid( T ) ) {
+		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+	}
+
+	return boost::any_cast<const T&>( value );
+}
+
+template<typename T>
+const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) const
+{
+	auto it = mData.find( key );
+	if( it == mData.end() ) {
+		return defaultValue;
 	}
 
 	const auto &value = it->second;

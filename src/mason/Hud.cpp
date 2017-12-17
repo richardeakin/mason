@@ -20,6 +20,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mason/Hud.h"
+#include "mason/Assets.h"
 #include "mason/Notifications.h"
 
 #include "cinder/app/App.h"
@@ -84,6 +85,8 @@ void Hud::registerSignals()
 	mGraph->getWindow()->getSignalResize().connect( [this] {
 		layout();
 	} );
+
+	assets()->getSignalShaderLoaded().connect( ci::signals::slot( this, &Hud::addShaderControls ) );
 
 	app::App::get()->getSignalUpdate().connect( [] { hud()->update(); } );
 #if defined( MASON_CLEANUP_AT_SHUTDOWN )
@@ -282,6 +285,9 @@ void Hud::layout()
 
 void Hud::update()
 {
+	if( isHidden() )
+		return;
+
 	// remove any ShaderControlGroups that have an expired shader
 	mShaderControlGroups.erase( remove_if( mShaderControlGroups.begin(), mShaderControlGroups.end(),
 							[]( const ShaderControlGroup &group ) {
@@ -307,6 +313,9 @@ void Hud::update()
 
 void Hud::draw()
 {
+	if( isHidden() )
+		return;
+
 	clearViewsMarkedForRemoval();
 
 	mGraph->propagateDraw();
@@ -343,8 +352,9 @@ void Hud::updateNotificationBorder()
 // ----------------------------------------------------------------------------------------------------
 
 namespace {
-const Rectf DEFAULT_SLIDER_BOUNDS = Rectf( 0, 0, 190, 40 );
-const Rectf DEFAULT_CHECKBOX_BOUNDS = Rectf( 0, 0, 100, 40 );
+const Rectf DEFAULT_SLIDER_BOUNDS = Rectf( 0, 0, 190, 30 );
+const Rectf DEFAULT_NUMBOX_BOUNDS = Rectf( 0, 0, 190, 40 );
+const Rectf DEFAULT_CHECKBOX_BOUNDS = Rectf( 0, 0, 100, 30 );
 }
 
 ui::HSliderRef Hud::slider( float *x, const std::string &label, Options options )
@@ -529,7 +539,7 @@ shared_ptr<ui::NumberBoxT<T>> Hud::findOrMakeNumberBoxN( const T &initialValue, 
 	const auto &view = findView( label );
 	auto nbox = dynamic_pointer_cast<ui::NumberBoxT<T>>( view );
 	if( ! nbox ) {
-		nbox = make_shared<ui::NumberBoxT<T>>( DEFAULT_SLIDER_BOUNDS );
+		nbox = make_shared<ui::NumberBoxT<T>>( DEFAULT_NUMBOX_BOUNDS );
 		nbox->setTitle( label );
 		nbox->getBackground()->setColor( ColorA::gray( 0, 0.6f ) );
 		nbox->setValue( initialValue );
@@ -723,7 +733,7 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			// If we find a line that says 'hud: disable', then disregard controls for the entire shader (accounting for '// ' string
 			// TODO: this should only disregard controls for the current source file
 			if( posHudStr <= 3 && line.find( "hud: disable" ) <= 3 ) {
-				LOG_SHADER_CTL( "shader controls disabled" );
+				LOG_SHADER_CTL( "shader controls disabled for shader: " << sp.first );
 				return;
 			}
 
@@ -749,6 +759,15 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			size_t posUniformNameBegin = line.find_first_not_of( whitespaceChars, posTypeEnd + 1 );
 			size_t posUniformNameEnd = line.find_first_of( whitespaceChars + ";", posUniformNameBegin + 1 );
 			string uniformName = line.substr( posUniformNameBegin, posUniformNameEnd - posUniformNameBegin );
+
+			// mark whether uniform is inactive - we'll still leave a control so that it's value persist but it won't do anything
+			bool active = false;
+			for( const auto &uniform : shader->getActiveUniforms() ) {
+				if( uniform.getName() == uniformName ) {
+					active = true;
+					break;
+				}
+			}
 
 			// parse param label, which directly follows 'hud:" in quotes
 			size_t posLabelBegin = line.find( "\"", posFoundUniformStr );
@@ -793,7 +812,6 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			}
 
 			// make persistent controls based on uniform type
-			// TODO: Try to make this templated. only part I don't know about yet is the methods checkBox, slider, etc.
 			ShaderControlBaseRef shaderControl;
 			if( paramType == "bool" ) {
 				bool initialValue = defaultValue == "true" ? true : false;
@@ -805,11 +823,24 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			}
 			else if( paramType == "float" ) {
 				float initialValue = ( ! defaultValue.empty() ) ? stof( defaultValue ) : 0;
-				auto floatShaderControl = make_shared<ShaderControl<float>>( initialValue );
-				shaderControl = floatShaderControl;
+	
+				// TODO: parse out a "type = slider" string, and if that exists use a slider instead of numbox
+				string controlType = "";
+				//controlType = "slider";
+				if( controlType == "slider" ) {
+					auto floatControl = make_shared<ShaderControl<float, 1>>( initialValue );
+					shaderControl = floatControl;
 
-				floatShaderControl->mControl = slider( floatShaderControl->getVar(), paramLabel, controlOptions );
-				shaderControl->mConnValueChanged = floatShaderControl->mControl->getSignalValueChanged().connect( -1, signals::slot( floatShaderControl.get(), &ShaderControl<float>::updateUniform ) );
+					floatControl->mControl = slider( floatControl->getVar(), paramLabel, controlOptions );
+					shaderControl->mConnValueChanged = floatControl->mControl->getSignalValueChanged().connect( -1, signals::slot( floatControl.get(), &ShaderControl<float, 1>::updateUniform ) );
+				}
+				else {
+					auto floatControl = make_shared<ShaderControl<float>>( initialValue );
+					shaderControl = floatControl;
+
+					floatControl->mControl = numBox( floatControl->getVar(), paramLabel, controlOptions );
+					shaderControl->mConnValueChanged = floatControl->mControl->getSignalValueChanged().connect( -1, signals::slot( floatControl.get(), &ShaderControl<float>::updateUniform ) );
+				}
 			}
 			else if( paramType == "vec2" ) {
 				vec2 initialValue;
@@ -848,6 +879,7 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 			shaderControl->mShader = shader;
 			shaderControl->mUniformName = uniformName;
 			shaderControl->mShaderLine = line;
+			shaderControl->mActive = active;
 			shaderControl->updateUniform();
 
 			group.mShaderControls.push_back( shaderControl );

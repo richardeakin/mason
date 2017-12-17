@@ -56,6 +56,8 @@ MA_API void					notifyResourceReloaded();
 MA_API ci::Timeline*	timeline();
 //! Returns the current time since the app was started
 MA_API double			currentTime();
+//! Returns the current frame since the app was started.
+MA_API uint64_t			currentFrame();
 
 // TODO: move these to mason/Rand.h
 MA_API void			initRand( bool randomizeSeed = false, uint32_t seed = 21837219 );

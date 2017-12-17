@@ -35,23 +35,18 @@ FlyCam::FlyCam()
 {
 }
 
-FlyCam::FlyCam( CameraPersp *camera, const app::WindowRef &window, int signalPriority )
+FlyCam::FlyCam( CameraPersp *camera, const app::WindowRef &window, const EventOptions &options )
 	: mCamera( camera ), mInitialCam( *camera ), mWindowSize( 640, 480 ), mEnabled( true )
 {
-	connect( window, signalPriority );
+	connect( window, options );
 }
 
 FlyCam::FlyCam( const FlyCam &rhs )
 	: mCamera( rhs.mCamera ), mInitialCam( *rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
-		mWindow( rhs.mWindow ), mSignalPriority( rhs.mSignalPriority ),
-		mEnabled( rhs.mEnabled )
+		mWindow( rhs.mWindow ), mEventOptions( rhs.mEventOptions ),	mEnabled( rhs.mEnabled ),
+	mMoveIncrement( rhs.mMoveIncrement )
 {
-	connect( mWindow, mSignalPriority );
-}
-
-FlyCam::~FlyCam()
-{
-	disconnect();
+	connect( mWindow, mEventOptions );
 }
 
 FlyCam& FlyCam::operator=( const FlyCam &rhs )
@@ -60,57 +55,63 @@ FlyCam& FlyCam::operator=( const FlyCam &rhs )
 	mInitialCam = *rhs.mCamera;
 	mWindowSize = rhs.mWindowSize;
 	mWindow = rhs.mWindow;
-	mSignalPriority = rhs.mSignalPriority;
+	mEventOptions = rhs.mEventOptions;
+	mMoveIncrement = rhs.mMoveIncrement;
 	mEnabled = rhs.mEnabled;
-	connect( mWindow, mSignalPriority );
+	connect( mWindow, mEventOptions );
 	return *this;
 }
 
-//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
-void FlyCam::connect( const app::WindowRef &window, int signalPriority )
+FlyCam::~FlyCam()
 {
-	if( ! mEventConnections.empty() ) {
-		for( auto &conn : mEventConnections )
-			conn.disconnect();
-	}
+	disconnect();
+}
 
+//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
+void FlyCam::connect( const app::WindowRef &window, const EventOptions &options )
+{
+	mEventConnections.clear();
 	mWindow = window;
-	mSignalPriority = signalPriority;
+	mEventOptions = options;
 	if( window ) {
-		mEventConnections.push_back( window->getSignalMouseDown().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDown( event ); } ) );
-		mEventConnections.push_back( window->getSignalMouseUp().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseUp( event ); } ) );
-		mEventConnections.push_back( window->getSignalMouseDrag().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDrag( event ); } ) );
-		mEventConnections.push_back( window->getSignalMouseWheel().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseWheel( event ); } ) );
-		mEventConnections.push_back( window->getSignalKeyDown().connect( signalPriority,
-			[this]( app::KeyEvent &event ) { keyDown( event ); } ) );
-		mEventConnections.push_back( window->getSignalKeyUp().connect( signalPriority,
-			[this]( app::KeyEvent &event ) { keyUp( event ); } ) );
-		mEventConnections.push_back( window->getSignalResize().connect( signalPriority,
-			[this]() {
-				setWindowSize( mWindow->getSize() );
-				if( mCamera )
-					mCamera->setAspectRatio( mWindow->getAspectRatio() );
-			}
-		) );
-
-		mEventConnections.push_back( app::AppBase::get()->getSignalUpdate().connect( signalPriority,
-			[this] { update(); } ) );
+		if( options.mMouse ) {
+			mEventConnections += window->getSignalMouseDown().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseDown( event ); } );
+			mEventConnections += window->getSignalMouseUp().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseUp( event ); } );
+			mEventConnections += window->getSignalMouseDrag().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
+			mEventConnections += window->getSignalMouseWheel().connect( options.mPriority,
+				[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
+			mEventConnections += window->getSignalKeyDown().connect( options.mPriority,
+				[this]( app::KeyEvent &event ) { keyDown( event ); } );
+		}
+		if( options.mKeyboard ) {
+			mEventConnections += window->getSignalKeyUp().connect( options.mPriority,
+				[this]( app::KeyEvent &event ) { keyUp( event ); } );
+		}
+		if( options.mResize ) {
+			mEventConnections += window->getSignalResize().connect( options.mPriority,
+				[this]() {
+					setWindowSize( mWindow->getSize() );
+					if( mCamera )
+						mCamera->setAspectRatio( mWindow->getAspectRatio() );
+				}
+			);
+		}		
+		if( options.mUpdate && app::AppBase::get() ) {
+			mEventConnections += app::AppBase::get()->getSignalUpdate().connect( options.mPriority,
+				[this] { update(); } );
+		}
 	}
-	else
-		disconnect();
 }
 
 //! Disconnects all signal handlers
 void FlyCam::disconnect()
 {
-	for( auto &conn : mEventConnections )
-		conn.disconnect();
+	mEventConnections.clear();
 
-	mWindow.reset();
+	mWindow = nullptr;
 }
 
 bool FlyCam::isConnected() const
@@ -197,17 +198,22 @@ void FlyCam::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, bo
 void FlyCam::mouseWheel( float increment )
 {
 	if( ! mCamera || ! mEnabled )
-		return;	
+		return;
+
+	mMoveDirection.y = mMoveIncrement * increment * 0.1f;
 }
 
 // TODO: need a way to disable using up these keys
-// - also shouldn't handle if any modifier keys are down
 void FlyCam::keyDown( ci::app::KeyEvent &event )
 {
+	// skip if any modifier key is being pressed, except shift which is used to decrease speed.
+	if( event.isAltDown() || event.isControlDown() || event.isMetaDown() )
+		return;
+
 	bool handled = true;
 	float moveAmount = mMoveIncrement;
 	if( event.isShiftDown() )
-		moveAmount = 0.1f;
+		moveAmount *= 0.1f;
 
 	const char c = tolower( event.getChar() );
 
@@ -273,7 +279,7 @@ void FlyCam::update()
 
 	mMoveAccel += mMoveDirection;
 
-	const float maxVelocity = 5;
+	const float maxVelocity = mMoveIncrement * 5;
 
 	vec3 targetVelocity = glm::clamp( mMoveAccel * 0.3f, vec3( -maxVelocity ), vec3( maxVelocity ) );
 	mMoveVelocity = lerp( mMoveVelocity, targetVelocity, 0.3f );
@@ -292,6 +298,9 @@ void FlyCam::update()
 	eye += up * mMoveVelocity.z;
 
 	mCamera->setEyePoint( eye );
+
+	const float drag = 0.2f;
+	mMoveAccel *= 1 - drag;
 }
 
 ivec2 FlyCam::getWindowSize() const

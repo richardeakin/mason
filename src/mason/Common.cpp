@@ -111,6 +111,11 @@ double currentTime()
 	return app::getElapsedSeconds();
 }
 
+uint64_t currentFrame()
+{
+	return app::getElapsedFrames();
+}
+
 void notifyResourceReloaded()
 {
 	NotificationCenter::post( NOTIFY_RESOURCE_RELOADED );
@@ -120,7 +125,6 @@ void initialize( const fs::path &masonRootDir )
 {
 	initRand();
 	log::makeOrGetLogger<ma::LoggerNotification>();
-	ma::assets()->getSignalShaderLoaded().connect( ci::signals::slot( ma::hud(), &ma::Hud::addShaderControls ) );
 
 	if( ! masonRootDir.empty() ) {
 		fs::path glslDir = masonRootDir / "src/glsl";

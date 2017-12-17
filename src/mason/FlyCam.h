@@ -34,17 +34,39 @@ namespace mason {
 
 //! Enables user interaction with a CameraPersp via the mouse
 class MA_API FlyCam {
- public:
+  public:
+	struct EventOptions {
+		EventOptions() {}
+
+		EventOptions& mouse( bool enable )			{ mMouse = enable; return *this; }
+		//! Whether keyboard is used to move the Camera eye position. Default is WSAD like in FPS shooters. TODO: make key layout an option.
+		EventOptions& keyboard( bool enable )		{ mKeyboard = enable; return *this; }
+		EventOptions& resize( bool enable )			{ mResize = enable; return *this; }
+		//! Whether to use the main App's update loop to update the move speed. Useful to disable if you want to run the update() method
+		//! yourself at a fixed timestep.
+		EventOptions& update( bool enable )			{ mUpdate = enable; return *this; }
+		EventOptions& priority( int priority )		{ mPriority = priority; return *this; }
+
+	private:
+		bool	mMouse		= true;
+		bool	mKeyboard	= true;
+		bool	mResize		= true;
+		bool	mUpdate		= true;
+		int		mPriority	= 0;
+
+		friend class FlyCam;
+	};
+
 	FlyCam();
-	//! Constructs a CameraFpsUi which manipulates \a camera directly (and consequently expects its pointer to remain valid). Optionally attaches to mouse/window signals of \a window, with priority \a signalPriority.
-	FlyCam( ci::CameraPersp *camera, const ci::app::WindowRef &window = nullptr, int signalPriority = 0 );
+	//! Constructs a CameraFpsUi which manipulates \a camera directly (and consequently expects its pointer to remain valid). You can specify signal connection options via the \a options struct.
+	FlyCam( ci::CameraPersp *camera, const ci::app::WindowRef &window = nullptr, const EventOptions &options = EventOptions() );
 	FlyCam( const FlyCam &rhs );
 	~FlyCam();
 	
 	FlyCam& operator=( const FlyCam &rhs );
 
 	//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
-	void connect( const ci::app::WindowRef &window, int signalPriority = 0 );
+	void connect( const ci::app::WindowRef &window, const EventOptions &options = EventOptions() );
 	//! Disconnects all signal handlers
 	void disconnect();
 	//! Returns whether the CameraFpsUi is connected to mouse and window signal handlers
@@ -95,17 +117,16 @@ class MA_API FlyCam {
 	ci::CameraPersp			mInitialCam;
 	ci::CameraPersp			*mCamera;
 	bool					mLookEnabled = false;
-
 	ci::vec3				mMoveDirection, mMoveAccel, mMoveVelocity;
 	float					mMoveIncrement = 1.0f;
-
 	
-	ci::ivec2					mWindowSize; // used when mWindow is null
-	ci::app::WindowRef			mWindow;
-	bool						mEnabled;
-	int							mSignalPriority;
-	std::vector<ci::signals::Connection>	mEventConnections;
-	ci::signals::Signal<void()>				mSignalCameraChange;
+	ci::ivec2				mWindowSize; // used when mWindow is null
+	ci::app::WindowRef		mWindow;
+	bool					mEnabled;
+	EventOptions			mEventOptions;
+
+	ci::signals::ConnectionList		mEventConnections;
+	ci::signals::Signal<void()>		mSignalCameraChange;
 };
 
 }; // namespace mason

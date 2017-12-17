@@ -158,7 +158,7 @@ public:
 
 	//! Returns the requested texture within the provided \a updateCallback upon initial load and any time it is updated on file. Loads synchronously if the texture is not cached.
 	ci::signals::Connection getTexture( const ci::fs::path &texturePath, const std::function<void( ci::gl::Texture2dRef )> &updateCallback  );
-	//! Calls \a updateCallback whenever the file at \a path is modified and needs to be relaoded. Returns a WatchRef to handle the scope of the associated file watch (empty in deploy mode)
+	//! Calls \a updateCallback whenever the file at \a path is modified and needs to be reloaded. Returns a WatchRef to handle the scope of the associated file watch (empty in deploy mode)
 	ci::signals::Connection getFile( const ci::fs::path &path, const std::function<void( ci::DataSourceRef )> &updateCallback );
 	//! Loads and returns a DataSourceRef for the file associated with \a path.
 	ci::DataSourceRef loadAsset( const ci::fs::path &path );
@@ -173,8 +173,8 @@ public:
 	// Returns a signal that is emitted whenever a shader is parsed. Useful for adding UI based on that shader's params. args: 1) shader path, 2) shader source.
 	SignalShaderLoaded&	getSignalShaderLoaded()		{ return mSignalShaderLoaded; }
 
-	//! Removes weak references to assets that are no longer in use. Not required for normal operation. This is a potentially slow operation, use with care.
-	void cleanup();
+	//! Clears cached assets.
+	void clear();
 
 	//! Returns the total number of different shaders loaded, including expired ones. Call cleanup() first if you want to exclude expired shaders.
 	size_t getShaderCount() const { return mShaders.size(); }
@@ -226,7 +226,7 @@ private:
 
 	std::map<uint32_t, bool>             mAssetErrors;
 
-	ci::signals::Connection              mConnection;
+	//ci::signals::Connection              mConnection;
 
 	//std::unique_ptr<AssetArchiver>		mArchiver;
 };

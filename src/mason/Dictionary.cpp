@@ -77,42 +77,179 @@ namespace detail {
 
 bool getValue( const boost::any &value, float *result )
 {
-	if( value.type() == typeid( float ) ) {
-		*result = boost::any_cast<float>( value );
-	}
-	else if( value.type() == typeid( double ) ) {
-		*result = static_cast<float>( boost::any_cast<double>( value ) );
-	}
-	else {
-		return false;
+	const auto castedFloat = boost::any_cast<float>( &value );
+	if( castedFloat ) {
+		*result = *castedFloat;
+		return true;
 	}
 
-	return true;
+	const auto castedDouble = boost::any_cast<double>( &value );
+	if( castedDouble ) {
+		*result = static_cast<float>( *castedDouble );
+		return true;
+	}
+
+	const auto castedInt = boost::any_cast<int>( &value );
+	if( castedInt ) {
+		*result = static_cast<float>( *castedInt );
+		return true;
+	}
+
+	return false;
 }
 
 bool getValue( const boost::any &value, double *result )
 {
-	if( value.type() == typeid( double ) ) {
-		*result = boost::any_cast<double>( value );
+	const auto castedDouble = boost::any_cast<double>( &value );
+	if( castedDouble ) {
+		*result = *castedDouble;
+		return true;
 	}
-	else if( value.type() == typeid( float ) ) {
-		*result = static_cast<double>( boost::any_cast<float>( value ) );
+
+	const auto castedFloat = boost::any_cast<float>( &value );
+	if( castedFloat ) {
+		*result = static_cast<double>( *castedFloat );
+		return true;
+	}
+
+	const auto castedInt = boost::any_cast<int>( &value );
+	if( castedInt ) {
+		*result = static_cast<double>( *castedInt );
+		return true;
+	}
+
+	return false;
+}
+
+bool getValue( const boost::any &value, size_t *result )
+{
+	const auto castedInt = boost::any_cast<int>( &value );
+	if( castedInt ) {
+		*result = static_cast<size_t>( *castedInt );
+		return true;
+	}
+	return true;
+}
+
+bool getValue( const boost::any &value, vec2 *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>>( &value );
+	if( ! castedVector || castedVector->size() < 2 )
+		return false;
+
+	// Then get result's values from vector
+	if( ! getValue( (*castedVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, vec3 *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->z ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, vec4 *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 4 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->z ) )
+		return false;
+	if( ! getValue( (*castedVector)[3], &result->w ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, Color *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->r ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->g ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->b ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const boost::any &value, ColorA *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->r ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->g ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->b ) )
+		return false;
+
+	// alpha channel is optional
+	if( castedVector->size() >= 4 ) {
+		if( ! getValue( (*castedVector)[3], &result->a ) )
+			return false;
 	}
 	else {
-		return false;
+		result->a = 1.0;
 	}
 
 	return true;
 }
 
-bool getValue( const boost::any &value, vector<boost::any> *result )
+bool getValue( const boost::any &value, ci::fs::path *result )
 {
-	if( value.type() != typeid( vector<boost::any> ) ) {
-		return false;
+	const auto castedString = boost::any_cast<std::string>( &value );
+	if( castedString ) {
+		*result = *castedString;
+		return true;
 	}
 
-	*result = boost::any_cast<vector<boost::any>>( value );
-	return true;
+	return false;
+}
+
+bool getValue( const boost::any &value, vector<boost::any> *result )
+{
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( castedVector ) {
+		*result = *castedVector;
+		return true;
+	}
+
+	return false;
 }
 
 } // namespace mason::detail
