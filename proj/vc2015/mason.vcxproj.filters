@@ -35,6 +35,9 @@
     <Filter Include="Source Files\mason\audio">
       <UniqueIdentifier>{1c99687e-39a2-48ee-86e5-ef29529ceea6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\mason\ui">
+      <UniqueIdentifier>{f032c0a5-e36a-4d0e-acb2-d3bf82809aa7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mason\Assets.cpp">
@@ -122,6 +125,15 @@
       <Filter>Source Files\mason</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mason\audio\AudioAnalyzer.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\AudioAnalyzerView.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\DraggableView.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\OfflineContext.cpp">
       <Filter>Source Files\mason\audio</Filter>
     </ClCompile>
   </ItemGroup>
@@ -238,6 +250,15 @@
       <Filter>Source Files\mason</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\audio\AudioAnalyzer.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\AudioAnalyzerView.h">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\DraggableView.h">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\OfflineContext.h">
       <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
   </ItemGroup>
