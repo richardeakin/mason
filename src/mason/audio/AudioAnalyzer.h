@@ -110,6 +110,8 @@ public:
 	ci::fs::path	getSampleFilePath() const;
 	
 	ci::signals::Signal<void ()>&	getSignalOnset()	{ return mSignalOnset; }
+	float getOnsetVolumeChange() const					{ return mOnsetVolumeChange; }
+	void setOnsetVolumeChange( float change )			{ mOnsetVolumeChange = change; }
 
 private:
 	void initBarkBands();
@@ -130,6 +132,8 @@ private:
 	int									mIndex = -1;
 	float								mGainValue = 1;
 	float								mVolumeRMS = 0;
+	float								mVolumeRMSLastOnset = 0;
+	float								mOnsetVolumeChange = 5;
 	float								mVolumeSmoothingFactor = 0.5;
 	float								mMinMagValue = 0; // value to scale audible portion of magnitudes.
 	ci::signals::ScopedConnection		mConnAudioFile;

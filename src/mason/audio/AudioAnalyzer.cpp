@@ -155,10 +155,16 @@ void Track::update()
 	// - or just provide two separate control values
 	if( volume > mVolumeRMS ) {
 		mVolumeRMS = volume;
-		mSignalOnset.emit(); // hokey horrible onsets - whenever volume gets louder (time thresholding in app)
+
+		if( mVolumeRMS > mVolumeRMSLastOnset + mOnsetVolumeChange ) {
+			// only send out onsets if volume changes substantially
+			mVolumeRMSLastOnset = mVolumeRMS;
+			mSignalOnset.emit(); // hokey horrible onsets - whenever volume gets louder (time thresholding in app)
+		}
 	}
 	else {
 		mVolumeRMS = mVolumeRMS * mVolumeSmoothingFactor + volume * ( 1 - mVolumeSmoothingFactor );
+		mVolumeRMSLastOnset = mVolumeRMSLastOnset * mVolumeSmoothingFactor + volume * ( 1 - mVolumeSmoothingFactor );
 	}
 	
 	mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
