@@ -545,6 +545,15 @@ void AudioAnalyzer::initTracks( const ma::Dictionary &config )
 				} );
 			}
 
+			if( trackInfo.contains( "loopBegin" ) ) {
+				float loopBegin = trackInfo.get<double>( "loopBegin" );
+				track->mSamplePlayerNode->setLoopBeginTime( loopBegin );
+			}
+			if( trackInfo.contains( "loopEnd" ) ) {
+				float loopEnd = trackInfo.get<double>( "loopEnd" );
+				track->mSamplePlayerNode->setLoopEndTime( loopEnd );
+			}
+
 			// connect up whoever was assigned as input
 			track->mInputNode >> track->mGain >> track->mMonitorSpectralNode;
 		}
@@ -624,6 +633,10 @@ void AudioAnalyzer::keyDown( app::KeyEvent &event )
 		if( event.getChar() == '?' ) {
 			setEnabled( ! ci::audio::master()->isEnabled() );
 			CI_LOG_I( "audio::Context enabled: " << boolalpha << ci::audio::master()->isEnabled() << ", AudioAnalyzer paused: " << mIsPaused << dec );
+		}
+		else if( event.getChar() == ' ' ) {
+			setPaused( ! isPaused() );
+			CI_LOG_I( "playing: " << ! isPaused() );
 		}
 		else if( event.getChar() == 'P' ) {
 			printInfo();
