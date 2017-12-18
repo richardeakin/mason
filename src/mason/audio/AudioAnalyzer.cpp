@@ -418,7 +418,7 @@ void AudioAnalyzer::initContext( const ma::Dictionary &config )
 
 	//CI_LOG_I( "audio graph before:\n" << ctx->printGraphToString() );
 	
-#if defined( CINDER_MSW )
+#if defined( CINDER_AUDIO_MSW_HAS_EXCLUSIVE_MODE ) // TODO: define this is personal audio dev branch
 	if( config.contains( "wasapiExclusive" ) ) {
 		bool wasapiExclusive = config.get<bool>( "wasapiExclusive", false );
 		if( wasapiExclusive ) {
