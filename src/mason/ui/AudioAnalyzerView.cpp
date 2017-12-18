@@ -190,7 +190,7 @@ AudioTrackView::AudioTrackView( AudioAnalyzerView *parent, int trackIndex, const
 	auto track = ma::audio::analyzer()->getTrack( mTrackIndex );
 
 	if( track->isSamplePlayer() ) {
-		mSpectrogramView = make_shared<AudioSpectrogramView>();
+		mSpectrogramView = make_shared<AudioSpectrogramView>( trackIndex );
 		addSubview( mSpectrogramView );
 
 		mSpectrogramView->load( track ); // TEMPORARY: disabling as it takes a while to load currently
@@ -461,8 +461,8 @@ ma::ColorLUT<ci::ColorAf> makeLutSpectrogram()
 	return ColorLUT<ci::ColorAf>( 1000, stops );
 }
 
-AudioSpectrogramView::AudioSpectrogramView( const ci::Rectf &bounds )
-	: View( bounds )
+AudioSpectrogramView::AudioSpectrogramView( int trackIndex, const ci::Rectf &bounds )
+	: View( bounds ), mTrackIndex( trackIndex )
 {
 	CI_LOG_I( "bang. this: " << hex << this << dec );
 	//initGl();
@@ -717,6 +717,39 @@ void AudioSpectrogramView::draw( ::ui::Renderer *ren )
 
 }
 
+bool AudioSpectrogramView::touchesBegan( app::TouchEvent &event )
+{
+	auto &firstTouch = event.getTouches().front();
+	vec2 pos = toLocal( firstTouch.getPos() );
+
+	setTrackPos( pos.x );
+	//updateValue( pos );
+	firstTouch.setHandled();
+	return true;
+}
+
+bool AudioSpectrogramView::touchesMoved( app::TouchEvent &event )
+{
+	auto &firstTouch = event.getTouches().front();
+	vec2 pos = toLocal( firstTouch.getPos() );
+	setTrackPos( pos.x );
+
+	firstTouch.setHandled();
+	return true;
+}
+
+void AudioSpectrogramView::setTrackPos( float x )
+{
+	auto track = ma::audio::analyzer()->getTrack( mTrackIndex );
+	if( ! track )
+		return;
+
+	double time = track->getSampleDuration() * x / getWidth();
+	glm::clamp<double>( time, 0.0, track->getSamplePlaybackTime() );
+	
+	// TODO: refactor AudioAnalyzer so that individual tracks can be seeked
+	mason::audio::analyzer()->seek( time, true );
+}
 
 // ----------------------------------------------------------------------------------------------------
 // AudioBarkBandsView

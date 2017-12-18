@@ -149,7 +149,7 @@ class AudioSpectrumView : public ::ui::View {
 //! Shows the magnitude spectrum of an entire audio::Source
 class AudioSpectrogramView : public ::ui::View {
   public:
-	AudioSpectrogramView( const ci::Rectf &bounds = ci::Rectf::zero() );
+	AudioSpectrogramView( int trackIndex, const ci::Rectf &bounds = ci::Rectf::zero() );
 
 	void load( const audio::TrackRef &track );
 
@@ -157,12 +157,15 @@ class AudioSpectrogramView : public ::ui::View {
 
   protected:
 	void draw( ::ui::Renderer *ren ) override;
+	bool touchesBegan( ci::app::TouchEvent &event )	override;
+	bool touchesMoved( ci::app::TouchEvent &event )	override;
+
 
   private:
 	void makeTex();
 	bool readSTFTFromDisk( const ci::fs::path &sampleName );
 	void writeSTFTToDisk( const ci::fs::path &sampleName );
-
+	void setTrackPos( float x );
 
 	std::vector<std::vector<float>>	mSTFT; // actual analysis data
 	ci::gl::TextureRef				mTex;
@@ -172,6 +175,7 @@ class AudioSpectrogramView : public ::ui::View {
 	ci::ivec2			mBinUnderMouse = { -1, -1 };
 
 	float				mTrackTimePercent = 0;
+	int					mTrackIndex = -1;
 
 	bool				mBorderEnabled = true;
 	ci::ColorA			mBorderColor = ci::ColorA( 0.5f, 0.5f, 0.5f, 1 );
