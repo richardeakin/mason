@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/audio/OfflineContext.h"
 #include "mason/Common.h"
 
-// TODO: make cereal optional? Add it to RPH project? it is small and header only
-// - that doesn't solve the problem that cereal isn't a part of mason
-#define CEREAL_ENABLED 0
+#define CEREAL_ENABLED 1
 #if CEREAL_ENABLED
 #include "CinderCereal.h"
 #include <cereal/archives/binary.hpp>

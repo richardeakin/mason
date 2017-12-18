@@ -253,7 +253,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -277,7 +277,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -301,7 +301,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -332,7 +332,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -366,7 +366,7 @@
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -394,7 +394,7 @@
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -422,7 +422,7 @@
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -456,7 +456,7 @@
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
