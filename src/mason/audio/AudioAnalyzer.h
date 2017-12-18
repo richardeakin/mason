@@ -109,6 +109,8 @@ public:
 
 	ci::fs::path	getSampleFilePath() const;
 	
+	ci::signals::Signal<void ()>&	getSignalOnset()	{ return mSignalOnset; }
+
 private:
 	void initBarkBands();
 	void sumFrequencyBands();
@@ -133,6 +135,7 @@ private:
 	ci::signals::ScopedConnection		mConnAudioFile;
 
 	std::vector<FrequencyBand>			mFreqBands;
+	ci::signals::Signal<void ()>		mSignalOnset;
 
 
 	friend class AudioAnalyzer;
