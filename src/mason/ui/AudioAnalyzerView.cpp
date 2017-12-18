@@ -375,6 +375,9 @@ void AudioSpectrumView::draw( ::ui::Renderer *ren )
 
 		size_t numBins = mMaxSpectrumBin;
 		CI_ASSERT( numBins <= mMagSpectrum.size() );
+		
+		if( mMagSpectrum.empty() )
+			return;
 
 		float binWidth = getWidth() / (float)numBins;
 
