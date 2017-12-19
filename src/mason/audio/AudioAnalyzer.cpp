@@ -156,11 +156,11 @@ void Track::update()
 	if( volume > mVolumeRMS ) {
 		mVolumeRMS = volume;
 
-		if( mVolumeRMS > mVolumeRMSLastOnset + mOnsetVolumeChange ) {
+		//if( mVolumeRMS > mVolumeRMSLastOnset + mOnsetVolumeChange ) {
 			// only send out onsets if volume changes substantially
 			mVolumeRMSLastOnset = mVolumeRMS;
 			mSignalOnset.emit(); // hokey horrible onsets - whenever volume gets louder (time thresholding in app)
-		}
+//		}
 	}
 	else {
 		mVolumeRMS = mVolumeRMS * mVolumeSmoothingFactor + volume * ( 1 - mVolumeSmoothingFactor );
