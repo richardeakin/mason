@@ -162,9 +162,9 @@ void Hud::setFillWindow()
 
 void Hud::addView( const ui::ViewRef &view, const string &label, const Options &options )
 {
-	if( findView( label ) ) {
+	if( const auto &previousView = findView( label ) ) {
 		LOG_HUD( "removing old subview for label: " << label );
-		removeView( view );
+		removeView( previousView );
 	}
 
 	view->setLabel( label );
