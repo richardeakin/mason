@@ -185,6 +185,26 @@ bool getValue( const boost::any &value, vec4 *result )
 	return true;
 }
 
+bool getValue( const boost::any &value, Rectf *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	if( ! castedVector || castedVector->size() < 4 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->x1 ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y1 ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->x2 ) )
+		return false;
+	if( ! getValue( (*castedVector)[3], &result->y2 ) )
+		return false;
+
+	return true;
+}
+
 bool getValue( const boost::any &value, Color *result )
 {
 	// First cast to vector<any>
