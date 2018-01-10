@@ -219,7 +219,8 @@ void Track::initBarkBands()
 
 void Track::sumFrequencyBands()
 {
-	bool usePower = ma::hud()->checkBox( "bark power", false )->isEnabled();
+	//bool usePower = ma::hud()->checkBox( "bark power", false )->isEnabled();
+	bool usePower = false;
 
 	for( size_t b = 0; b < mFreqBands.size(); b++ ) {
 		auto &band = mFreqBands[b];

@@ -159,13 +159,14 @@ void AudioAnalyzerView::layout()
 
 void AudioAnalyzerView::update()
 {
-	bool alignBandsToSpectrum = ma::hud()->checkBox( "align bands", true )->isEnabled();
-	;
+	if( ! isHidden() ) {
+		bool alignBandsToSpectrum = ma::hud()->checkBox( "align bands", true )->isEnabled();
 
-	for( auto &trackView : mTrackViews ) {
-		trackView->mSpectrumView->mMinMagValue = 0; // TODO: remove once mag scaling stuff is finished in AudioAnalyzer
+		for( auto &trackView : mTrackViews ) {
+			trackView->mSpectrumView->mMinMagValue = 0; // TODO: remove once mag scaling stuff is finished in AudioAnalyzer
 
-		trackView->mFreqBandsView->mAlignBandsToSpectrum = alignBandsToSpectrum;
+			trackView->mFreqBandsView->mAlignBandsToSpectrum = alignBandsToSpectrum;
+		}
 	}
 }
 
