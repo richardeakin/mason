@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/audio/AudioAnalyzer.h"
 
 #if defined( CINDER_RUNTIME_PRESENT )
-#include "runtime/ClassWatcher.h"
+#include "runtime/Factory.h"
 #include "runtime/Virtual.h"
 #else
 #define rt_virtual 
