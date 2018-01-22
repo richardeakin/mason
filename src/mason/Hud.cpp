@@ -720,21 +720,59 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 	ShaderControlGroup group;
 
 	for( const auto &sp : shaderSources ) {
+		bool hudDisabledForSource = false;
+		bool inDisabledBlock = false;
 		group.mLabel = sp.first.filename().string(); // taking the last source filename that we process as the group label
 
 		// search for lines with "hud:" that begin with "uniform"
 		istringstream input( sp.second );
 		string line;
 		while( getline( input, line ) ) {
+			if( hudDisabledForSource )
+				break;
+
 			size_t posHudStr = line.find( "hud:" );
 			if( posHudStr == string::npos )
 				continue;
 
-			// If we find a line that says 'hud: disable', then disregard controls for the entire shader (accounting for '// ' string
-			// TODO: this should only disregard controls for the current source file
-			if( posHudStr <= 3 && line.find( "hud: disable" ) <= 3 ) {
-				LOG_SHADER_CTL( "shader controls disabled for shader: " << sp.first );
-				return;
+			if( inDisabledBlock ) {
+				// check for disable block close
+				size_t posDisableBracketBlock = line.find( "hud: }" );
+				if( posDisableBracketBlock != string::npos ) {
+					LOG_SHADER_CTL( "disable block end" );
+					inDisabledBlock = false;
+				}
+				else {
+					LOG_SHADER_CTL( "\t.. skipping line in disable block: " << line );
+					continue;
+				}
+			}
+
+			// check for 'disable' keywords
+			size_t posDisable = line.find( "hud: disable" );
+			if( posDisable != string::npos ) {
+				// check for 'hud: disable' at the beginning of a line
+				if( posDisable <= 3 ) {
+
+					// check for a disable block, with string "hud: disable {".
+					// Later the group should end with a "hud: }" string
+					size_t posDisableBracketOpen = line.find( '{', posDisable + 12 ); // 12 = strlen( "hud: disable" )
+					if( posDisableBracketOpen != string::npos ) {
+						LOG_SHADER_CTL( "disable block begin" );
+						inDisabledBlock = true;
+						continue;
+					}
+					else {
+						// this is a global disable for the current shader source
+						LOG_SHADER_CTL( "shader controls disabled for shader source: " << sp.first );
+						hudDisabledForSource = true;
+						break;
+					}
+				}
+				else {
+					LOG_SHADER_CTL( "\t.. skipping disabled line: " << line );
+					continue;
+				}
 			}
 
 			size_t posFoundUniformStr = line.find( "uniform" );
