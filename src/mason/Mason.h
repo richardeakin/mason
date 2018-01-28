@@ -21,6 +21,10 @@
 
 #pragma once
 
+#if defined( MASON_MSW_DEBUG_RELEASE )
+#pragma optimize ( "", off )
+#endif
+
 #include "mason/Export.h"
 
 namespace mason {
