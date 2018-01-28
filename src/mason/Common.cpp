@@ -202,4 +202,9 @@ string stackTraceAsString( size_t startingFrame, size_t count, bool skipPlatform
 	return result;
 }
 
+int nextOdd( int n )
+{
+	return n + 1 - ( n & 1 );
+}
+
 } // namespace mason

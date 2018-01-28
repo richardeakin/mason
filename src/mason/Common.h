@@ -65,7 +65,9 @@ MA_API ci::Rand*	rand();
 MA_API ci::vec3		randVec3( const ci::AxisAlignedBox &box );
 MA_API ci::Color	randColor();
 
-MA_API bool epsilonEqual( const ci::Rectf &r1, const ci::Rectf &r2, float epsilon );
+MA_API bool			epsilonEqual( const ci::Rectf &r1, const ci::Rectf &r2, float epsilon );
+//! Returns n if it is odd, otherwise returns n + 1
+MA_API int			nextOdd( int n );
 
 //! Returns a stringified stack trace ready for logging. TODO: move to cinder core
 MA_API std::string stackTraceAsString( size_t startingFrame = 0, size_t count = 0, bool skipPlatformFrames = true );
