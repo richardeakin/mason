@@ -22,6 +22,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "ui/View.h"
+#include "mason/Export.h"
 
 // note: using namespace mason::mui so as not to conflict with ui::*. Oh well..
 namespace mason { namespace mui {
@@ -29,7 +30,7 @@ namespace mason { namespace mui {
 using DraggableViewRef = std::shared_ptr<class DraggableView>;
 
 
-class DraggableView : public ::ui::View {
+class MA_API DraggableView : public ::ui::View {
   public:
 	DraggableView( const ci::Rectf &bounds = ci::Rectf::zero() );
 

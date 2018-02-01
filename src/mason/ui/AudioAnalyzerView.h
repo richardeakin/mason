@@ -25,6 +25,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "ui/View.h"
 #include "mason/Mason.h"
+#include "mason/Export.h"
 #include "mason/Dictionary.h"
 #include "mason/LUT.h"
 #include "mason/audio/AudioAnalyzer.h"
@@ -53,7 +54,7 @@ using AudioSpectrumViewRef		= std::shared_ptr<class AudioSpectrumView>;
 using AudioSpectrogramViewRef	= std::shared_ptr<class AudioSpectrogramView>;
 using AudioBarkBandsViewRef		= std::shared_ptr<class AudioFrequencyBandsView>;
 
-class AudioAnalyzerView : public ::ui::View {
+class MA_API AudioAnalyzerView : public ::ui::View {
 	//RT_DECL
   public:
 	AudioAnalyzerView( const ci::Rectf &bounds = ci::Rectf::zero() );
@@ -80,7 +81,7 @@ class AudioAnalyzerView : public ::ui::View {
 	friend class AudioTrackView;
 };
 
-class AudioTrackView : public ::ui::View {
+class MA_API AudioTrackView : public ::ui::View {
   public:
 	AudioTrackView( AudioAnalyzerView *parent, int trackIndex, const ci::Rectf &bounds = ci::Rectf::zero() );
 	~AudioTrackView();
@@ -106,7 +107,7 @@ class AudioTrackView : public ::ui::View {
 };
 
 //! Shows one frame of the magnitude spectrum
-class AudioSpectrumView : public ::ui::View {
+class MA_API AudioSpectrumView : public ::ui::View {
   public:
 	AudioSpectrumView( const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -147,7 +148,7 @@ class AudioSpectrumView : public ::ui::View {
 };
 
 //! Shows the magnitude spectrum of an entire audio::Source
-class AudioSpectrogramView : public ::ui::View {
+class MA_API AudioSpectrogramView : public ::ui::View {
   public:
 	AudioSpectrogramView( int trackIndex, const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -182,7 +183,7 @@ class AudioSpectrogramView : public ::ui::View {
 };
 
 //! Visualizes a Track's Frequency Bands. TODO: make this a generic BarGraphView or something.
-class AudioFrequencyBandsView : public ::ui::View {
+class MA_API AudioFrequencyBandsView : public ::ui::View {
 public:
 	AudioFrequencyBandsView( const ci::Rectf &bounds = ci::Rectf::zero() );
 

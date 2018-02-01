@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/app/KeyEvent.h"
 #include "cinder/Signals.h"
 
+#include "mason/Export.h"
 #include "mason/Dictionary.h"
 
 #include <array>
@@ -50,14 +51,14 @@ namespace mason { namespace audio {
 using AudioAnalyzerRef = std::shared_ptr<class AudioAnalyzer>;
 
 //! Describes one frequency band
-struct FrequencyBand {
+struct MA_API FrequencyBand {
 	int		mIndex;						//! Band index in vector
 	float	mFreqLower, mFreqUpper;		// Hertz
 	int		mBinLower, mBinUpper;		//! Corresponds to mag spectrum. Upper is exclusive
 	float	mMag;						//! Mags are normalized between 0-1, with 1 equal to 100db
 }; 
 
-class Track {
+class MA_API Track {
 public:
 	Track( const std::string &id, int trackId );
 	~Track();
@@ -155,7 +156,7 @@ enum class InputType {
 using TrackRef = std::shared_ptr<mason::audio::Track>;
 using AudioAnalyzerRef = std::shared_ptr<class mason::audio::AudioAnalyzer>;
 
-class AudioAnalyzer {
+class MA_API AudioAnalyzer {
 public:
 
 	//! Call whenever configuration changes
@@ -219,9 +220,9 @@ private:
 };
 
 //! Global AudioAnalyzer instance
-AudioAnalyzer* analyzer();
+MA_API AudioAnalyzer* analyzer();
 //! Sets the global Tracker instance
-void setAnalyzerInstance( const std::shared_ptr<AudioAnalyzer> &analyzer );
+MA_API void setAnalyzerInstance( const std::shared_ptr<AudioAnalyzer> &analyzer );
 
 
 } } // namepsace mason::audio
