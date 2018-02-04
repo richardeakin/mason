@@ -198,6 +198,11 @@ public:
 
 	ci::gl::ShaderPreprocessor*	getShaderPreprocessor()	{ initShaderPreprocessorLazy(); return mShaderPreprocessor.get(); }
 
+	//! Adds a define directive
+	void	addShaderDefine( const std::string &define );
+	//! Adds a define directive in the form of `define=value`
+	void	addShaderDefine( const std::string &define, const std::string &value );
+
 private:
 	AssetManager();
 

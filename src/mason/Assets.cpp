@@ -480,6 +480,16 @@ void AssetManager::onFileChanged( const WatchEvent &event )
 	}
 }
 
+void AssetManager::addShaderDefine( const std::string &define )
+{
+	mShaderPreprocessor->addDefine( define );
+}
+
+void AssetManager::addShaderDefine( const std::string &define, const std::string &value )
+{
+	mShaderPreprocessor->addDefine( define, value );
+}
+
 // ----------------------------------------------------------------------------------------------------
 // Asset Archiving
 // ----------------------------------------------------------------------------------------------------
