@@ -45,6 +45,24 @@ uint32_t makeUuid( const string &str )
 	return uint32_t( hasher( str ) );
 }
 
+//! Returns a unique ID based on the supplied string.
+uint32_t makeUuid( const string &str, const gl::GlslProg::Format &format )
+{
+	hash<string> hasher;
+
+	if( format.getDefines().empty() ) {
+		return uint32_t( hasher( str ) );
+	}
+	else {
+		// append defines to hash so that it is unique
+		auto strWithDefines = str;
+		for( const auto &define : format.getDefines() ) {
+			strWithDefines += define.first + define.second;
+		}
+		return uint32_t( hasher( strWithDefines ) );
+	}
+}
+
 void setShaderFilePathBySuffix( const DataSourceRef &shaderFile, gl::GlslProg::Format *format )
 {
 	string suffix = shaderFile->getFilePathHint().extension().string();
@@ -92,7 +110,7 @@ AssetManager::~AssetManager()
 
 ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const gl::GlslProg::Format &format, const function<void( gl::GlslProgRef )> &updateCallback )
 {
-	uint32_t hash = makeUuid( vertex.generic_string() );
+	uint32_t hash = makeUuid( vertex.generic_string(), format );
 
 	auto glslModifiedCallback = [this, format, hash, updateCallback, vertex] {
 		try {
@@ -134,7 +152,7 @@ ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const g
 // TODO: make this generic, vector of fs::paths along with overloads
 ci::signals::Connection AssetManager::getShader( const fs::path &vertex, const fs::path &fragment, const gl::GlslProg::Format &format, const function<void( gl::GlslProgRef )> &updateCallback )
 {
-	uint32_t hash = makeUuid( vertex.generic_string() + fragment.generic_string() );
+	uint32_t hash = makeUuid( vertex.generic_string() + fragment.generic_string(), format );
 
 	auto glslModifiedCallback = [this, format, hash, updateCallback, vertex, fragment] {
 		try {
