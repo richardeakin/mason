@@ -51,6 +51,9 @@ Maya 44 USB:
 //#define LOG_ANALYZER( stream )	CI_LOG_I( stream )
 #define LOG_ANALYZER( stream )	( (void)( 0 ) )
 
+// uncomment for my audio_dev branch, until the exclusive mode stuff makes it into master branch
+#define CINDER_AUDIO_MSW_HAS_EXCLUSIVE_MODE
+
 using namespace ci;
 using namespace std;
 
@@ -426,7 +429,7 @@ void AudioAnalyzer::initContext( const ma::Dictionary &config )
 
 	//CI_LOG_I( "audio graph before:\n" << ctx->printGraphToString() );
 	
-#if defined( CINDER_AUDIO_MSW_HAS_EXCLUSIVE_MODE ) // TODO: define this is personal audio dev branch
+#if defined( CINDER_AUDIO_MSW_HAS_EXCLUSIVE_MODE )
 	if( config.contains( "wasapiExclusive" ) ) {
 		bool wasapiExclusive = config.get<bool>( "wasapiExclusive", false );
 		if( wasapiExclusive ) {
