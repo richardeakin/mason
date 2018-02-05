@@ -204,7 +204,16 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 {
 	initShaderPreprocessorLazy();
 
-	format.preprocess( false ); // we use our own preprocessor and pull out included files to watch them at each stage.
+	// we use our own preprocessor and pull out included files to watch them at each stage.
+	const auto formatDefines = format.getDefines();
+	format.preprocess( false );
+
+	// Add defines specified to GlslProg::Format, for just this shader
+	// TODO: this could blow away existing defines, and then removing them later would be a problem
+	// - solution would be that ShaderPreprocessor can take a per-parse set of defines too
+	for( const auto &define : formatDefines ) {
+		mShaderPreprocessor->addDefine( define.first, define.second );
+	}
 
 	std::vector<std::pair<ci::fs::path, std::string>>	sources;
 
@@ -249,6 +258,11 @@ ci::gl::GlslProgRef AssetManager::reloadShader( ci::gl::GlslProg::Format &format
 	// all included files before trying to create the shader, so that in the case of an error we are still watching those files too.
 	for( const auto &includeFile : includedFiles ) {
 		group->addAsset( getAssetRef( includeFile ) );
+	}
+
+	// remove all defines specified by Format (see TODO above)
+	for( const auto &define : formatDefines ) {
+		mShaderPreprocessor->removeDefine( define.first );
 	}
 
 	auto shader = gl::GlslProg::create( format );
