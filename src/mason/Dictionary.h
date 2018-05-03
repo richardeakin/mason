@@ -57,6 +57,10 @@ class MA_API Dictionary {
 	template<typename DataT>
 	static Dictionary		convert( const ci::fs::path &filePath );
 
+	//! Converts and returns this Dictionary as type DataT.
+	template<typename DataT>
+	DataT		convert() const;
+
 	// TODO: possible to reuse above converts but store in shared_ptr?
 //	template<typename DataT, typename... Args>
 //	static DictionaryRef	convertShared( Args... )
@@ -83,6 +87,8 @@ class MA_API Dictionary {
 
 	bool contains( const std::string &key ) const;
 
+	const std::map<std::string, boost::any>&	getData() const	{ return mData; }
+
 	// TODO: need to sort out what is happening with return versus const-ref before these are useful
 	// - could use getStrict() but more likely to throw
 //	template<typename T>
@@ -95,8 +101,9 @@ class MA_API Dictionary {
 
 	bool isEmpty() const		{ return mData.empty(); }
 
-	// TODO: implement
+	// TODO: finish implementing these. Might use a helper class to maintain spaces for pretty print
 	//std::string	toString() const;
+	//friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
 
   private:
 

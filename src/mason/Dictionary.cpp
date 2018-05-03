@@ -69,6 +69,36 @@ const std::type_info& Dictionary::getType( const std::string &key ) const
 	return it->second.type();
 }
 
+/*
+std::string	Dictionary::toString() const
+{
+	stringstream ss;
+	ss << *this;
+	return ss.str();
+}
+
+std::ostream& operator<<( std::ostream &os, const Dictionary &rhs )
+{
+	for( const auto &mp : rhs.mData ) {
+		const auto &value = mp.second;
+		if( value.type() == typeid( Dictionary ) )
+			os << boost::any_cast<Dictionary>( value );
+		else if( value.type() == typeid( int ) )
+			os << boost::any_cast<int>( value );
+		else if( value.type() == typeid( float ) )
+			os << boost::any_cast<float>( value );
+		else if( value.type() == typeid( double ) )
+			os << boost::any_cast<double>( value );
+		else if( value.type() == typeid( std::string ) )
+			os << boost::any_cast<std::string>( value );
+		else
+			os << "(unexpected type)";
+	}
+
+	return os;
+}
+*/
+
 // ----------------------------------------------------------------------------------------------------
 // Detail
 // ----------------------------------------------------------------------------------------------------
@@ -280,34 +310,35 @@ bool getValue( const boost::any &value, vector<boost::any> *result )
 
 namespace {
 
-any parseJsonAny( const Json::Value &value );
+any toAny( const Json::Value &value );
+Json::Value toJson( const any &a );
 
-Dictionary parseJsonDict( const Json::Value &value )
+Dictionary toDictionary( const Json::Value &value )
 {
 	Dictionary result;
 
 	for( auto childIt = value.begin(); childIt != value.end(); ++childIt ) {
 		string key = childIt.key().asString();
-		any value = parseJsonAny( *childIt );
+		any value = toAny( *childIt );
 		result.set( key, value );
 	}
 
 	return result;
 }
 
-any parseJsonAny( const Json::Value &value )
+any toAny( const Json::Value &value )
 {
-	if( value.isArray() ) {
+	if( value.isObject() ) {
+		return toDictionary( value );
+	}
+	else if( value.isArray() ) {
 		vector<any> arr;
 		arr.reserve( value.size() );
 
 		for( const auto &child : value )
-			arr.push_back( parseJsonAny( child ) );
+			arr.push_back( toAny( child ) );
 
 		return arr;
-	}
-	else if( value.isObject() ) {
-		return parseJsonDict( value );
 	}
 	else if( value.isBool() ) {
 		return value.asBool();
@@ -332,13 +363,58 @@ any parseJsonAny( const Json::Value &value )
 	return nullptr;
 }
 
+Json::Value toJson( const Dictionary &dict )
+{
+	Json::Value result;
+	for( const auto &mp : dict.getData() ) {
+		result[mp.first] = toJson( mp.second );
+	}
+
+	return result;
+}
+
+Json::Value toJson( const vector<any> &arr )
+{
+	Json::Value result;
+	for( const auto &a : arr ) {
+		result.append( toJson( a ) );
+	}
+
+	return result;
+}
+
+Json::Value toJson( const any &a )
+{
+	if( a.type() == typeid( Dictionary ) ) {
+		return toJson( boost::any_cast<Dictionary>( a ) );
+	}
+	else if( a.type() == typeid( vector<any> ) ) {
+		return toJson( boost::any_cast<vector<any>>( a ) );
+	}
+	else if( a.type() == typeid( int ) ) {
+		return Json::Value( boost::any_cast<int>( a ) );
+	}
+	else if( a.type() == typeid( double ) ) {
+		return Json::Value( boost::any_cast<double>( a ) );
+	}
+	else if( a.type() == typeid( string ) ) {
+		return Json::Value( boost::any_cast<string>( a ) );
+	}
+	else if( a.type() == typeid( nullptr ) ) {
+		return Json::Value::null;
+	}
+	else {
+		CI_ASSERT_NOT_REACHABLE();
+	}
+}
+
 } // anonymous namespace
 
 // static
 template<>
 MA_API Dictionary Dictionary::convert<Json::Value>( const Json::Value &data )
 {
-	Dictionary result =	parseJsonDict( data );
+	Dictionary result =	toDictionary( data );
 	return result;
 }
 
@@ -358,6 +434,13 @@ MA_API Dictionary Dictionary::convert<Json::Value>( const DataSourceRef &dataSou
 	}
 
 	return convert( data );
+}
+
+template<>
+MA_API Json::Value Dictionary::convert<Json::Value>() const
+{
+	Json::Value result = toJson( *this );	
+	return result;
 }
 
 } // namespace mason

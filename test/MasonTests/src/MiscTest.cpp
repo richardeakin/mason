@@ -31,6 +31,7 @@ MiscTest::MiscTest()
 			try {
 				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( event.getFile() ) );
 				testDict( dict );
+				testConvertBack( dict );
 
 				CI_LOG_I( "testDict completed." );
 			}
@@ -78,6 +79,14 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 		oddNumbersStr += "[" + to_string( i ) + "] " + to_string( oddNumbers[i] ) + ", ";
 	}
 	CI_LOG_I( "num elements in oddNumbers: " << oddNumbers.size() << ", values: " << oddNumbersStr );
+
+}
+
+void MiscTest::testConvertBack( const ma::Dictionary &dict )
+{
+	auto json = dict.convert<Json::Value>();
+
+	CI_LOG_I( "dict -> json:\n" << json );
 }
 
 void MiscTest::addStressTestWatches()
