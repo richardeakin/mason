@@ -400,11 +400,16 @@ Json::Value toJson( const any &a )
 	else if( a.type() == typeid( string ) ) {
 		return Json::Value( boost::any_cast<string>( a ) );
 	}
+	else if( a.type() == typeid( const char* ) ) {
+		return Json::Value( boost::any_cast<const char *>( a ) );
+	}
 	else if( a.type() == typeid( nullptr ) ) {
 		return Json::Value::null;
 	}
 	else {
-		CI_ASSERT_NOT_REACHABLE();
+		string typeAsString = System::demangleTypeName( a.type().name() );
+		//CI_ASSERT_NOT_REACHABLE();
+		return Json::Value( "type '" + typeAsString + "'" );
 	}
 }
 

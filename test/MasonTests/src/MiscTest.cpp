@@ -43,6 +43,8 @@ MiscTest::MiscTest()
 	catch( exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
 	}
+
+	testWritingDict();
 }
 
 void MiscTest::testDict( const ma::Dictionary &dict )
@@ -85,7 +87,17 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 void MiscTest::testConvertBack( const ma::Dictionary &dict )
 {
 	auto json = dict.convert<Json::Value>();
+	CI_LOG_I( "dict -> json:\n" << json );
+}
 
+void MiscTest::testWritingDict()
+{
+	ma::Dictionary d;
+	d.set( "a", 2 );
+	d.set( "b", "blah" );
+	d.set( "vec2", vec2( 0, 1 ) );
+
+	auto json = d.convert<Json::Value>();
 	CI_LOG_I( "dict -> json:\n" << json );
 }
 

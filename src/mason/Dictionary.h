@@ -132,9 +132,10 @@ class MA_API DictionaryBadTypeExc : public DictionaryExc {
 // ----------------------------------------------------------------------------------------------------
 // Implementation
 // ----------------------------------------------------------------------------------------------------
+// Note detail::getValue<T> - if one doesn't exist for a user's type, you can implement a specialized
+// function for that type.
 
 namespace detail {
-// TODO: move getValue() to private Dictionary::getValue() for clarity
 
 template<typename T>
 bool getValue( const boost::any &value, T *result )
