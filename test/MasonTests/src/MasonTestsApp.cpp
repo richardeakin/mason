@@ -153,19 +153,9 @@ void prepareSettings( App::Settings *settings )
 	bool useSecondaryScreen = ( USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1 );
 
 	if( useSecondaryScreen ) {
-		for( const auto &display : Display::getDisplays() ) {
-			//CI_LOG_I( "display name: " << display->getName() );
-			if( display->getName() == "Color LCD" ) {
-				// macbook
-				settings->setDisplay( display );
-				settings->setWindowSize( 1280, 720 );
-			}
-			else if( display->getName() == "Generic PnP Monitor" ) {
-				// gechic 1303i 13"touch display
-				settings->setDisplay( display );
-				settings->setFullScreen( true );
-			}
-		}
+		const auto &display = Display::getDisplays()[1];
+		settings->setDisplay( display );
+		settings->setFullScreen( true );
 	}
 	else {
 #if defined( CINDER_MAC )

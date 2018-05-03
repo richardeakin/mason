@@ -403,6 +403,21 @@ Json::Value toJson( const any &a )
 	else if( a.type() == typeid( const char* ) ) {
 		return Json::Value( boost::any_cast<const char *>( a ) );
 	}
+	else if( a.type() == typeid( vec2 ) ) {
+		auto v = boost::any_cast<vec2>( a );
+		Json::Value result;
+		result.append( v[0] );
+		result.append( v[1] );
+		return result;
+	}
+	else if( a.type() == typeid( vec3 ) ) {
+		auto v = boost::any_cast<vec3>( a );
+		Json::Value result;
+		result.append( v[0] );
+		result.append( v[1] );
+		result.append( v[2] );
+		return result;
+	}
 	else if( a.type() == typeid( nullptr ) ) {
 		return Json::Value::null;
 	}
