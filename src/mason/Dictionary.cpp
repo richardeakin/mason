@@ -69,35 +69,39 @@ const std::type_info& Dictionary::getType( const std::string &key ) const
 	return it->second.type();
 }
 
-/*
+void Dictionary::merge( const Dictionary &other )
+{
+	for( const auto& mp : other.getData() ) {
+		const string &key = mp.first;
+		if( mp.second.type() == typeid( Dictionary ) ) {
+			// if we have that key, check if it is also a dictionary.
+			// - if yes then recursive merge. if no, blow away our current contents with other's.
+			const auto &b = boost::any_cast<Dictionary>( mp.second );
+			auto it = mData.find( mp.first );
+			if( it != mData.end() && it->second.type() == typeid( Dictionary ) ) {				
+				Dictionary *a = boost::any_cast<Dictionary>( &it->second );
+				a->merge( b );
+			}
+			else {
+				mData[key] = b;
+			}
+		}
+		else if( mp.second.type() == typeid( std::vector<any> ) ) {
+			// TODO: iterate over each array type to look for dictionarys or values
+		}
+		else {
+			mData[key] = mp.second;
+		}
+	}
+}
+
+
 std::string	Dictionary::toString() const
 {
 	stringstream ss;
 	ss << *this;
 	return ss.str();
 }
-
-std::ostream& operator<<( std::ostream &os, const Dictionary &rhs )
-{
-	for( const auto &mp : rhs.mData ) {
-		const auto &value = mp.second;
-		if( value.type() == typeid( Dictionary ) )
-			os << boost::any_cast<Dictionary>( value );
-		else if( value.type() == typeid( int ) )
-			os << boost::any_cast<int>( value );
-		else if( value.type() == typeid( float ) )
-			os << boost::any_cast<float>( value );
-		else if( value.type() == typeid( double ) )
-			os << boost::any_cast<double>( value );
-		else if( value.type() == typeid( std::string ) )
-			os << boost::any_cast<std::string>( value );
-		else
-			os << "(unexpected type)";
-	}
-
-	return os;
-}
-*/
 
 // ----------------------------------------------------------------------------------------------------
 // Detail
@@ -461,6 +465,14 @@ MA_API Json::Value Dictionary::convert<Json::Value>() const
 {
 	Json::Value result = toJson( *this );	
 	return result;
+}
+
+// TODO: implement this natively. using jsoncpp for now
+std::ostream& operator<<( std::ostream &os, const Dictionary &rhs )
+{
+	auto json = rhs.convert<Json::Value>();
+	os << json;
+	return os;
 }
 
 } // namespace mason

@@ -20,7 +20,8 @@ class MiscTest : public ui::SuiteView {
   private:
 	void testDict( const ma::Dictionary &dict );
 	void testConvertBack( const ma::Dictionary &dict );
-	void testWritingDict();
+	void testPrintingDict();
+	void testMergegDict();
 
 	void addStressTestWatches();
 

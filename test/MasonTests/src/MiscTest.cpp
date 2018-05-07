@@ -44,7 +44,8 @@ MiscTest::MiscTest()
 		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
 	}
 
-	testWritingDict();
+	testPrintingDict();
+	testMergegDict();
 }
 
 void MiscTest::testDict( const ma::Dictionary &dict )
@@ -90,15 +91,43 @@ void MiscTest::testConvertBack( const ma::Dictionary &dict )
 	CI_LOG_I( "dict -> json:\n" << json );
 }
 
-void MiscTest::testWritingDict()
+void MiscTest::testPrintingDict()
 {
 	ma::Dictionary d;
 	d.set( "a", 2 );
 	d.set( "b", "blah" );
 	d.set( "vec2", vec2( 0, 1 ) );
 
-	auto json = d.convert<Json::Value>();
-	CI_LOG_I( "dict -> json:\n" << json );
+	CI_LOG_I( "dict:\n" << d );
+}
+
+void MiscTest::testMergegDict()
+{
+	ma::Dictionary a;
+	a.set( "a", 2 );
+	//a.set( "aa", "hey" );
+
+	{
+		ma::Dictionary sub;
+		sub.set( "b", "blah" );
+		sub.set( "vec2", vec2( 0, 1 ) );
+
+		a.set( "sub", sub );
+	}
+
+	ma::Dictionary b;
+	b.set( "a", 3 );
+	{
+		ma::Dictionary sub;
+		sub.set( "b", "updated" );
+
+		b.set( "sub", sub );
+	}
+
+	a.merge( b );
+
+	auto json = a.convert<Json::Value>();
+	CI_LOG_I( "merged:\n" << json );
 }
 
 void MiscTest::addStressTestWatches()

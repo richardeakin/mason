@@ -87,6 +87,9 @@ class MA_API Dictionary {
 
 	bool contains( const std::string &key ) const;
 
+	//! Recursively copy the values of other into this Dictionary.
+	void merge( const Dictionary &other );
+
 	const std::map<std::string, boost::any>&	getData() const	{ return mData; }
 
 	// TODO: need to sort out what is happening with return versus const-ref before these are useful
@@ -101,9 +104,8 @@ class MA_API Dictionary {
 
 	bool isEmpty() const		{ return mData.empty(); }
 
-	// TODO: finish implementing these. Might use a helper class to maintain spaces for pretty print
-	//std::string	toString() const;
-	//friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
+	std::string	toString() const;
+	friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
 
   private:
 
