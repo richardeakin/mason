@@ -411,6 +411,9 @@ Json::Value toJson( const any &a )
 	else if( a.type() == typeid( int ) ) {
 		return Json::Value( boost::any_cast<int>( a ) );
 	}
+	else if( a.type() == typeid( bool ) ) {
+		return Json::Value( boost::any_cast<bool>( a ) );
+	}
 	else if( a.type() == typeid( double ) ) {
 		return Json::Value( boost::any_cast<double>( a ) );
 	}
