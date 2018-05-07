@@ -9,6 +9,26 @@ using namespace std;
 
 namespace mason {
 
+#if 1
+
+namespace detail {
+
+static ma::Dictionary sConfig;
+
+void setConfig( const ma::Dictionary &config )
+{
+	sConfig = config;
+}
+
+} // namespace mason::detail
+
+ma::Dictionary*	config()
+{
+	return &detail::sConfig;
+}
+
+#else
+
 // static
 Config* Config::instance()
 {
@@ -90,5 +110,6 @@ ma::Dictionary Config::getGroupAsDictionary( const std::string &category ) const
 	return Dictionary::convert( group );
 }
 
+#endif
 
 } // namespace mason

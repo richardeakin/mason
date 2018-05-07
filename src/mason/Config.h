@@ -41,6 +41,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace mason {
 
+#if 1
+//! Global Dictionary used for configuration
+MA_API ma::Dictionary*	config();
+
+namespace detail {
+
+MA_API void setConfig( const ma::Dictionary &config );
+
+}
+#else
+
 class MA_API ConfigExc : public ci::Exception {
   public:
 	ConfigExc( const std::string &description )
@@ -529,6 +540,10 @@ std::vector<T> Config::getList( const std::string &category )
 	return result;
 }
 
+// Disabling and using Dictionary instead, which lives in mason/Common.h now
 inline Config* config() { return Config::instance(); }
+
+#endif
+
 
 } // namespace mason
