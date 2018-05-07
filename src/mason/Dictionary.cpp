@@ -76,19 +76,32 @@ void Dictionary::merge( const Dictionary &other )
 		if( mp.second.type() == typeid( Dictionary ) ) {
 			// if we have that key, check if it is also a dictionary.
 			// - if yes then recursive merge. if no, blow away our current contents with other's.
-			const auto &b = boost::any_cast<Dictionary>( mp.second );
+			const Dictionary *b = boost::any_cast<Dictionary>( &mp.second );
 			auto it = mData.find( mp.first );
 			if( it != mData.end() && it->second.type() == typeid( Dictionary ) ) {				
 				Dictionary *a = boost::any_cast<Dictionary>( &it->second );
-				a->merge( b );
+				a->merge( *b );
 			}
 			else {
-				mData[key] = b;
+				mData[key] = *b;
 			}
 		}
-		else if( mp.second.type() == typeid( std::vector<any> ) ) {
-			// TODO: iterate over each array type to look for dictionarys or values
-		}
+		//else if( mp.second.type() == typeid( std::vector<any> ) ) {
+		//	// iterate over each array type to look for Dictionaries or values
+		//	// - check if we have a key and it is also an array.
+		//	// - if yes then merge the two, if no then replace our key
+		//	const vector<any> *b = boost::any_cast<vector<any>>( &mp.second );
+		//	auto it = mData.find( mp.first );
+		//	if( it != mData.end() && it->second.type() == typeid( std::vector<any> ) ) {
+		//		vector<any> *a = boost::any_cast<vector<any>>( &it->second );
+		//		for( const auto &c : *b ) {
+
+		//		}
+		//	}
+		//	else {
+		//		mData[key] = b;
+		//	}
+		//}
 		else {
 			mData[key] = mp.second;
 		}

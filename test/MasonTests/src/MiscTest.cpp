@@ -113,8 +113,11 @@ void MiscTest::testMergegDict()
 		sub.set( "vec2", vec2( 0, 1 ) );
 
 		a.set( "sub", sub );
-	}
 
+		// TODO: what to do about if a user adds a vector<int> or something like that?
+		vector<boost::any> arr = { 1, 2, 3, 4 } ;
+		a.set( "array", arr );
+	}
 	ma::Dictionary b;
 	b.set( "a", 3 );
 	{
@@ -122,6 +125,9 @@ void MiscTest::testMergegDict()
 		sub.set( "b", "updated" );
 
 		b.set( "sub", sub );
+
+		vector<boost::any> arr = { 2, "yo"} ;
+		b.set( "array", arr );
 	}
 
 	a.merge( b );
