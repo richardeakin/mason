@@ -492,9 +492,10 @@ Json::Value toJson( const any &a )
 		result.append( v[2] );
 		return result;
 	}
-	else if( a.type() == typeid( nullptr ) ) {
-		return Json::Value::null;
-	}
+	// FIXME: Json::Value::null doesn't seem to be exported with jsoncpp
+	//else if( a.type() == typeid( nullptr ) ) {
+	//	return Json::Value::null;
+	//}
 	else {
 		string typeAsString = System::demangleTypeName( a.type().name() );
 		//CI_ASSERT_NOT_REACHABLE();
