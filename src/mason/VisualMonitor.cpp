@@ -39,7 +39,7 @@ VisualMonitorView::VisualMonitorView( const Rectf &bounds, size_t windowFrames )
 
 	mVarRecording.resize( windowFrames, 0 );
 
-	mLabelText = ui::TextManager::loadText( ui::FontFace::NORMAL, 14 );
+	mLabelText = ui::TextManager::loadText( "", 14 );
 	CI_ASSERT( mLabelText );
 }
 
