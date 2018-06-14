@@ -266,6 +266,11 @@ void Hud::showInfo( size_t rowIndex, const std::vector<std::string> &textColumns
 	mInfoLabel->setRow( rowIndex, textColumns );
 }
 
+void Hud::showInfo( size_t rowIndex, const std::string &leftText, const std::string &rightText )
+{
+	mInfoLabel->setRow( rowIndex, { leftText, rightText } );
+}
+
 void Hud::layout()
 {
 	if( mFullScreen ) {
