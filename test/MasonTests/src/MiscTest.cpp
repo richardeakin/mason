@@ -160,6 +160,9 @@ void MiscTest::layout()
 
 bool MiscTest::keyDown( ci::app::KeyEvent &event )
 {
+	if( event.isControlDown() )
+		return false;
+
 	bool handled = true;
 	if( event.getChar() == 'u' ) {
 		CI_LOG_I( "unwatching " << JSON_FILENAME );
