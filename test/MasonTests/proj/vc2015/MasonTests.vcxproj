@@ -126,6 +126,9 @@
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">
     <ClCompile>
@@ -167,6 +170,9 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
       <Command>
       </Command>
     </PreLinkEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -200,6 +206,9 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
       <Profile>false</Profile>
       <CreateHotPatchableImage>Enabled</CreateHotPatchableImage>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
     <ClCompile>
@@ -243,6 +252,9 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
       <Command>
       </Command>
     </PreLinkEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\EmptyTest.cpp" />
