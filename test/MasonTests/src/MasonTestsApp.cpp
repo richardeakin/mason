@@ -12,10 +12,18 @@
 
 #include "HudTest.h"
 #include "MiscTest.h"
-//#include "BlendingTest.h"
 
 #define USE_SECONDARY_SCREEN 1
 #define MSAA 4
+#define LIVEPP_ENABLED 1
+
+#if LIVEPP_ENABLED
+
+#include <windows.h>
+#include "../../../../LivePP/API/LPP_ForceLinkStaticRuntime.h"
+#include "../../../../LivePP/API/LPP_API.h"
+
+#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -134,6 +142,11 @@ void MasonTestsApp::draw()
 
 void prepareSettings( App::Settings *settings )
 {
+#if LIVEPP_ENABLED
+	HMODULE livePP = lpp::lppLoadAndRegister( L"../../../../../LivePP", "MasonTests" );
+	lpp::lppEnableAllCallingModulesSync( livePP );
+#endif
+
 	bool useSecondaryScreen = ( USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1 );
 
 	if( useSecondaryScreen ) {
