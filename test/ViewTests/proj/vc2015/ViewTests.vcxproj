@@ -277,6 +277,9 @@ xcopy /y /d "$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfor
       <Command>if not exist "$(OutDir)assets" mklink /j "$(OutDir)assets" "$(REPO_PATH)\blocks\Cinder-View\assets"
 </Command>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">
     <ClCompile>
@@ -317,6 +320,9 @@ xcopy /y /d "$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfor
       <Command>if not exist "$(OutDir)assets" mklink /j "$(OutDir)assets" "$(REPO_PATH)\blocks\Cinder-View\assets"
 xcopy /y /d "$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -431,6 +437,9 @@ xcopy /y /d "$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfor
     <PostBuildEvent>
       <Command>if not exist "$(OutDir)assets" mklink /j "$(OutDir)assets" "$(REPO_PATH)\blocks\Cinder-View\assets"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
     <ClCompile>
@@ -471,6 +480,9 @@ xcopy /y /d "$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfor
       <Command>if not exist "$(OutDir)assets" mklink /j "$(OutDir)assets" "$(REPO_PATH)\blocks\Cinder-View\assets"
 xcopy /y /d "$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
