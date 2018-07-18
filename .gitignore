@@ -1,4 +1,5 @@
 test/MasonTests/proj/vc2015/log*
+test/ViewTests/proj/vc2015/log*
 
 # Mac OS X cruft
 *.pbxuser
