@@ -178,6 +178,26 @@ bool getValue( const boost::any &value, size_t *result )
 	return true;
 }
 
+bool MA_API getValue( const boost::any &value, int32_t *result )
+{
+	const auto castedInt = boost::any_cast<int>( &value );
+	if( castedInt ) {
+		*result = static_cast<int32_t>( *castedInt );
+		return true;
+	}
+	return true;
+}
+
+bool MA_API getValue( const boost::any &value, uint32_t *result )
+{
+	const auto castedInt = boost::any_cast<int>( &value );
+	if( castedInt ) {
+		*result = static_cast<uint32_t>( *castedInt );
+		return true;
+	}
+	return true;
+}
+
 bool getValue( const boost::any &value, vec2 *result )
 {
 	// First cast to vector<any>

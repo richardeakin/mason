@@ -168,6 +168,8 @@ bool getValue( const boost::any &value, std::vector<T> *result )
 bool MA_API getValue( const boost::any &value, float *result );
 bool MA_API getValue( const boost::any &value, double *result );
 bool MA_API getValue( const boost::any &value, size_t *result );
+bool MA_API getValue( const boost::any &value, int32_t *result );
+bool MA_API getValue( const boost::any &value, uint32_t *result );
 bool MA_API getValue( const boost::any &value, ci::vec2 *result );
 bool MA_API getValue( const boost::any &value, ci::vec3 *result );
 bool MA_API getValue( const boost::any &value, ci::vec4 *result );
