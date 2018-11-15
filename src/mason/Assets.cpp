@@ -304,6 +304,7 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 				Surface surface = loadImage( dataSource );
 
 #if USE_DEEP_LOADING
+				// TODO: I think this should always be on. test in MasonTests
 				if( texture && texture->getSize() == surface.getSize() ) {
 					texture->update( surface, 0 );
 				}
