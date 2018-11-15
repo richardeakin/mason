@@ -136,6 +136,9 @@
     <ClCompile Include="..\..\src\mason\audio\OfflineContext.cpp">
       <Filter>Source Files\mason\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\LivePPManager.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -260,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\audio\OfflineContext.h">
       <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\LivePPManager.h">
+      <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
