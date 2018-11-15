@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "mason/Mason.h"
+
 namespace mason {
 
 class VarOwner {
