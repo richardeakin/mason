@@ -65,6 +65,7 @@
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp" />
     <ClCompile Include="..\..\src\mason\ui\AudioAnalyzerView.cpp" />
+    <ClCompile Include="..\..\src\mason\ui\AudioViews.cpp" />
     <ClCompile Include="..\..\src\mason\ui\DraggableView.cpp" />
     <ClCompile Include="..\..\src\mason\VisualMonitor.cpp" />
     <ClCompile Include="..\..\src\mason\WorldClock.cpp" />
@@ -108,6 +109,7 @@
     <ClInclude Include="..\..\src\mason\Profiling.h" />
     <ClInclude Include="..\..\src\mason\ShaderControls.h" />
     <ClInclude Include="..\..\src\mason\ui\AudioAnalyzerView.h" />
+    <ClInclude Include="..\..\src\mason\ui\AudioViews.h" />
     <ClInclude Include="..\..\src\mason\ui\DraggableView.h" />
     <ClInclude Include="..\..\src\mason\Var.h" />
     <ClInclude Include="..\..\src\mason\VisualMonitor.h" />

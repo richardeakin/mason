@@ -21,21 +21,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#pragma optimize( "", off ) // TODO: make this a common project wide macro
-
 #include "ui/View.h"
 #include "mason/Mason.h"
-#include "mason/Export.h"
 #include "mason/Dictionary.h"
-#include "mason/LUT.h"
 #include "mason/audio/AudioAnalyzer.h"
-
-#if defined( CINDER_RUNTIME_PRESENT )
-#include "runtime/Factory.h"
-#include "runtime/Virtual.h"
-#else
-#define rt_virtual 
-#endif
+#include "mason/ui/AudioViews.h"
 
 namespace mason { namespace audio {
 
@@ -50,19 +40,15 @@ namespace mason { namespace mui {
 
 using AudioAnalyzerViewRef		= std::shared_ptr<class AudioAnalyzerView>;
 using AudioTrackViewRef			= std::shared_ptr<class AudioTrackView>;
-using AudioSpectrumViewRef		= std::shared_ptr<class AudioSpectrumView>;
-using AudioSpectrogramViewRef	= std::shared_ptr<class AudioSpectrogramView>;
-using AudioBarkBandsViewRef		= std::shared_ptr<class AudioFrequencyBandsView>;
 
 class MA_API AudioAnalyzerView : public ::ui::View {
-	//RT_DECL
   public:
 	AudioAnalyzerView( const ci::Rectf &bounds = ci::Rectf::zero() );
 	~AudioAnalyzerView();
 
-	rt_virtual void load( const ma::Dictionary &config );
+	void load( const ma::Dictionary &config );
 
-	rt_virtual void setup();
+	void setup();
 
   protected:
 
@@ -104,119 +90,6 @@ class MA_API AudioTrackView : public ::ui::View {
 
 	friend class AudioAnalyzerView;
 	friend class AudioSpectrogramView;
-};
-
-//! Shows one frame of the magnitude spectrum
-class MA_API AudioSpectrumView : public ::ui::View {
-  public:
-	AudioSpectrumView( const ci::Rectf &bounds = ci::Rectf::zero() );
-
-	void enableScaleDecibels( bool b = true )	{ mScaleDecibels = b; }
-	bool getScaleDecibels() const				{ return mScaleDecibels; }
-
-	void enableBorder( bool b = true )			{ mBorderEnabled = b; }
-	bool getBorderEnabled() const				{ return mBorderEnabled; }
-
-	void setBorderColor( const ci::ColorA &color )	{ mBorderColor = color; }
-	const ci::ColorA& getBorderColor() const		{ return mBorderColor; }
-
-	void setMinMagValue( float x )				{ mMinMagValue = x; }
-
-	void updateData( const audio::TrackRef &track );
-
-  private:
-	void draw( ::ui::Renderer *ren ) override;
-
-  private:
-	void initGl();
-
-	bool					mScaleDecibels = true;
-	bool					mBorderEnabled = true;
-	bool					mDrawSpectralCentroid = true;
-	bool					mDrawValueAtMouse = true;
-	float					mMinMagValue = 0;
-	float					mMaxSpectrumFreq = -1; // defaults to nyquist, can be set to something lower in config
-	size_t					mMaxSpectrumBin; // can be set to lower than mMagSpectrum.size() by setting maxSpectrumFreq in config
-	ci::ColorA				mBorderColor = ci::ColorA( 0.5f, 0.5f, 0.5f, 1 );
-	std::vector<float>		mMagSpectrum;
-	float					mSpectralCentroidNormalized = -1;
-
-	int						mBinIndexUnderMouse = -1;
-	float					mFreqUnderMouse = 0;
-
-	friend class AudioAnalyzerView;
-};
-
-//! Shows the magnitude spectrum of an entire audio::Source
-class MA_API AudioSpectrogramView : public ::ui::View {
-  public:
-	AudioSpectrogramView( int trackIndex, const ci::Rectf &bounds = ci::Rectf::zero() );
-
-	void load( const audio::TrackRef &track );
-
-	void update( const audio::TrackRef &track );
-
-  protected:
-	void draw( ::ui::Renderer *ren ) override;
-	bool touchesBegan( ci::app::TouchEvent &event )	override;
-	bool touchesMoved( ci::app::TouchEvent &event )	override;
-
-
-  private:
-	void makeTex();
-	bool readSTFTFromDisk( const ci::fs::path &sampleName );
-	void writeSTFTToDisk( const ci::fs::path &sampleName );
-	void setTrackPos( float x );
-
-	std::vector<std::vector<float>>	mSTFT; // actual analysis data
-	ci::gl::TextureRef				mTex;
-	ma::ColorLUT<ci::ColorAf>		mLUT;
-
-	bool				mDrawValueAtMouse = true;
-	ci::ivec2			mBinUnderMouse = { -1, -1 };
-
-	float				mTrackTimePercent = 0;
-	int					mTrackIndex = -1;
-
-	bool				mBorderEnabled = true;
-	ci::ColorA			mBorderColor = ci::ColorA( 0.5f, 0.5f, 0.5f, 1 );
-};
-
-//! Visualizes a Track's Frequency Bands. TODO: make this a generic BarGraphView or something.
-class MA_API AudioFrequencyBandsView : public ::ui::View {
-public:
-	AudioFrequencyBandsView( const ci::Rectf &bounds = ci::Rectf::zero() );
-
-	void enableScaleDecibels( bool b = true )	{ mScaleDecibels = b; }
-	bool getScaleDecibels() const				{ return mScaleDecibels; }
-
-	void enableBorder( bool b = true )			{ mBorderEnabled = b; }
-	bool getBorderEnabled() const				{ return mBorderEnabled; }
-
-	void setBorderColor( const ci::ColorA &color )	{ mBorderColor = color; }
-	const ci::ColorA& getBorderColor() const		{ return mBorderColor; }
-
-
-	void updateData( const audio::TrackRef &track );
-
-private:
-	void draw( ::ui::Renderer *ren ) override;
-
-private:
-	void initGl();
-	
-	bool					mScaleDecibels = true;
-	bool					mBorderEnabled = true;
-	bool					mDrawValueAtMouse = true;
-	bool					mAlignBandsToSpectrum = false;
-	float					mMaxSpectrumFreq = -1; // defaults to nyquist, can be set to something lower in config
-	ci::ColorA				mBorderColor = ci::ColorA( 0.5f, 0.5f, 0.5f, 1 );
-
-	std::vector<ma::audio::FrequencyBand>		mBands;
-
-	int mBandIndexUnderMouse = -1;
-
-	friend class AudioAnalyzerView;
 };
 
 } } // namespace mason::mui

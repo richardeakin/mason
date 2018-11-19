@@ -139,6 +139,9 @@
     <ClCompile Include="..\..\src\mason\LivePPManager.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\AudioViews.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -266,6 +269,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\LivePPManager.h">
       <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\AudioViews.h">
+      <Filter>Source Files\mason\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
