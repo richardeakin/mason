@@ -156,6 +156,9 @@ enum class InputType {
 using TrackRef = std::shared_ptr<mason::audio::Track>;
 using AudioAnalyzerRef = std::shared_ptr<class mason::audio::AudioAnalyzer>;
 
+//! The Signal type used for for AudioAnalyyzer::getSignalResolvePath(). Returns a non-empty path if succeeded to resolve the path
+typedef ci::signals::Signal<ci::fs::path ( const std::string & )>	SignalResolvePath;
+
 class MA_API AudioAnalyzer {
 public:
 
@@ -198,11 +201,13 @@ public:
 		
 	ci::signals::Signal<void ()>&	getSignalTracksChanged()	{ return mSignalTracksChanged; }
 
+	SignalResolvePath&	getSignalResolvePath()	{ return mSignalResolvePath; }
+
 private:
 	void initEntry( const Dictionary &config );
 	void initContext( const Dictionary &config );
 	void initTracks( const Dictionary &config );
-	ci::fs::path resolvePath( const std::string &url );
+	ci::fs::path resolvePathFromUrl( const std::string &url );
 
 	void keyDown( ci::app::KeyEvent &event );
 	void printInfo();
@@ -210,6 +215,7 @@ private:
 	ci::audio::GainNodeRef			mMasterGain;
 	std::vector<TrackRef>			mTracks;
 	ci::signals::Signal<void ()>	mSignalTracksChanged;
+	SignalResolvePath				mSignalResolvePath;
 	bool							mIsPaused = true;
 	double							mSeekRampSeconds = 0.02;
 

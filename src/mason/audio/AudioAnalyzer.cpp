@@ -509,7 +509,7 @@ void AudioAnalyzer::initTracks( const ma::Dictionary &config )
 		if( inputType == InputType::FILE_PLAYER || inputType == InputType::BUFFER_PLAYER ) {
 			const auto loopEnabled = trackInfo.get<bool>( "loopEnabled", false );
 			track->mSampleFileName = trackInfo.get<string>( "fileName" );
-			auto audioFilePath = resolvePath( track->mSampleFileName );
+			auto audioFilePath = resolvePathFromUrl( track->mSampleFileName );
 			CI_LOG_I( "\t- file path: " << audioFilePath );
 
 			weak_ptr<Track>	weakTrack = track; // avoid circular ownership in track callback lambdas
@@ -621,8 +621,13 @@ void AudioAnalyzer::initTracks( const ma::Dictionary &config )
 	mSignalTracksChanged.emit();
 }
 
-ci::fs::path AudioAnalyzer::resolvePath( const std::string &url )
+ci::fs::path AudioAnalyzer::resolvePathFromUrl( const std::string &url )
 {
+	auto result = mSignalResolvePath.emit( url );
+	if( ! result.empty() )
+		return result;
+
+	// default: try ci::app asset system
 	return app::getAssetPath( url );
 }
 
