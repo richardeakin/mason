@@ -28,6 +28,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/gl/gl.h"
 #include "cinder/audio/audio.h"
 #include "cinder/Timer.h"
+#include "cinder/Triangulate.h"
 
 #define CEREAL_ENABLED 1
 #if CEREAL_ENABLED
@@ -53,6 +54,147 @@ gl::TextureFontRef getTrackViewFont()
 	return sTextFont;
 }
 
+void calcMinMaxForSection( const float *buffer, size_t samplesPerSection, float &max, float &min )
+{
+	max = 0;
+	min = 0;
+	for( size_t k = 0; k < samplesPerSection; k++ ) {
+		float s = buffer[k];
+		max = glm::max( max, s );
+		min = glm::min( min, s );
+	}
+}
+
+void calcAverageForSection( const float *buffer, size_t samplesPerSection, float &upper, float &lower )
+{
+	upper = 0;
+	lower = 0;
+	for( size_t k = 0; k < samplesPerSection; k++ ) {
+		float s = buffer[k];
+		if( s > 0 ) {
+			upper += s;
+		} else {
+			lower += s;
+		}
+	}
+	upper /= samplesPerSection;
+	lower /= samplesPerSection;
+}
+
+} // anonymous namespace
+
+// ----------------------------------------------------------------------------------------------------
+// AudioBufferView
+// ----------------------------------------------------------------------------------------------------
+
+AudioBufferView::AudioBufferView( const ci::Rectf &bounds )
+	: ::ui::View( bounds )
+{
+	mTitleLabel = make_shared<ui::Label>();
+	mTitleLabel->setHidden( true );
+	mTitleLabel->setTextColor( Color( 1, 1, 1 ) );
+	//mTitleLabel->getBackground()->setColor( Color( 1, 0, 0 ) );
+
+	addSubview( mTitleLabel );
+}
+
+void AudioBufferView::load( const std::vector<float> &samples, size_t pixelsPerVertex )
+{
+	mWaveformVbos.clear();
+
+	loadWaveform( samples.data(), samples.size(), getSize(), pixelsPerVertex, CalcMode::MIN_MAX );
+	loadWaveform( samples.data(), samples.size(), getSize(), pixelsPerVertex, CalcMode::AVERAGE );
+}
+
+void AudioBufferView::load( const ci::audio::BufferRef &buffer, size_t pixelsPerVertex )
+{
+	mWaveformVbos.clear();
+
+	size_t numChannels = buffer->getNumChannels();
+	ivec2 waveSize = getSize();
+	waveSize.y /= numChannels;
+	for( size_t ch = 0; ch < numChannels; ch++ ) {
+		loadWaveform( buffer->getChannel( ch ), buffer->getNumFrames(), waveSize, pixelsPerVertex, CalcMode::MIN_MAX );
+		loadWaveform( buffer->getChannel( ch ), buffer->getNumFrames(), waveSize, pixelsPerVertex, CalcMode::AVERAGE );
+	}
+}
+
+void AudioBufferView::loadWaveform( const float *samples, size_t numSamples, const ci::vec2 &waveSize, size_t pixelsPerVertex, CalcMode mode )
+{
+	float height = waveSize.y / 2.0f;
+	size_t numSections = waveSize.x / pixelsPerVertex + 1;
+	size_t samplesPerSection = numSamples / numSections;
+
+	ci::PolyLine2f polyLine;
+	vector<vec2> &points = polyLine.getPoints();
+	points.resize( numSections * 2 );
+
+	for( size_t i = 0; i < numSections; i++ ) {
+		float x = (float)i * pixelsPerVertex;
+		float yUpper, yLower;
+		if( mode == CalcMode::MIN_MAX ) {
+			calcMinMaxForSection( &samples[i * samplesPerSection], samplesPerSection, yUpper, yLower );
+		} else {
+			calcAverageForSection( &samples[i * samplesPerSection], samplesPerSection, yUpper, yLower );
+		}
+		points[i] = vec2( x, height - height * yUpper );
+		points[numSections * 2 - i - 1] = vec2( x, height - height * yLower );
+	}
+	polyLine.setClosed();
+
+	auto mesh = gl::VboMesh::create( Triangulator( polyLine ).calcMesh() );
+	mWaveformVbos.push_back( mesh );
+}
+
+void AudioBufferView::setTitle( const std::string &title )
+{
+	mTitleLabel->setHidden( title.empty() );
+	mTitleLabel->setText( title );
+}
+
+// TODO: figure out what to do when layout changes and a buffer has already been loaded
+void AudioBufferView::layout()
+{
+	mTitleLabel->setBounds( Rectf( 0, 0, getWidth(), 20 ) );
+}
+
+void AudioBufferView::update()
+{
+}
+
+void AudioBufferView::draw( ::ui::Renderer *ren )
+{
+	if( ! mWaveformVbos.empty() ) {
+
+		// TODO: use our own Vao + shader
+		gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
+
+		// evens are average values, odds are min/max
+		gl::color( mColorMinMax );
+		gl::draw( mWaveformVbos[0] );
+
+		gl::color( mColorAverage );
+		gl::draw( mWaveformVbos[1] );
+
+		// TODO: support N number channels
+		if( mWaveformVbos.size() > 2 ) {
+			gl::pushMatrices(); // TODO: use scoped mat
+			gl::translate( 0, getBounds().getHeight() / 2 );
+
+			gl::color( mColorMinMax );
+			gl::draw( mWaveformVbos[2] );
+
+			gl::color( mColorAverage );
+			gl::draw( mWaveformVbos[3] );
+
+			gl::popMatrices();
+		}
+	}
+
+	if( mBorderEnabled ) {
+		ren->setColor( mBorderColor );
+		ren->drawStrokedRect( getBoundsLocal() );
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -61,11 +203,6 @@ gl::TextureFontRef getTrackViewFont()
 
 AudioSpectrumView::AudioSpectrumView( const ci::Rectf &bounds )
 	: View( bounds )
-{
-	initGl();
-}
-
-void AudioSpectrumView::initGl()
 {
 }
 

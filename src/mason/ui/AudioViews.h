@@ -22,8 +22,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "ui/View.h"
+#include "ui/Label.h"
 #include "mason/Mason.h"
 #include "mason/LUT.h"
+#include "cinder/audio/Buffer.h"
+#include "cinder/gl/VboMesh.h"
 
 // TODO: decouple these views from AudioAnalyzer
 #include "mason/audio/AudioAnalyzer.h"
@@ -31,9 +34,53 @@ POSSIBILITY OF SUCH DAMAGE.
 // note: using namespace mason::mui so as not to conflict with ui::*. Oh well..
 namespace mason { namespace mui {
 
+using AudioBufferViewRef		= std::shared_ptr<class AudioBufferView>;
 using AudioSpectrumViewRef		= std::shared_ptr<class AudioSpectrumView>;
 using AudioSpectrogramViewRef	= std::shared_ptr<class AudioSpectrogramView>;
 using AudioBarkBandsViewRef		= std::shared_ptr<class AudioFrequencyBandsView>;
+
+//! Displays the entire contents of an audio::Buffer as a waveform plot.
+// TODO: support calling load() methods async
+class MA_API AudioBufferView : public ::ui::View {
+  public:
+	AudioBufferView( const ci::Rectf &bounds = ci::Rectf::zero() );
+
+	// TODO: make this overload take float* + count, so it is more generic
+	void load( const std::vector<float> &samples, size_t pixelsPerVertex = 2 );
+
+	void load( const ci::audio::BufferRef &buffer, size_t pixelsPerVertex = 2 );
+
+	void setTitle( const std::string &title );
+
+	//void enableScaleDecibels( bool b = true )	{ mScaleDecibels = b; }
+	//bool getScaleDecibels() const				{ return mScaleDecibels; }
+
+	void setBorderEnabled( bool b = true )			{ mBorderEnabled = b; }
+	bool getBorderEnabled() const					{ return mBorderEnabled; }
+
+	void setBorderColor( const ci::ColorA &color )	{ mBorderColor = color; }
+	const ci::ColorA& getBorderColor() const		{ return mBorderColor; }
+
+  private:
+	void layout() override;
+	void update() override;
+	void draw( ::ui::Renderer *ren ) override;
+
+  private:
+	enum CalcMode { MIN_MAX, AVERAGE };
+
+	void loadWaveform( const float *samples, size_t numSamples, const ci::vec2 &waveSize, size_t pixelsPerVertex, CalcMode mode );
+
+	//bool					mScaleDecibels = false;
+	bool					mBorderEnabled = true;
+	//bool					mDrawValueAtMouse = true;
+	ci::ColorA				mBorderColor = ci::ColorA( 0.5f, 0.5f, 0.5f, 1 );
+	ci::ColorA				mColorMinMax = ci::ColorA::gray( 0.5f );
+	ci::ColorA				mColorAverage = ci::ColorA::gray( 0.75f );
+	ui::LabelRef			mTitleLabel;
+
+	std::vector<ci::gl::VboMeshRef>	mWaveformVbos;
+};
 
 //! Shows one frame of the magnitude spectrum
 class MA_API AudioSpectrumView : public ::ui::View {
