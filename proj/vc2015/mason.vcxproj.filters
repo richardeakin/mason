@@ -154,6 +154,9 @@
     <ClCompile Include="..\..\src\mason\audio\CompressorNode.cpp">
       <Filter>Source Files\mason\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\ProfilerNode.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -298,6 +301,9 @@
       <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\audio\CompressorNode.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\ProfilerNode.h">
       <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
   </ItemGroup>

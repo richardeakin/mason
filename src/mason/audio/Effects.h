@@ -31,7 +31,8 @@
 
 namespace mason { namespace audio {
 
-typedef std::shared_ptr<class MoogFilterNode>		MoogFilterNodeRef;
+using MoogFilterNodeRef = std::shared_ptr<class MoogFilterNode>;
+using VcfNodeRef = std::shared_ptr<class VcfNode>;
 
 //! \brief Resonant lowpass filter with a 'Moog VCF' sound.
 //!
@@ -42,13 +43,11 @@ class MoogFilterNode : public ci::audio::Node {
 public:
 	MoogFilterNode( const Format &format = Format() );
 
-	ci::audio::Param*	getParamCutoffFreq()	{ return &mCutoffFreq; }
-	ci::audio::Param*	getParamQ()				{ return &mQ; }
+	ci::audio::Param*	getParamFreq()	{ return &mCutoffFreq; }
+	ci::audio::Param*	getParamQ()		{ return &mQ; }
 
-	void	setCutoffFreq( float freq )	{ mCutoffFreq.setValue( freq ); }
-	float	getCutoffFreq() const		{ return mCutoffFreq.getValue(); }
-	float	getMinCutoffFreq()			{ return 0; }
-	float	getMaxCutoffFreq()			{ return 8140; }
+	void	setFreq( float freq )		{ mCutoffFreq.setValue( freq ); }
+	float	getFreq() const				{ return mCutoffFreq.getValue(); }
 
 	void	setQ( float q )				{ mQ.setValue( q ); }
 	float	getQ() const				{ return mQ.getValue(); }
@@ -69,9 +68,54 @@ private:
 	float mY1, mY2, mY3, mY4;
 };
 
+//! Port of Pd's [vcf~] Node
+//!
+//! Complex one-pole resonant filter (with audio-rate center frequency input).
+//! Default Mode is bandpass, can also be used as a lowpass resonant filter.
+class VcfNode : public ci::audio::Node {
+public:
+	//! These map to the left and right outputs of [vcf~]
+	enum class Mode { BANDPASS, LOWPASS };
+
+	VcfNode( const Format &format = Format() );
+	~VcfNode();
+
+	ci::audio::Param*	getParamFreq()	{ return &mFreq; }
+	ci::audio::Param*	getParamQ()		{ return &mQ; }
+
+	void	setFreq( float freq )		{ mFreq.setValue( freq ); }
+	float	getFreq() const				{ return mFreq.getValue(); }
+	float	getMinFreq()				{ return 0; }
+	float	getMaxFreq()				{ return 20000; }
+
+	void	setQ( float q )				{ mQ.setValue( q ); }
+	float	getQ() const				{ return mQ.getValue(); }
+	float	getMinQ() const				{ return 0; }
+	float	getMaxQ() const				{ return 40; }
+
+	//! Sets the mode, which updates the coefficients so that the frequency response is that of a common type of filter. \see Mode.
+	void	setMode( Mode mode )	{ mMode = mode; }
+	//! Returns the current mode.
+	Mode	getMode() const			{ return mMode; }
+
+	void reset();
+
+protected:
+	void initialize() override;
+	void process( ci::audio::Buffer *buffer )	override;
+
+private:
+	ci::audio::Param	mFreq; // TODO: document this is either cutoff or center, depending on mode
+	ci::audio::Param	mQ;
+	
+	std::atomic<Mode>	mMode = { Mode::BANDPASS };
+	float	mReal, mImaginary, mConversion;
+};
+
 typedef std::shared_ptr<class Chorus>	ChorusRef;
 
 //! Manages a graph that constructs a stereo chorus effect.
+// TODO: this needs enable / disable functionality
 class Chorus {
   public:
 	Chorus();

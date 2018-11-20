@@ -110,6 +110,194 @@ void MoogFilterNode::process( ci::audio::Buffer *buffer )
 }
 
 // ----------------------------------------------------------------------------------------------------
+// VcfNode
+// ----------------------------------------------------------------------------------------------------
+// A port of a [vfc~] pd object, starting with the variant found here: https://github.com/Spaghettis/Spaghettis/blob/master/src/d_vcf.c
+
+typedef float                       t_float;
+typedef float                       t_sample;
+
+typedef union {
+	t_float     z_f;
+	uint32_t    z_i;
+} t_rawcast32;
+
+typedef union {
+	double      z_d;
+	uint32_t    z_i[2];
+} t_rawcast64;
+
+#define PD_TWO_PI                   6.283185307179586476925286766559
+
+#define DSP_UNITBIT             1572864.0   // (1.5 * 2^20)
+
+#define DSP_UNITBIT_MSB         0x41380000 
+#define DSP_UNITBIT_LSB         0x00000000 
+
+#define PD_RAWCAST64_MSB        1                                                              
+#define PD_RAWCAST64_LSB        0
+
+#define PD_MAX(a,b)                 ((a)>(b)?(a):(b))
+
+void *memory_get (size_t n)
+{
+	void *r = calloc (n < 1 ? 1 : n, 1);
+
+	//PD_ASSERT (r != NULL);
+	//PD_ABORT  (r == NULL);
+
+	return r;
+}
+
+#define PD_MEMORY_GET(n)                memory_get ((n))
+
+static inline int PD_IS_BIG_OR_SMALL (t_float f)        /* True if exponent falls out (-64, 64) range. */
+{
+	t_rawcast32 z;
+	z.z_f = f;
+	return ((z.z_i & 0x20000000) == ((z.z_i >> 1) & 0x20000000)); 
+}
+
+#define COSINE_TABLE_SIZE       (1 << 9)    // 512
+
+t_float *cos_tilde_table;
+
+void cos_tilde_initialize (void)
+{
+	if (!cos_tilde_table) {
+		//
+		double phase = 0.0;
+		double phaseIncrement = PD_TWO_PI / COSINE_TABLE_SIZE;
+		int i;
+
+		cos_tilde_table = (t_float *)PD_MEMORY_GET (sizeof (t_float) * (COSINE_TABLE_SIZE + 1));
+
+		for (i = 0; i < COSINE_TABLE_SIZE + 1; i++) {
+			cos_tilde_table[i] = (t_float)cos (phase);
+			phase += phaseIncrement;
+		}
+		//
+	}
+}
+
+static inline t_float dsp_getCosineAtLUT (double position)
+{
+	t_float f1, f2, f;
+	t_rawcast64 z;
+	int i;
+
+	z.z_d = position + DSP_UNITBIT;
+
+	i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
+
+	z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
+
+	f = (t_float)(z.z_d - DSP_UNITBIT);  /* Fractional part. */
+
+										 /* Linear interpolation. */
+
+	f1 = cos_tilde_table[i + 0];
+	f2 = cos_tilde_table[i + 1];
+
+	return (f1 + f * (f2 - f1));
+}
+
+#define dsp_getSineAtLUT(index) dsp_getCosineAtLUT ((double)(index) - (COSINE_TABLE_SIZE / 4.0))
+
+VcfNode::VcfNode( const Format &format )
+	: Node( format ), mFreq( this, 400 ), mQ( this, 2 )
+{
+	cos_tilde_initialize();
+}
+
+VcfNode::~VcfNode()
+{
+}
+
+void VcfNode::initialize()
+{
+	mConversion = ( 2.0f * M_PI ) / float( getSampleRate() );
+
+	reset();
+}
+
+void VcfNode::reset()
+{
+	mReal = 0;
+	mImaginary = 0;
+}
+
+void VcfNode::process( ci::audio::Buffer *buffer )
+{
+	CI_ASSERT_MSG( buffer->getNumChannels() == 1, "multi channel not yet supported" );
+
+	mFreq.eval();
+	mQ.eval();
+
+	//float *in1 = (float *)(w[1]);
+	//float *in2 = (float *)(w[2]);
+	//float *out1 = (float *)(w[3]);
+	//float *out2 = (float *)(w[4]);
+	//t_vcfctl *c = (t_vcfctl *)(w[5]);
+	float *in1 = buffer->getData();
+	const float *in2 = mFreq.getValueArray();
+	float *out1 = in1;
+
+	//int n = (int)w[6];
+	//int i;
+	//float re = c->c_re, re2;
+	//float im = c->c_im;
+	//float q = c->c_q;
+
+	int n = buffer->getNumFrames();
+	float re = mReal;
+	float im = mImaginary;
+	float q = mQ.getValue();
+	float k = mConversion;
+
+	Mode mode = mMode;
+
+	double qInverse = (q > 0.0 ? 1.0 / q : 0.0);
+	double correction = 2.0 - (2.0 / (q + 2.0));
+
+	while( n-- ) {
+		double centerFrequency;
+		double r, g;
+		double pReal;
+		double pImaginary;
+
+		centerFrequency = (*in2++) * k; 
+		centerFrequency = PD_MAX (0.0, centerFrequency);
+
+		r = (qInverse > 0.0 ? 1.0 - centerFrequency * qInverse : 0.0);
+		r = PD_MAX (0.0, r);
+		g = correction * (1.0 - r);
+
+		pReal      = r * dsp_getCosineAtLUT (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
+		pImaginary = r * dsp_getSineAtLUT   (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
+
+		{
+			double s = (*in1++);
+			double tReal = re;
+			double tImaginary = im;
+
+			re = (t_sample)((g * s) + (pReal * tReal - pImaginary * tImaginary));
+			im = (t_sample)((pImaginary * tReal + pReal * tImaginary));
+
+			// Output real part in bandpass mode, imaginary in lowpass mode
+			// https://lists.puredata.info/pipermail/pd-list/2012-09/097546.html
+			*out1++ = ( mode == Mode::BANDPASS ? re : im );
+		}
+	}
+
+	if (PD_IS_BIG_OR_SMALL (re)) { re = (t_sample)0.0; }
+	if (PD_IS_BIG_OR_SMALL (im)) { im = (t_sample)0.0; }
+
+	mReal = re;
+	mImaginary = im;
+}
+
+// ----------------------------------------------------------------------------------------------------
 // Chorus
 // ----------------------------------------------------------------------------------------------------
 
