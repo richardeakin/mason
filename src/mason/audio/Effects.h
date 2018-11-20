@@ -48,6 +48,8 @@ public:
 
 	void	setFreq( float freq )		{ mCutoffFreq.setValue( freq ); }
 	float	getFreq() const				{ return mCutoffFreq.getValue(); }
+	float	getMinFreq()				{ return 0; }
+	float	getMaxFreq()				{ return 20000; }
 
 	void	setQ( float q )				{ mQ.setValue( q ); }
 	float	getQ() const				{ return mQ.getValue(); }
