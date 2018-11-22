@@ -44,6 +44,8 @@ namespace mason {
 #if 1
 //! Global Dictionary used for configuration
 MA_API ma::Dictionary*	config();
+//! Loads a config json file, relative to the application's assets directory.
+MA_API void loadConfig( const ci::fs::path &filename = "config.json" );
 
 namespace detail {
 
