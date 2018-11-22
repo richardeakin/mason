@@ -24,3 +24,6 @@
 #include "mason/audio/CompressorNode.h"
 #include "mason/audio/Effects.h"
 #include "mason/audio/Gens.h"
+#include "mason/audio/AudioAnalyzer.h"
+#include "mason/audio/OfflineContext.h"
+#include "mason/audio/ProfilerNode.h"
