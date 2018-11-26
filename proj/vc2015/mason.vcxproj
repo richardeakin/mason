@@ -114,6 +114,7 @@
     <ClInclude Include="..\..\src\mason\LivePPManager.h" />
     <ClInclude Include="..\..\src\mason\LUT.h" />
     <ClInclude Include="..\..\src\mason\Mason.h" />
+    <ClInclude Include="..\..\src\mason\MotionTracker.h" />
     <ClInclude Include="..\..\src\mason\Notifications.h" />
     <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h" />
     <ClInclude Include="..\..\src\mason\Profiling.h" />

@@ -306,5 +306,8 @@
     <ClInclude Include="..\..\src\mason\audio\ProfilerNode.h">
       <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\mason\MotionTracker.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
