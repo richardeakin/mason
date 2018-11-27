@@ -32,6 +32,7 @@
 #include <memory>
 #include <map>
 
+// TODO: switch to std::any on toolsets that supply it
 #include <boost/any.hpp>
 
 #include "mason/Mason.h"
@@ -68,7 +69,7 @@ class MA_API Dictionary {
 	template<typename T>
 	void		set( const std::string &key, const T &value );
 
-	//! Returns a copy of the value associated with T. Some type conversions are allowed (like double -> float), hency why a copy is necessary.
+	//! Returns a copy of the value associated with T. Some type conversions are allowed (like double -> float), hence why a copy is necessary.
 	//! A DictionaryExc is thrown if the key doesn't exist or it can't be converted to type T.
 	template<typename T>
 	T	get( const std::string &key ) const;
