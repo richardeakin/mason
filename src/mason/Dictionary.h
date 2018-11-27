@@ -44,6 +44,11 @@ typedef std::shared_ptr<class Dictionary> DictionaryRef;
 //! Object for storing dynamic data in a hierarchical form, key = string, value = any.
 class MA_API Dictionary {
   public:
+	using AnyT = boost::any;
+	
+	class ValueType : public boost::any {
+	};
+
 	//! Constructs an empty Dictionary on the stack
 	Dictionary();
 	//! Creates an empty Dictionary and returns it in a shared_ptr
@@ -93,24 +98,29 @@ class MA_API Dictionary {
 
 	const std::map<std::string, boost::any>&	getData() const	{ return mData; }
 
-	// TODO: need to sort out what is happening with return versus const-ref before these are useful
-	// - could use getStrict() but more likely to throw
-//	template<typename T>
-//	T& operator[]( const std::string &key )			    { return get<T>( key ); }
-//	template<typename T>
-//	const T& operator[]( const std::string &key ) const { return get<T>( key ); }
-
 	size_t getSize() const  { return mData.size(); }
 	std::vector<std::string>	getAllKeys() const;
 
 	bool isEmpty() const		{ return mData.empty(); }
+
+	// TODO: need to sort out what is happening with return versus const-ref before these are useful
+	// - could use getStrict() but more likely to throw
+	//	template<typename T>
+	//	T& operator[]( const std::string &key )			    { return get<T>( key ); }
+	//template<typename T>
+	const Dictionary& operator[]( const std::string &key ) const { return getStrict<Dictionary>( key ); }
+
+	// TODO NEXT: figure out how what conversion here is necessary. Might need to subclass std::any and use that instaad
+	// - considering ValueType inner class
+	operator std::string() const	{ return "blarg"; }
+	operator float() const	{ return -3; }
 
 	std::string	toString() const;
 	friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
 
   private:
 
-	std::map<std::string, boost::any>	mData;
+	std::map<std::string, AnyT>	mData;
 };
 
 class MA_API DictionaryExc : public ci::Exception {
