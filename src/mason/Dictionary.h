@@ -39,14 +39,52 @@
 
 namespace mason {
 
-typedef std::shared_ptr<class Dictionary> DictionaryRef;
+using DictionaryRef = std::shared_ptr<class Dictionary>;
+
 
 //! Object for storing dynamic data in a hierarchical form, key = string, value = any.
 class MA_API Dictionary {
   public:
+
 	using AnyT = boost::any;
-	
-	class ValueType : public boost::any {
+	class Value : public AnyT {
+	  public:
+
+		Value() BOOST_NOEXCEPT
+			: AnyT()
+		{}
+
+		template<typename ValueT>
+		Value( const ValueT &value )
+			: AnyT( static_cast<const AnyT &>( value ) )
+		{
+		}
+
+		Value( const Value &other )
+			: AnyT( static_cast<const AnyT &>( other ) )
+		{
+		}
+
+		Value & operator=( const Value& rhs )
+		{
+			AnyT::operator=( static_cast<const AnyT &>( rhs ) );
+			return *this;
+		}
+
+		// move assignement
+		Value & operator=( Value&& rhs ) BOOST_NOEXCEPT
+		{
+			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
+			return *this;
+		}
+
+		// Perfect forwarding of Value
+		template <class ValueT>
+		Value & operator=( ValueT&& rhs )
+		{
+			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
+			return *this;
+		}
 	};
 
 	//! Constructs an empty Dictionary on the stack
@@ -96,7 +134,7 @@ class MA_API Dictionary {
 	//! Recursively copy the values of other into this Dictionary.
 	void merge( const Dictionary &other );
 
-	const std::map<std::string, boost::any>&	getData() const	{ return mData; }
+	const std::map<std::string, Value>&	getData() const	{ return mData; }
 
 	size_t getSize() const  { return mData.size(); }
 	std::vector<std::string>	getAllKeys() const;
@@ -111,7 +149,7 @@ class MA_API Dictionary {
 	const Dictionary& operator[]( const std::string &key ) const { return getStrict<Dictionary>( key ); }
 
 	// TODO NEXT: figure out how what conversion here is necessary. Might need to subclass std::any and use that instaad
-	// - considering ValueType inner class
+	// - considering Value inner class
 	operator std::string() const	{ return "blarg"; }
 	operator float() const	{ return -3; }
 
@@ -120,7 +158,7 @@ class MA_API Dictionary {
 
   private:
 
-	std::map<std::string, AnyT>	mData;
+	std::map<std::string, Value>	mData;
 };
 
 class MA_API DictionaryExc : public ci::Exception {
@@ -132,7 +170,7 @@ class MA_API DictionaryExc : public ci::Exception {
 
 class MA_API DictionaryBadTypeExc : public DictionaryExc {
   public:
-	DictionaryBadTypeExc( const std::string &key, const boost::any &value, const std::type_info &typeInfo )
+	DictionaryBadTypeExc( const std::string &key, const Dictionary::Value &value, const std::type_info &typeInfo )
 		: DictionaryExc( "" )
 	{
 		std::string descr = "Failed to convert value for key '" + key + "', from native type '";
@@ -151,7 +189,7 @@ class MA_API DictionaryBadTypeExc : public DictionaryExc {
 namespace detail {
 
 template<typename T>
-bool getValue( const boost::any &value, T *result )
+bool getValue( const Dictionary::Value &value, T *result )
 {
 	if( value.type() != typeid( T ) ) {
 		return false;
@@ -162,9 +200,9 @@ bool getValue( const boost::any &value, T *result )
 }
 
 template<typename T>
-bool getValue( const boost::any &value, std::vector<T> *result )
+bool getValue( const Dictionary::Value &value, std::vector<T> *result )
 {
-	const auto castedVector = boost::any_cast<std::vector<boost::any>> ( &value );
+	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector )
 		return false;
 	
@@ -176,22 +214,22 @@ bool getValue( const boost::any &value, std::vector<T> *result )
 	return true;
 }
 
-bool MA_API getValue( const boost::any &value, float *result );
-bool MA_API getValue( const boost::any &value, double *result );
-bool MA_API getValue( const boost::any &value, size_t *result );
-bool MA_API getValue( const boost::any &value, int32_t *result );
-bool MA_API getValue( const boost::any &value, uint32_t *result );
-bool MA_API getValue( const boost::any &value, ci::vec2 *result );
-bool MA_API getValue( const boost::any &value, ci::vec3 *result );
-bool MA_API getValue( const boost::any &value, ci::vec4 *result );
-bool MA_API getValue( const boost::any &value, ci::ivec2 *result );
-bool MA_API getValue( const boost::any &value, ci::ivec3 *result );
-bool MA_API getValue( const boost::any &value, ci::ivec4 *result );
-bool MA_API getValue( const boost::any &value, ci::Rectf *result );
-bool MA_API getValue( const boost::any &value, ci::Color *result );
-bool MA_API getValue( const boost::any &value, ci::ColorA *result );
-bool MA_API getValue( const boost::any &value, ci::fs::path *result );
-bool MA_API getValue( const boost::any &value, std::vector<boost::any> *result );
+bool MA_API getValue( const Dictionary::Value &value, float *result );
+bool MA_API getValue( const Dictionary::Value &value, double *result );
+bool MA_API getValue( const Dictionary::Value &value, size_t *result );
+bool MA_API getValue( const Dictionary::Value &value, int32_t *result );
+bool MA_API getValue( const Dictionary::Value &value, uint32_t *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::vec2 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::vec3 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::vec4 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::ivec2 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::ivec3 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::ivec4 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::Rectf *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::Color *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::ColorA *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::fs::path *result );
+bool MA_API getValue( const Dictionary::Value &value, std::vector<Dictionary::Value> *result );
 
 } // namespace mason::detail
 
