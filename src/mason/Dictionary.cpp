@@ -250,6 +250,60 @@ bool getValue( const Dictionary::Value &value, vec4 *result )
 	return true;
 }
 
+bool getValue( const Dictionary::Value &value, dvec2 *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>>( &value );
+	if( ! castedVector || castedVector->size() < 2 )
+		return false;
+
+	// Then get result's values from vector
+	if( ! getValue( (*castedVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const Dictionary::Value &value, dvec3 *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	if( ! castedVector || castedVector->size() < 3 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->z ) )
+		return false;
+
+	return true;
+}
+
+bool getValue( const Dictionary::Value &value, dvec4 *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	if( ! castedVector || castedVector->size() < 4 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( (*castedVector)[0], &result->x ) )
+		return false;
+	if( ! getValue( (*castedVector)[1], &result->y ) )
+		return false;
+	if( ! getValue( (*castedVector)[2], &result->z ) )
+		return false;
+	if( ! getValue( (*castedVector)[3], &result->w ) )
+		return false;
+
+	return true;
+}
+
 bool getValue( const Dictionary::Value &value, ivec2 *result )
 {
 	// First cast to vector<any>

@@ -59,7 +59,10 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 		auto b = dict.get<float>( "b" );
 		auto bAsDouble = dict.get<double>( "b" );
 		auto c = dict.get<string>( "c" );
-		CI_LOG_I( "a: " << a << ", b: " << b << ", bAsDouble: " << bAsDouble << ", c: " << c );
+		auto v2 = dict.get<vec2>( "vec2" );
+		auto dv2 = dict.get<dvec2>( "vec2" );
+
+		CI_LOG_I( "a: " << a << ", b: " << b << ", bAsDouble: " << bAsDouble << ", c: " << c << ", v2: " << v2 << ", dv2: " << dv2 );
 	}
 
 	{
@@ -94,7 +97,6 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 		oddNumbersStr += "[" + to_string( i ) + "] " + to_string( oddNumbers[i] ) + ", ";
 	}
 	CI_LOG_I( "num elements in oddNumbers: " << oddNumbers.size() << ", values: " << oddNumbersStr );
-
 }
 
 void MiscTest::testConvertBack( const ma::Dictionary &dict )
