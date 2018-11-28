@@ -57,13 +57,11 @@ class MA_API Dictionary {
 		template<typename ValueT>
 		Value( const ValueT &value )
 			: AnyT( static_cast<const AnyT &>( value ) )
-		{
-		}
+		{}
 
 		Value( const Value &other )
 			: AnyT( static_cast<const AnyT &>( other ) )
-		{
-		}
+		{}
 
 		Value & operator=( const Value& rhs )
 		{
@@ -85,6 +83,19 @@ class MA_API Dictionary {
 			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
 			return *this;
 		}
+
+		// -----------------------------------
+		// conversion operators
+
+		operator std::string() const;
+		//operator int() const;
+		//operator float() const;
+		//operator double() const;
+
+		//operator std::string() const	{ return boost::any_cast<std::string>( *this ); }
+		operator int() const			{ return boost::any_cast<int>( *this ); }
+		operator float() const			{ return boost::any_cast<float>( *this ); }
+		operator double() const			{ return boost::any_cast<double>( *this ); }
 	};
 
 	//! Constructs an empty Dictionary on the stack
@@ -121,8 +132,11 @@ class MA_API Dictionary {
 	template<typename T>
 	T	get( const std::string &key, const T &defaultValue ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly.
+	//! TODO: consider renaming to getRef(), which matches some other impls
 	template<typename T>
 	const T&	getStrict( const std::string &key ) const;
+	template<>
+	const Dictionary::Value& getStrict<Dictionary::Value>( const std::string &key ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly. Returns \a defaultValue if the key doesn't exist.
 	template<typename T>
 	const T&	getStrict( const std::string &key, const T &defaultValue ) const;
@@ -142,16 +156,13 @@ class MA_API Dictionary {
 	bool isEmpty() const		{ return mData.empty(); }
 
 	// TODO: need to sort out what is happening with return versus const-ref before these are useful
+	// TODO: test multiple operator[]s in series to make sure there isn't extra copying (ex. float x = dict["a"]["b"])
 	// - could use getStrict() but more likely to throw
 	//	template<typename T>
 	//	T& operator[]( const std::string &key )			    { return get<T>( key ); }
-	//template<typename T>
-	const Dictionary& operator[]( const std::string &key ) const { return getStrict<Dictionary>( key ); }
-
-	// TODO NEXT: figure out how what conversion here is necessary. Might need to subclass std::any and use that instaad
-	// - considering Value inner class
-	operator std::string() const	{ return "blarg"; }
-	operator float() const	{ return -3; }
+	
+//	template<typename T>
+	const Dictionary::Value& operator[]( const std::string &key ) const { return getStrict<Dictionary::Value>( key ); }
 
 	std::string	toString() const;
 	friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
@@ -309,5 +320,16 @@ const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) 
 	return boost::any_cast<const T&>( value );
 }
 
+// TODO: move to cpp
+template<>
+const Dictionary::Value& Dictionary::getStrict<Dictionary::Value>( const std::string &key ) const
+{
+	auto it = mData.find( key );
+	if( it == mData.end() ) {
+		throw DictionaryExc( "no key named '" + key + "'" );
+	}
+
+	return it->second;
+}
 
 } // namespace mason

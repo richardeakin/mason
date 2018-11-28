@@ -52,12 +52,23 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 {
 	CI_LOG_I( "number of elements: " << dict.getSize() );
 
-	int a = dict.get<int>( "a" );
-	CI_LOG_I( "a: " << a );
-	float b = dict.get<float>( "b" );
-	CI_LOG_I( "b: " << b );
-	string c = dict.get<string>( "c" );
-	CI_LOG_I( "c: " << c );
+	// test get<T> methods
+	{
+		CI_LOG_I( "testing get<T> methods.." );
+		int a = dict.get<int>( "a" );
+		float b = dict.get<float>( "b" );
+		string c = dict.get<string>( "c" );
+		CI_LOG_I( "a: " << a << ", b: " << b << ", c: " << c );
+	}
+
+	{
+		CI_LOG_I( "testing Value conversion for basic types.." );
+		int a = dict["a"];
+		//float b = dict["b"]; // TODO NEXT: what to do about this one? Maybe can use the getValue() detail methods for these
+		double b = dict["b"];
+		string c = dict["c"];
+		CI_LOG_I( "a: " << a << ", b: " << b << ", c: " << c );
+	}
 
 	// nested Dictionary, copied
 	auto nested = dict.get<ma::Dictionary>( "nested" );
