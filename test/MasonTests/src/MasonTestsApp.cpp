@@ -19,9 +19,7 @@
 
 #if LIVEPP_ENABLED
 
-#include <windows.h>
-#include "../../../../LivePP/API/LPP_ForceLinkStaticRuntime.h"
-#include "../../../../LivePP/API/LPP_API.h"
+#include "mason/LivePPManager.h"
 
 #endif
 
@@ -143,8 +141,8 @@ void MasonTestsApp::draw()
 void prepareSettings( App::Settings *settings )
 {
 #if LIVEPP_ENABLED
-	HMODULE livePP = lpp::lppLoadAndRegister( L"../../../../../LivePP", "MasonTests" );
-	lpp::lppEnableAllCallingModulesSync( livePP );
+	bool liveppEnabled = ma::initLivePP( "../../../../../../tools/LivePP", "MasonTests" );
+	CI_LOG_I( "Live++ " << string( liveppEnabled ? "enabled" : "disabled" ) );
 #endif
 
 	bool useSecondaryScreen = ( USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1 );
