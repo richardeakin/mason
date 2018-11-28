@@ -394,20 +394,6 @@ bool getValue( const Dictionary::Value &value, vector<Dictionary::Value> *result
 } // namespace mason::detail
 
 // ----------------------------------------------------------------------------------------------------
-// Dictionary::Value
-// ----------------------------------------------------------------------------------------------------
-
-Dictionary::Value::operator std::string() const
-{ 
-	return boost::any_cast<std::string>( *this );
-}
-
-//operator int() const			{ return boost::any_cast<int>( *this ); }
-//operator float() const			{ return boost::any_cast<float>( *this ); }
-//operator double() const			{ return boost::any_cast<double>( *this ); }
-
-
-// ----------------------------------------------------------------------------------------------------
 // Dictionary <-> JSON
 // ----------------------------------------------------------------------------------------------------
 

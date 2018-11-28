@@ -54,8 +54,8 @@ class MA_API Dictionary {
 			: AnyT()
 		{}
 
-		template<typename ValueT>
-		Value( const ValueT &value )
+		template<typename T>
+		Value( const T &value )
 			: AnyT( static_cast<const AnyT &>( value ) )
 		{}
 
@@ -77,25 +77,24 @@ class MA_API Dictionary {
 		}
 
 		// Perfect forwarding of Value
-		template <class ValueT>
-		Value & operator=( ValueT&& rhs )
+		template <class T>
+		Value & operator=( T&& rhs )
 		{
 			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
 			return *this;
 		}
 
-		// -----------------------------------
-		// conversion operators
+		//! Conversion operator for anything supported by detail::getValue()
+		template <typename T>
+		operator T() const
+		{
+			T result;
+			if( ! detail::getValue( *this, &result ) ) {
+				throw DictionaryBadTypeExc( *this, typeid( T ) );
+			}
 
-		operator std::string() const;
-		//operator int() const;
-		//operator float() const;
-		//operator double() const;
-
-		//operator std::string() const	{ return boost::any_cast<std::string>( *this ); }
-		operator int() const			{ return boost::any_cast<int>( *this ); }
-		operator float() const			{ return boost::any_cast<float>( *this ); }
-		operator double() const			{ return boost::any_cast<double>( *this ); }
+			return result;
+		}
 	};
 
 	//! Constructs an empty Dictionary on the stack
@@ -155,13 +154,8 @@ class MA_API Dictionary {
 
 	bool isEmpty() const		{ return mData.empty(); }
 
-	// TODO: need to sort out what is happening with return versus const-ref before these are useful
+	// TODO: enable non-const ref for assignment
 	// TODO: test multiple operator[]s in series to make sure there isn't extra copying (ex. float x = dict["a"]["b"])
-	// - could use getStrict() but more likely to throw
-	//	template<typename T>
-	//	T& operator[]( const std::string &key )			    { return get<T>( key ); }
-	
-//	template<typename T>
 	const Dictionary::Value& operator[]( const std::string &key ) const { return getStrict<Dictionary::Value>( key ); }
 
 	std::string	toString() const;
@@ -181,6 +175,15 @@ class MA_API DictionaryExc : public ci::Exception {
 
 class MA_API DictionaryBadTypeExc : public DictionaryExc {
   public:
+	DictionaryBadTypeExc( const Dictionary::Value &value, const std::type_info &typeInfo )
+		: DictionaryExc( "" )
+	{
+		std::string descr = "Failed to convert value during type conversion, from native type '";
+		descr += ci::System::demangleTypeName( value.type().name() ) + "' to requested type '";
+		descr += ci::System::demangleTypeName( typeInfo.name() ) + "'.";
+		setDescription( descr );
+	}
+
 	DictionaryBadTypeExc( const std::string &key, const Dictionary::Value &value, const std::type_info &typeInfo )
 		: DictionaryExc( "" )
 	{
