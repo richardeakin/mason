@@ -106,6 +106,15 @@ void Dictionary::merge( const Dictionary &other )
 	}
 }
 
+const Dictionary::Value& Dictionary::operator[]( const std::string &key ) const
+{
+	return getStrict<Dictionary::Value>( key );
+}
+
+Dictionary::Value& Dictionary::operator[]( const std::string &key )
+{
+	return mData[key];
+}
 
 std::string	Dictionary::toString() const
 {

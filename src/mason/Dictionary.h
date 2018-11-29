@@ -156,10 +156,14 @@ class MA_API Dictionary {
 
 	bool isEmpty() const		{ return mData.empty(); }
 
-	// TODO: enable non-const ref for assignment
-	const Dictionary::Value& operator[]( const std::string &key ) const { return getStrict<Dictionary::Value>( key ); }
-
+	//! operator enabling lookup by key. Enables syntax like `float x = dict["x"];`.
+	const Dictionary::Value& operator[]( const std::string &key ) const;
+	//! operator enabling lookup by key. Enables syntax like `dict["x"] = 1.0f`.
+	Dictionary::Value& operator[]( const std::string &key );
+	//! Convert this Dictionary to a string representation.
 	std::string	toString() const;
+
+
 	friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
 
   private:

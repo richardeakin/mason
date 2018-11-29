@@ -45,6 +45,7 @@ MiscTest::MiscTest()
 	}
 
 	testPrintingDict();
+	testSetDictWithOperators();
 	testMergegDict();
 }
 
@@ -118,6 +119,16 @@ void MiscTest::testPrintingDict()
 	d.set( "a", 2 );
 	d.set( "b", "blah" );
 	d.set( "vec2", vec2( 0, 1 ) );
+
+	CI_LOG_I( "dict:\n" << d );
+}
+
+void MiscTest::testSetDictWithOperators()
+{
+	ma::Dictionary d;
+	d["a"] = 2;
+	d["b"] = "blah";
+	d["vec2"] = vec2( 0, 1 );
 
 	CI_LOG_I( "dict:\n" << d );
 }
