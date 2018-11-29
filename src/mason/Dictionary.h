@@ -95,6 +95,8 @@ class MA_API Dictionary {
 
 			return result;
 		}
+
+		const Dictionary::Value& operator[]( const std::string &key ) const;
 	};
 
 	//! Constructs an empty Dictionary on the stack
@@ -155,7 +157,6 @@ class MA_API Dictionary {
 	bool isEmpty() const		{ return mData.empty(); }
 
 	// TODO: enable non-const ref for assignment
-	// TODO: test multiple operator[]s in series to make sure there isn't extra copying (ex. float x = dict["a"]["b"])
 	const Dictionary::Value& operator[]( const std::string &key ) const { return getStrict<Dictionary::Value>( key ); }
 
 	std::string	toString() const;
@@ -326,7 +327,9 @@ const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) 
 	return boost::any_cast<const T&>( value );
 }
 
-// TODO: move to cpp
+// ----------------------------------------------------
+// TODO: move these to cpp
+
 template<>
 const Dictionary::Value& Dictionary::getStrict<Dictionary::Value>( const std::string &key ) const
 {

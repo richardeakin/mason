@@ -82,6 +82,13 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 	const auto &nestedRef = dict.getStrict<ma::Dictionary>( "nested" );
 	CI_LOG_I( "nestedRef days: " << nestedRef.get<int>( "days" ) );
 
+	// nested using operator conversion syntax
+	{
+		string blah = dict["nested"]["blah"];
+		float days = dict["nested"]["days"];
+		CI_LOG_I( R"(dict["nested"]["blah"]: )" << blah << R"(, dict["nested"]["days"]: )" << days );
+	}
+
 	// vector with mixed types
 	auto mixedArray = dict.get<vector<boost::any>>( "mixedArray" );
 	string typesStr;

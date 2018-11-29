@@ -448,6 +448,16 @@ bool getValue( const Dictionary::Value &value, vector<Dictionary::Value> *result
 } // namespace mason::detail
 
 // ----------------------------------------------------------------------------------------------------
+// Dictionary::Value
+// ----------------------------------------------------------------------------------------------------
+
+const Dictionary::Value& Dictionary::Value::operator[]( const std::string &key ) const
+{ 
+	const auto &dict = boost::any_cast<const Dictionary &>( *this );
+	return dict.getStrict<Dictionary::Value>( key );
+}
+
+// ----------------------------------------------------------------------------------------------------
 // Dictionary <-> JSON
 // ----------------------------------------------------------------------------------------------------
 
