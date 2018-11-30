@@ -20,6 +20,7 @@
 // custom section names for hooks
 #define LPP_PREPATCH_SECTION			".lpp_prepatch_hooks"
 #define LPP_POSTPATCH_SECTION			".lpp_postpatch_hooks"
+#define LPP_COMPILE_START_SECTION		".lpp_compile_start_hooks"
 #define LPP_COMPILE_SUCCESS_SECTION		".lpp_compile_success_hooks"
 #define LPP_COMPILE_ERROR_SECTION		".lpp_compile_error_hooks"
 
@@ -32,6 +33,11 @@
 #define LPP_POSTPATCH_HOOK(_function)																							\
 	__pragma(section(LPP_POSTPATCH_SECTION, read))																				\
 	__declspec(allocate(LPP_POSTPATCH_SECTION)) extern void (*LPP_IDENTIFIER(lpp_postpatch_hook_function))(void) = &_function
+
+// register a compile start hook in a custom section
+#define LPP_COMPILE_START_HOOK(_function)																								\
+	__pragma(section(LPP_COMPILE_START_SECTION, read))																					\
+	__declspec(allocate(LPP_COMPILE_START_SECTION)) extern void (*LPP_IDENTIFIER(lpp_compile_start_hook_function))(void) = &_function
 
 // register a compile success hook in a custom section
 #define LPP_COMPILE_SUCCESS_HOOK(_function)																									\
@@ -50,7 +56,7 @@
 /******************************************************************************/
 
 // version string
-#define LPP_VERSION "1.2.3"
+#define LPP_VERSION "1.3.2"
 
 // macros to temporarily enable/disable optimizations
 #define LPP_ENABLE_OPTIMIZATIONS		__pragma(optimize("", on))
@@ -118,6 +124,20 @@ LPP_API void lppTriggerRecompile(HMODULE livePP)
 }
 
 
+// installs Live++'s exception handler.
+LPP_API void lppInstallExceptionHandler(HMODULE livePP)
+{
+	LPP_CALL(livePP, "LppInstallExceptionHandler", void, void)();
+}
+
+
+// makes Live++ listen to changed .obj files compiled by an external build system.
+LPP_API void lppUseExternalBuildSystem(HMODULE livePP)
+{
+	LPP_CALL(livePP, "LppUseExternalBuildSystem", void, void)();
+}
+
+
 // asynchronously enables Live++ for just the given .exe or .dll, but not its import modules.
 // returns a token that can be waited upon using lppWaitForToken().
 LPP_API void* lppEnableModuleAsync(HMODULE livePP, const wchar_t* const nameOfExeOrDll)
@@ -176,6 +196,68 @@ LPP_API void lppEnableCallingModuleSync(HMODULE livePP)
 LPP_API void lppEnableAllCallingModulesSync(HMODULE livePP)
 {
 	void* token = lppEnableAllCallingModulesAsync(livePP);
+	lppWaitForToken(livePP, token);
+}
+
+
+// asynchronously disables Live++ for just the given .exe or .dll, but not its import modules.
+// returns a token that can be waited upon using lppWaitForToken().
+LPP_API void* lppDisableModuleAsync(HMODULE livePP, const wchar_t* const nameOfExeOrDll)
+{
+	return LPP_CALL(livePP, "LppDisableModule", void*, const wchar_t* const)(nameOfExeOrDll);
+}
+
+// asynchronously disables Live++ for the given .exe or .dll and all its import modules.
+// returns a token that can be waited upon using lppWaitForToken().
+LPP_API void* lppDisableAllModulesAsync(HMODULE livePP, const wchar_t* const nameOfExeOrDll)
+{
+	return LPP_CALL(livePP, "LppDisableAllModules", void*, const wchar_t* const)(nameOfExeOrDll);
+}
+
+// asynchronously disables Live++ for just the .exe or .dll this function is being called from, but not its import modules.
+// returns a token that can be waited upon using lppWaitForToken().
+LPP_API void* lppDisableCallingModuleAsync(HMODULE livePP)
+{
+	wchar_t path[MAX_PATH] = { 0 };
+	GetModuleFileNameW((HMODULE)(&__ImageBase), path, MAX_PATH);
+	return lppDisableModuleAsync(livePP, path);
+}
+
+// asynchronously disables Live++ for the .exe or .dll this function is being called from and all its import modules.
+// returns a token that can be waited upon using lppWaitForToken().
+LPP_API void* lppDisableAllCallingModulesAsync(HMODULE livePP)
+{
+	wchar_t path[MAX_PATH] = { 0 };
+	GetModuleFileNameW((HMODULE)(&__ImageBase), path, MAX_PATH);
+	return lppDisableAllModulesAsync(livePP, path);
+}
+
+
+// synchronously disables Live++ for just the given .exe or .dll, but not its import modules.
+LPP_API void lppDisableModuleSync(HMODULE livePP, const wchar_t* const nameOfExeOrDll)
+{
+	void* token = lppDisableModuleAsync(livePP, nameOfExeOrDll);
+	lppWaitForToken(livePP, token);
+}
+
+// synchronously disables Live++ for the given .exe or .dll and all its import modules.
+LPP_API void lppDisableAllModulesSync(HMODULE livePP, const wchar_t* const nameOfExeOrDll)
+{
+	void* token = lppDisableAllModulesAsync(livePP, nameOfExeOrDll);
+	lppWaitForToken(livePP, token);
+}
+
+// synchronously disables Live++ for just the .exe or .dll this function is being called from, but not its import modules.
+LPP_API void lppDisableCallingModuleSync(HMODULE livePP)
+{
+	void* token = lppDisableCallingModuleAsync(livePP);
+	lppWaitForToken(livePP, token);
+}
+
+// synchronously disables Live++ for the .exe or .dll this function is being called from and all its import modules.
+LPP_API void lppDisableAllCallingModulesSync(HMODULE livePP)
+{
+	void* token = lppDisableAllCallingModulesAsync(livePP);
 	lppWaitForToken(livePP, token);
 }
 
