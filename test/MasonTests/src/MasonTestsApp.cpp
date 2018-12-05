@@ -60,16 +60,17 @@ void MasonTestsApp::setup()
 
 void MasonTestsApp::reload()
 {
-	// TODO: this should work without getAssetPath() too
-	ma::assets()->getFile( app::getAssetPath( "config.json" ), [this]( DataSourceRef dataSource ) {
-		CI_LOG_I( "config.json reloaded" );
+	ma::loadConfig();
 
-		auto config = ma::Dictionary::convert<Json::Value>( app::loadAsset( "config.json" ) );
-		ma::detail::setConfig( config );
+	try {
+		auto appConfig = ma::config()->get<ma::Dictionary>( "app" );
 
-		size_t testIndex = (size_t)ma::config()->getStrict<ma::Dictionary>( "app" ).get<int>( "test" );
+		size_t testIndex = appConfig["test"];
 		mSuite->select( testIndex );
-	} );
+	}
+	catch( exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load reload", exc );
+	}
 }
 
 void MasonTestsApp::keyDown( app::KeyEvent event )
