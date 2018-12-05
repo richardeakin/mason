@@ -97,6 +97,7 @@ class MA_API Dictionary {
 		}
 
 		const Dictionary::Value& operator[]( const std::string &key ) const;
+		Dictionary::Value& operator[]( const std::string &key );
 	};
 
 	//! Constructs an empty Dictionary on the stack

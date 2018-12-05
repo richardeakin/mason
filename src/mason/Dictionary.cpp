@@ -466,6 +466,22 @@ const Dictionary::Value& Dictionary::Value::operator[]( const std::string &key )
 	return dict.getStrict<Dictionary::Value>( key );
 }
 
+Dictionary::Value& Dictionary::Value::operator[]( const std::string &key )
+{
+	// check if this is a Dictionary. If yes, typecast to get the dictionary, then value from key
+	if( type() == typeid( Dictionary ) ) {
+		auto &dict = boost::any_cast<Dictionary &>( *this );
+		return dict[key];
+	}
+	else {
+		// if not, then blow away current contents with an empty Dictionary,
+		// add an element for the key and return the value.		
+		//emplace( Dictionary ); // TODO: want to use this, need the C++17 version
+		*this = Dictionary();
+		return (*this)[key];
+	}
+}
+
 // ----------------------------------------------------------------------------------------------------
 // Dictionary <-> JSON
 // ----------------------------------------------------------------------------------------------------

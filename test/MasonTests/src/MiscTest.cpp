@@ -130,7 +130,13 @@ void MiscTest::testSetDictWithOperators()
 	d["b"] = "blah";
 	d["vec2"] = vec2( 0, 1 );
 
-	CI_LOG_I( "dict:\n" << d );
+	d["x"]["y"] = 4;
+
+	CI_LOG_I( "dict (first):\n" << d );
+
+	d["x"]["y"] = "overwrite";
+
+	CI_LOG_I( "dict (second):\n" << d );
 }
 
 void MiscTest::testMergegDict()
