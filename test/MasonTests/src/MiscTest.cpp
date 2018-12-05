@@ -118,6 +118,9 @@ void MiscTest::testPrintingDict()
 	ma::Dictionary d;
 	d.set( "a", 2 );
 	d.set( "b", "blah" );
+	d.set( "float", 3.14f );
+	d.set( "double", 3.14 );
+	d.set( "a", 2 );
 	d.set( "vec2", vec2( 0, 1 ) );
 
 	CI_LOG_I( "dict:\n" << d );
@@ -128,6 +131,8 @@ void MiscTest::testSetDictWithOperators()
 	ma::Dictionary d;
 	d["a"] = 2;
 	d["b"] = "blah";
+	d["float"] = 3.14f;
+	d["double"] = 3.14;
 	d["vec2"] = vec2( 0, 1 );
 
 	d["x"]["y"] = 4;
