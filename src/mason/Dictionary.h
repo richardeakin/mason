@@ -100,6 +100,11 @@ class MA_API Dictionary {
 		Dictionary::Value& operator[]( const std::string &key );
 	};
 
+	using Container = std::map<std::string, Value>;
+	using Iterator = Container::iterator;
+	using ConstIterator = Container::const_iterator;
+
+
 	//! Constructs an empty Dictionary on the stack
 	Dictionary();
 	//! Creates an empty Dictionary and returns it in a shared_ptr
@@ -138,7 +143,7 @@ class MA_API Dictionary {
 	template<typename T>
 	const T&	getStrict( const std::string &key ) const;
 	template<>
-	const Dictionary::Value& getStrict<Dictionary::Value>( const std::string &key ) const;
+	const Value& getStrict<Dictionary::Value>( const std::string &key ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly. Returns \a defaultValue if the key doesn't exist.
 	template<typename T>
 	const T&	getStrict( const std::string &key, const T &defaultValue ) const;
@@ -150,7 +155,12 @@ class MA_API Dictionary {
 	//! Recursively copy the values of other into this Dictionary.
 	void merge( const Dictionary &other );
 
-	const std::map<std::string, Value>&	getData() const	{ return mData; }
+	Iterator			begin()			{ return mData.begin(); }
+	const ConstIterator	begin() const	{ return mData.begin(); }
+	Iterator			end()			{ return mData.end(); }
+	const ConstIterator	end() const		{ return mData.end(); }
+	//! Returns the underlining data container.
+	const Container&	getData() const	{ return mData; }
 
 	size_t getSize() const  { return mData.size(); }
 	std::vector<std::string>	getAllKeys() const;
