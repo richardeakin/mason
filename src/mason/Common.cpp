@@ -101,6 +101,19 @@ fs::path normalizePath( const fs::path &path )
 	return result;
 }
 
+// TODO: remove this and use filesystem::relative() when it is available on windows
+std::string stripBasePath( const ci::fs::path &fullPath, const ci::fs::path &basePath )
+{
+	auto fullString = fullPath.generic_string();
+	auto baseString = basePath.generic_string();
+	auto remainderPos = fullString.find( baseString );
+
+	if( remainderPos == string::npos )
+		return fullString;
+
+	return fullString.substr( baseString.size() + 1 );
+}
+
 ci::Timeline* timeline()
 {
 	return &app::timeline();

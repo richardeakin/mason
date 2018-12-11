@@ -49,6 +49,9 @@ MA_API void				initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
 MA_API const ci::fs::path&		getRepoRootPath();
 //! Returns a resolved a file path, removing any '..'s if they exist.
 MA_API ci::fs::path			normalizePath( const ci::fs::path &path );
+//! Returns the portion of fullPath relative to basePath
+//! TODO: remove this and use filesystem::relative() when it is available on windows
+MA_API std::string			stripBasePath( const ci::fs::path &fullPath, const ci::fs::path &basePath );
 //! Sends a global notification that a resource has been loaded. If Hud is in use, this causes the border to flash green.
 MA_API void					notifyResourceReloaded();
 
