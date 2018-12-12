@@ -84,6 +84,14 @@ class MA_API Dictionary {
 			return *this;
 		}
 
+		// FIXME: tried to get this overload working to fix vector<int> problem, not yet working
+		template <class T>
+		Value & operator=( std::vector<T>&& rhs )
+		{
+			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
+			return *this;
+		}
+
 		//! Conversion operator for anything supported by detail::getValue()
 		template <typename T>
 		operator T() const
@@ -129,6 +137,8 @@ class MA_API Dictionary {
 
 	template<typename T>
 	void		set( const std::string &key, const T &value );
+	template<typename T>
+	void set( const std::string &key, const std::vector<T> &value );
 
 	//! Returns a copy of the value associated with T. Some type conversions are allowed (like double -> float), hence why a copy is necessary.
 	//! A DictionaryExc is thrown if the key doesn't exist or it can't be converted to type T.
@@ -270,6 +280,23 @@ template<typename T>
 void Dictionary::set( const std::string &key, const T &value )
 {
 	mData[key] = value;
+}
+
+template<typename T>
+void Dictionary::set( const std::string &key, const std::vector<T> &value )
+{
+	// Force internal storage to be of type vector<Dictionary::Value> to simplify output converters
+	if( typeid( value ) == typeid( vector<Dictionary::Value> ) ) {
+		mData[key] = value;
+	}
+	else {
+		std::vector<Dictionary::Value> valueCoerced;
+		valueCoerced.reserve( value.size() );
+		for( const auto &x : value ) {
+			valueCoerced.push_back( x );
+		}
+		mData[key] = valueCoerced;
+	}
 }
 
 template<typename T>

@@ -123,6 +123,12 @@ void MiscTest::testPrintingDict()
 	d.set( "a", 2 );
 	d.set( "vec2", vec2( 0, 1 ) );
 
+	vector<ma::Dictionary::Value> vectorDictValue = { 0, "a", 2.5, "blue" };
+	d.set( "vectorDictValue", vectorDictValue );
+
+	vector<int> vectorInt = { 0, 1, 2 };
+	d.set( "vectorInt", vectorInt );
+
 	CI_LOG_I( "dict:\n" << d );
 }
 
@@ -134,6 +140,13 @@ void MiscTest::testSetDictWithOperators()
 	d["float"] = 3.14f;
 	d["double"] = 3.14;
 	d["vec2"] = vec2( 0, 1 );
+
+	vector<ma::Dictionary::Value> vectorDictValue = { 0, "a", 2.5, "blue" };
+	d["vectorDictValue"] = vectorDictValue;
+
+	vector<int> vectorInt = { 0, 1, 2 };
+	d["vectorInt"] = vectorInt; // FIXME: this isn't yet working, it is getting copied directly to boost::any::operator=
+
 
 	d["x"]["y"] = 4;
 
@@ -158,7 +171,7 @@ void MiscTest::testMergegDict()
 		a.set( "sub", sub );
 
 		// TODO: what to do about if a user adds a vector<int> or something like that?
-		vector<boost::any> arr = { 1, 2, 3, 4 } ;
+		vector<ma::Dictionary::Value> arr = { 1, 2, 3, 4 } ;
 		a.set( "array", arr );
 	}
 	ma::Dictionary b;
@@ -169,7 +182,7 @@ void MiscTest::testMergegDict()
 
 		b.set( "sub", sub );
 
-		vector<boost::any> arr = { 2, "yo"} ;
+		vector<ma::Dictionary::Value> arr = { 2, "yo"} ;
 		b.set( "array", arr );
 	}
 

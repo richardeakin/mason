@@ -567,6 +567,10 @@ Json::Value toJson( const Dictionary::Value &a )
 	if( a.type() == typeid( Dictionary ) ) {
 		return toJson( boost::any_cast<Dictionary>( a ) );
 	}
+//	else if( a.type() == typeid( vector<Dictionary> ) ) {
+//		// TODO NEXT: implement this either with for loop over vector or another toJson overload()
+////		return toJson( boost::any_cast<vector<Dictionary::Value>>( a ) );
+//	}
 	else if( a.type() == typeid( vector<Dictionary::Value> ) ) {
 		return toJson( boost::any_cast<vector<Dictionary::Value>>( a ) );
 	}
@@ -608,6 +612,8 @@ Json::Value toJson( const Dictionary::Value &a )
 	//	return Json::Value::null;
 	//}
 	else {
+		// Unknown type, write out as a string with type info.
+		// TODO: consider what best to do here. Could log an error, or provide a callback handler.
 		string typeAsString = System::demangleTypeName( a.type().name() );
 		//CI_ASSERT_NOT_REACHABLE();
 		return Json::Value( "type '" + typeAsString + "'" );
