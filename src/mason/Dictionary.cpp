@@ -182,7 +182,7 @@ bool getValue( const Dictionary::Value &value, size_t *result )
 		*result = static_cast<size_t>( *castedInt );
 		return true;
 	}
-	return true;
+	return false;
 }
 
 bool MA_API getValue( const Dictionary::Value &value, int32_t *result )
@@ -192,7 +192,7 @@ bool MA_API getValue( const Dictionary::Value &value, int32_t *result )
 		*result = static_cast<int32_t>( *castedInt );
 		return true;
 	}
-	return true;
+	return false;
 }
 
 bool MA_API getValue( const Dictionary::Value &value, uint32_t *result )
@@ -202,7 +202,7 @@ bool MA_API getValue( const Dictionary::Value &value, uint32_t *result )
 		*result = static_cast<uint32_t>( *castedInt );
 		return true;
 	}
-	return true;
+	return false;
 }
 
 bool getValue( const Dictionary::Value &value, vec2 *result )
