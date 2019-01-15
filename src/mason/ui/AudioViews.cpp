@@ -486,10 +486,6 @@ void AudioSpectrogramView::makeTex()
 			float mag = mSTFT[frame][bin];
 			mag = ci::audio::linearToDecibel( mag ) / 100.0f; // TODO: consider storing this in DB within the mSTFT frames
 
-															  //iter.r() = mag;
-															  //iter.g() = 0;
-															  //iter.b() = 0;
-
 			auto col = mLUT.lookup( mag );
 			iter.r() = col.r;
 			iter.g() = col.g;
