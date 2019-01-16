@@ -122,8 +122,13 @@ class Chorus {
   public:
 	Chorus();
 
+	void initialize();
+
 	void setInput( const ci::audio::NodeRef &node );
 	void setOutput( const ci::audio::NodeRef &node );
+
+	ci::audio::NodeRef	getInput() const	{ return mInput; }
+	ci::audio::NodeRef	getOutput() const	{ return mOutput; }
 
 	void setLfoRate( float rate );
 	void setLfoGain( float gainLinear );
@@ -137,7 +142,6 @@ class Chorus {
 		ci::audio::GainNodeRef		mLfoGain;
 	};
 
-	void setupGraph();
 	void setupDelayChain( size_t index, float phaseOffset );
 
 	ci::audio::NodeRef			mInput, mOutput;
