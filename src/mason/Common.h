@@ -75,4 +75,12 @@ MA_API int			nextOdd( int n );
 //! Returns a stringified stack trace ready for logging. TODO: move to cinder core
 MA_API std::string stackTraceAsString( size_t startingFrame = 0, size_t count = 0, bool skipPlatformFrames = true );
 
+//! scale then clamp \a val
+template<typename T>
+T scaleClamped( T val, T inMin, T inMax, T outMin, T outMax )
+{
+	float scaled = outMin + ((outMax - outMin) * (val - inMin)) / (inMax - inMin);
+	return glm::clamp<T>( scaled, outMin, outMax );
+}
+
 } // namespace mason
