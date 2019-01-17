@@ -308,10 +308,9 @@ void VcfNode::process( ci::audio::Buffer *buffer )
 
 Chorus::Chorus()
 {
-	mOutput = ci::audio::master()->makeNode<ci::audio::Node>( ci::audio::Node::Format() );
 }
 
-void Chorus::initialize()
+void Chorus::setupGraph()
 {
 	CI_ASSERT_MSG( mInput, "no input" );
 	CI_ASSERT_MSG( mOutput, "no output" );
@@ -373,7 +372,7 @@ void Chorus::setInput( const ci::audio::NodeRef &node )
 void Chorus::setOutput( const ci::audio::NodeRef &node )
 {
 	mOutput = node;
-	initialize();
+	setupGraph();
 }
 
 void Chorus::setLfoRate( float rate )
