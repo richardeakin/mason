@@ -38,6 +38,8 @@ namespace mason { namespace audio {
 MoogFilterNode::MoogFilterNode( const Format &format )
 	: Node( format ), mCutoffFreq( this, 400 ), mQ( this, 2 )
 {
+	setChannelMode( ChannelMode::SPECIFIED );
+	setNumChannels( 1 );
 }
 
 void MoogFilterNode::initialize()
@@ -207,6 +209,9 @@ static inline t_float dsp_getCosineAtLUT (double position)
 VcfNode::VcfNode( const Format &format )
 	: Node( format ), mFreq( this, 400 ), mQ( this, 2 )
 {
+	setChannelMode( ChannelMode::SPECIFIED );
+	setNumChannels( 1 );
+
 	cos_tilde_initialize();
 }
 

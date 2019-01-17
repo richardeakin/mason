@@ -46,15 +46,15 @@ public:
 	ci::audio::Param*	getParamFreq()	{ return &mCutoffFreq; }
 	ci::audio::Param*	getParamQ()		{ return &mQ; }
 
-	void	setFreq( float freq )		{ mCutoffFreq.setValue( freq ); }
-	float	getFreq() const				{ return mCutoffFreq.getValue(); }
-	float	getMinFreq()				{ return 0; }
-	float	getMaxFreq()				{ return 20000; }
+	void			setFreq( float freq )	{ mCutoffFreq.setValue( freq ); }
+	float			getFreq() const			{ return mCutoffFreq.getValue(); }
+	static float	getMinFreq()			{ return 0; }
+	static float	getMaxFreq()			{ return 20000; }
 
-	void	setQ( float q )				{ mQ.setValue( q ); }
-	float	getQ() const				{ return mQ.getValue(); }
-	float	getMinQ() const				{ return 0; }
-	float	getMaxQ() const				{ return 4; }
+	void			setQ( float q )			{ mQ.setValue( q ); }
+	float			getQ() const			{ return mQ.getValue(); }
+	static float	getMinQ() 				{ return 0; }
+	static float	getMaxQ()				{ return 4; }
 
 	void reset();
 
@@ -85,15 +85,15 @@ public:
 	ci::audio::Param*	getParamFreq()	{ return &mFreq; }
 	ci::audio::Param*	getParamQ()		{ return &mQ; }
 
-	void	setFreq( float freq )		{ mFreq.setValue( freq ); }
-	float	getFreq() const				{ return mFreq.getValue(); }
-	float	getMinFreq()				{ return 0; }
-	float	getMaxFreq()				{ return 20000; }
+	void			setFreq( float freq )		{ mFreq.setValue( freq ); }
+	float			getFreq() const				{ return mFreq.getValue(); }
+	static float	getMinFreq()				{ return 0; }
+	static float	getMaxFreq()				{ return 20000; }
 
-	void	setQ( float q )				{ mQ.setValue( q ); }
-	float	getQ() const				{ return mQ.getValue(); }
-	float	getMinQ() const				{ return 0; }
-	float	getMaxQ() const				{ return 40; }
+	void			setQ( float q )		{ mQ.setValue( q ); }
+	float			getQ() const		{ return mQ.getValue(); }
+	static float	getMinQ()			{ return 0; }
+	static float	getMaxQ() 			{ return 40; }
 
 	//! Sets the mode, which updates the coefficients so that the frequency response is that of a common type of filter. \see Mode.
 	void	setMode( Mode mode )	{ mMode = mode; }
