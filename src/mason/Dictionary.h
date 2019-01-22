@@ -242,16 +242,24 @@ bool getValue( const Dictionary::Value &value, T *result )
 template<typename T>
 bool getValue( const Dictionary::Value &value, std::vector<T> *result )
 {
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
-	if( ! castedVector )
-		return false;
-	
-	result->resize( castedVector->size() );
-	for( size_t i = 0; i < result->size(); i++ ) {
-		getValue( (*castedVector)[i], &( (*result)[i] ) );
+	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>>( &value );
+	if( castedVector ) {
+		result->resize( castedVector->size() );
+		for( size_t i = 0; i < result->size(); i++ ) {
+			getValue( (*castedVector)[i], &( (*result)[i] ) );
+		}
+
+		return true;
 	}
 
-	return true;
+	// Convert null to an empty vector
+	if( value.type() == typeid( nullptr ) ) {
+		result->clear();
+		return true;
+	}
+
+	
+	return false;
 }
 
 bool MA_API getValue( const Dictionary::Value &value, float *result );
