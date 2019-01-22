@@ -27,17 +27,26 @@
 namespace mason { namespace audio {
 
 class GenPinkNoiseNode : public ci::audio::GenNode {
-  protected:
+public:
+	GenPinkNoiseNode( const Format &format = Format() )
+		: GenNode( format )
+	{}
+
+protected:
 	void initialize() override;
 	void process( ci::audio::Buffer *buffer ) override;
 
-  private:
+private:
 	float mB0, mB1, mB2, mB3, mB4, mB5, mB6;
 };
 
 // I'm not really sure what to call this. It wraps the noise function from Inigo Quilez's soundtoy.
 class PeriodicNoiseNode : public ci::audio::GenNode {
 public:
+	PeriodicNoiseNode( const Format &format = Format() )
+		: GenNode( format )
+	{}
+
 	PeriodicNoiseNode() : GenNode(), mNoiseFreq( 0.002f ), mV( 0 )	{}
 
 	void setNoiseFreq( float freq )	{ mNoiseFreq = freq; }
