@@ -24,8 +24,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "jsoncpp/json.h"
-
 #include "mason/Mason.h"
 #include "mason/Dictionary.h"
 
@@ -34,7 +32,7 @@ namespace mason {
 //! Global Dictionary used for configuration
 MA_API ma::Dictionary*	config();
 //! Loads a config json file, relative to the application's assets directory.
-MA_API void loadConfig( const ci::fs::path &filename = "config.json" );
+MA_API void loadConfig( const ci::fs::path &filename = "config.json", const std::vector<ci::fs::path> cascadingFilenames = {} );
 
 namespace detail {
 

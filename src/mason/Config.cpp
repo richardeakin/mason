@@ -5,6 +5,8 @@
 #include "cinder/CinderAssert.h"
 #include "cinder/app/App.h"
 
+#include "jsoncpp/json.h"
+
 using namespace ci;
 using namespace std;
 
@@ -21,11 +23,18 @@ void setConfig( const ma::Dictionary &config )
 
 } // namespace mason::detail
 
-void loadConfig( const ci::fs::path &filename )
+// TODO: Finish and test cascadingFilenames
+// TODO: can use two separate methods, one with one filephat and one with a vector
+void loadConfig( const ci::fs::path &filename, const std::vector<ci::fs::path> cascadingFilenames )
 {
 	try {
 		// load main config
 		auto config = ma::Dictionary::convert<Json::Value>( app::loadAsset( filename ) );
+
+		for( const auto &fp : cascadingFilenames ) {
+			auto j = ma::Dictionary::convert<Json::Value>( app::loadAsset( fp ) );
+			config.merge( j );
+		}
 
 		//CI_LOG_I( "config (merged):\n" << config );
 		ma::detail::setConfig( config );
