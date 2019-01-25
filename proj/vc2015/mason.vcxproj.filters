@@ -157,6 +157,12 @@
     <ClCompile Include="..\..\src\mason\audio\ProfilerNode.cpp">
       <Filter>Source Files\mason\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\Dispatch.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\RenderToTexture.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -307,6 +313,12 @@
       <Filter>Source Files\mason\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\MotionTracker.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\Dispatch.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\RenderToTexture.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>
