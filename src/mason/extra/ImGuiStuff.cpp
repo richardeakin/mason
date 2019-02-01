@@ -27,7 +27,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
-#include "imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
+#include "imgui/imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
 
 using namespace std;
 using namespace ci;
@@ -62,6 +62,31 @@ bool ListBox( const char* label, int* currIndex, const std::vector<std::string>&
 	return ListBox( label, currIndex, vector_getter, (void *)( &values ), (int)values.size() );
 }
 
+#if defined( CINDER_IMGUI_BAKED )
+
+void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col )
+{
+	Image( (void*)(intptr_t) texture->getId(), size, uv0, uv1, tint_col, border_col );
+}
+
+ScopedId::ScopedId( const std::string &name )
+{
+	ImGui::PushID( name.c_str() );
+}
+ScopedId::ScopedId( const void *ptrId )
+{
+	ImGui::PushID( ptrId );
+}
+ScopedId::ScopedId( const int intId )
+{
+	ImGui::PushID( intId );
+}
+ScopedId::~ScopedId()
+{
+	ImGui::PopID();
+}
+
+#endif // defined( CINDER_IMGUI_BAKED )
 
 } // namespace ImGui
 
@@ -143,7 +168,7 @@ bool ButtonToggle( const char* label, bool *value, const ImVec2& size )
 
 bool FileSelector( const char* label, fs::path* selectedPath, const fs::path &initialPath, const std::vector<std::string> &extensions )
 {
-	ImGui::ScopedId idScope( label );
+	ImGui::PushID( label );
 
 	bool changed = false;
 
@@ -159,6 +184,7 @@ bool FileSelector( const char* label, fs::path* selectedPath, const fs::path &in
 	else {
 		writtenStr = stripBasePath( *selectedPath, initialPath );
 	}
+
 	if( ImGui::InputText( "##file", &writtenStr, ImGuiInputTextFlags_EnterReturnsTrue ) ) {
 		*selectedPath = writtenStr;
 		changed = true;
@@ -177,6 +203,7 @@ bool FileSelector( const char* label, fs::path* selectedPath, const fs::path &in
 		ImGui::EndPopup();
 	}
 
+	ImGui::PopID();
 	return changed;
 }
 
@@ -262,8 +289,7 @@ void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 
 //	- rect when inactive, circle when active (like color bar)
 bool XYPad( const char *label, const ImVec2& size, float v[2], const ImVec2 &min, const ImVec2 &max )
 {
-	ImGui::ScopedId idScope( label );
-	//static vec2 pad = vec2( 0 );
+	ImGui::PushID( label );
 	ImGui::PushButtonRepeat( true );
 	bool active = false;
 	float keyReapeatDelay = ImGui::GetIO().KeyRepeatDelay;
@@ -291,7 +317,7 @@ bool XYPad( const char *label, const ImVec2& size, float v[2], const ImVec2 &min
 	const float rectSize = 6;
 	draw_list->AddRectFilled( valuePos - vec2( rectSize / 2 ), valuePos + vec2( rectSize / 2 ), ImColor( ImVec4( 1, 1, 0, 1 ) ) );
 
-
+	ImGui::PopID();
 	return active;
 }
 
