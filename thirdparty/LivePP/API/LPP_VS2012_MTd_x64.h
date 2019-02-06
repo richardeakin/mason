@@ -1,5 +1,5 @@
-// Copyright 2011-2018 Molecular Matters e.U., all rights reserved. All registered trademarks are the properties of their respective owners.
-// The contents of this file are strictly confidential, and are covered under copyright and trademark laws by Molecular Matters e.U.
+// Copyright 2011-2019 Molecular Matters GmbH, all rights reserved. All registered trademarks are the properties of their respective owners.
+// The contents of this file are strictly confidential, and are covered under copyright and trademark laws by Molecular Matters GmbH.
 // This file is part of the Live++ API, and is subject to the terms and conditions and/or a license agreement in their latest versions.
 
 // !!! This header file was generated automatically. !!!
