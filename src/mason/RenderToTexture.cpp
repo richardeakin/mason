@@ -44,8 +44,14 @@ void RenderToTexture::setSize( const ci::ivec2 &size )
 	if( mFbo && mFbo->getSize() == clampedSize )
 		return;
 
+	// TODO: expose params as a setter and / or format
 	auto fboFormat = gl::Fbo::Format();
-	fboFormat.samples( 8 ); // TODO: expose as a setter and / or format
+	fboFormat.colorTexture(
+		gl::Texture2d::Format()
+		.internalFormat( GL_RGBA )
+		.minFilter( GL_LINEAR ).magFilter( GL_LINEAR )
+	);
+	fboFormat.samples( 8 );
 
 	mFbo = gl::Fbo::create( clampedSize.x, clampedSize.y, fboFormat );
 }
