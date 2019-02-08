@@ -106,4 +106,11 @@ void DispatchQueue::dispatchOnMain( const FunctionT& fn )
 	ci::app::AppBase::get()->dispatchAsync( fn );
 }
 
+size_t DispatchQueue::getNumQueuedOperations() const
+{
+	unique_lock<mutex> lock( mMutex );
+
+	return mQueue.size();
+}
+
 } // namespace mason

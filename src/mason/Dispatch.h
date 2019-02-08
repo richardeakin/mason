@@ -49,6 +49,9 @@ public:
 	//! dispatches fn on main thread (currently uses app's update loop / io_service)
 	void dispatchOnMain( const FunctionT& fn );
 
+	//! Returns number of operations currently in queue.
+	size_t getNumQueuedOperations() const;
+
 	// Deleted operations
 	DispatchQueue( const DispatchQueue& rhs ) = delete;
 	DispatchQueue& operator=( const DispatchQueue& rhs ) = delete;
@@ -59,7 +62,7 @@ private:
 	void dispatchThreadEntry();
 
 	std::string					mName;
-	std::mutex					mMutex;
+	mutable std::mutex			mMutex;
 	std::condition_variable		mCondition;
 	std::vector<std::thread>	mThreads;
 	std::queue<FunctionT>		mQueue;
