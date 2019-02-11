@@ -50,6 +50,7 @@ void RenderToTexture::setSize( const ci::ivec2 &size )
 		gl::Texture2d::Format()
 		.internalFormat( GL_RGBA )
 		.minFilter( GL_LINEAR ).magFilter( GL_LINEAR )
+		//.loadTopDown()
 	);
 	fboFormat.samples( 8 );
 
@@ -82,7 +83,9 @@ void RenderToTexture::render()
 	gl::ScopedFramebuffer	fboScope( mFbo );
 	gl::ScopedViewport		viewportScope( size );
 	gl::ScopedMatrices		matScope;
-	gl::setMatricesWindow( size );
+
+	bool mOriginUpperLeft = false; // TODO: expose param
+	gl::setMatricesWindow( size, mOriginUpperLeft );
 
 	gl::clear( ColorA::zero() );
 	mSignalDraw.emit();
