@@ -28,15 +28,31 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace mason {
 
-//! Helper class to ease rendering to a gl::Texture2d
+//! Helper class to ease rendering to a ci::gl::Texture2d
 class RenderToTexture {
 public:
-	RenderToTexture( const ci::ivec2 &size = { 0, 0 } );
+	struct Format {
+		//! Specifies whether the Texture should store scanlines top-down in memory. Default is \c false. Also marks Texture as top-down when \c true.
+		Format&		loadTopDown( bool loadTopDown = true ) { mLoadTopDown = loadTopDown; return *this; }
+
+		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 0.
+		Format&		msaa( int samples ) { mMsaaSamples = samples; return *this; }
+		//! Returns the number of samples used for Multisample Anti-Aliasing (MSAA).
+		int			getMsaa() const { return mMsaaSamples; }
+
+	private:
+		bool mLoadTopDown = false;
+		int  mMsaaSamples = 8;
+
+		friend RenderToTexture;
+	};
+
+	RenderToTexture( const ci::ivec2 &size = { 0, 0 }, const Format &format = Format() );
 
 	void		setSize( const ci::ivec2 &size );
 	ci::ivec2	getSize() const;
 
-	ci::signals::Signal<void ()>&	getSignalDraw()	{ return mSignalDraw; }
+	ci::signals::Signal<void ()>&	getSignalDraw()	{ return *mSignalDraw; }
 	ci::gl::Texture2dRef			getTexture() const;
 
 	//! Renders to texture, calling the draw signal as appropriate
@@ -44,8 +60,10 @@ public:
 
 private:
 
-	ci::gl::FboRef	mFbo;
-	ci::signals::Signal<void ()>	mSignalDraw;
+	ci::gl::FboRef		mFbo;
+	Format				mFormat;
+
+	std::unique_ptr<ci::signals::Signal<void ()>>	mSignalDraw;
 };
 
 } // namespace mason

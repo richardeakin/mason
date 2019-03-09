@@ -30,7 +30,8 @@ using namespace std;
 
 namespace mason {
 
-RenderToTexture::RenderToTexture( const ci::ivec2 &size )
+RenderToTexture::RenderToTexture( const ci::ivec2 &size, const Format &format )
+	: mFormat( format ), mSignalDraw( new signals::Signal<void ()> )
 {
 	if( size.x > 0 && size.y > 0 ) {
 		setSize( size );
@@ -44,15 +45,14 @@ void RenderToTexture::setSize( const ci::ivec2 &size )
 	if( mFbo && mFbo->getSize() == clampedSize )
 		return;
 
-	// TODO: expose params as a setter and / or format
 	auto fboFormat = gl::Fbo::Format();
 	fboFormat.colorTexture(
 		gl::Texture2d::Format()
 		.internalFormat( GL_RGBA )
 		.minFilter( GL_LINEAR ).magFilter( GL_LINEAR )
-		//.loadTopDown()
+		.loadTopDown( mFormat.mLoadTopDown )
 	);
-	fboFormat.samples( 8 );
+	fboFormat.samples( mFormat.mMsaaSamples );
 
 	mFbo = gl::Fbo::create( clampedSize.x, clampedSize.y, fboFormat );
 }
@@ -84,11 +84,11 @@ void RenderToTexture::render()
 	gl::ScopedViewport		viewportScope( size );
 	gl::ScopedMatrices		matScope;
 
-	bool mOriginUpperLeft = false; // TODO: expose param
-	gl::setMatricesWindow( size, mOriginUpperLeft );
+	bool originUpperLeft = mFormat.mLoadTopDown;
+	gl::setMatricesWindow( size, originUpperLeft );
 
 	gl::clear( ColorA::zero() );
-	mSignalDraw.emit();
+	mSignalDraw->emit();
 }
 
 } // namespace mason
