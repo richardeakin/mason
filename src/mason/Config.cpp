@@ -23,17 +23,23 @@ void setConfig( const ma::Dictionary &config )
 
 } // namespace mason::detail
 
-// TODO: Finish and test cascadingFilenames
-// TODO: can use two separate methods, one with one filephat and one with a vector
-void loadConfig( const ci::fs::path &filename, const std::vector<ci::fs::path> cascadingFilenames )
+void loadConfig( const fs::path &filename, const fs::path &cascadingFilename )
+{
+	loadConfig( filename, vector<fs::path>{ cascadingFilename } );
+}
+
+void loadConfig( const fs::path &filename, const vector<fs::path> &cascadingFilenames )
 {
 	try {
 		// load main config
 		auto config = ma::Dictionary::convert<Json::Value>( app::loadAsset( filename ) );
 
 		for( const auto &fp : cascadingFilenames ) {
-			auto j = ma::Dictionary::convert<Json::Value>( app::loadAsset( fp ) );
-			config.merge( j );
+			auto fullPath = app::getAssetPath( fp );
+			if( ! fullPath.empty() ) {
+				auto j = ma::Dictionary::convert<Json::Value>( loadFile( fullPath ) );
+				config.merge( j );
+			}
 		}
 
 		//CI_LOG_I( "config (merged):\n" << config );

@@ -31,8 +31,11 @@ namespace mason {
 
 //! Global Dictionary used for configuration
 MA_API ma::Dictionary*	config();
-//! Loads a config json file, relative to the application's assets directory.
-MA_API void loadConfig( const ci::fs::path &filename = "config.json", const std::vector<ci::fs::path> cascadingFilenames = {} );
+
+//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilename will be merged into the resulting Dictionary.
+MA_API void loadConfig( const ci::fs::path &filename = "config.json", const ci::fs::path &cascadingFilename = {} );
+//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilenames will be merged into the resulting Dictionary.
+MA_API void loadConfig( const ci::fs::path &filename, const std::vector<ci::fs::path> &cascadingFilenames );
 
 namespace detail {
 
