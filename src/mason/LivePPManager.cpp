@@ -4,7 +4,10 @@
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/app/App.h"
 
+#if ! defined( CINDER_SHARED )
 #include "../../thirdparty/LivePP/API/LPP_ForceLinkStaticRuntime.h"
+#endif
+
 #include "../../thirdparty/LivePP/API/LPP_API.h"
 
 
