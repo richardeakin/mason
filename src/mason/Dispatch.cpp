@@ -23,6 +23,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Log.h"
 #include "cinder/app/AppBase.h"
 
+//#define LOG_DISPATCH( stream )	CI_LOG_I( mName << " | " << stream )
+#define LOG_DISPATCH( stream )	( (void)( 0 ) )
+
 using namespace std;
 
 namespace mason {
@@ -30,7 +33,7 @@ namespace mason {
 DispatchQueue::DispatchQueue( string name, size_t thread_cnt ) :
 	mName( name ), mThreads( thread_cnt )
 {
-	//CI_LOG_I( "name: " << mName << ", threads: " << thread_cnt );
+	LOG_DISPATCH( "threads: " << thread_cnt );
 
 	for( size_t i = 0; i < mThreads.size(); i++ ) {
 		mThreads[i] = thread( &DispatchQueue::dispatchThreadEntry, this );
@@ -48,7 +51,7 @@ DispatchQueue::~DispatchQueue()
 	// Wait for threads to finish before we exit
 	for( size_t i = 0; i < mThreads.size(); i++ ) {
 		if( mThreads[i].joinable() ) {
-			printf( "Destructor: Joining thread %zu until completion\n", i );
+			LOG_DISPATCH( "Joining thread " << i );
 			mThreads[i].join();
 		}
 	}
@@ -58,6 +61,8 @@ void DispatchQueue::dispatch( const FunctionT& fn )
 {
 	unique_lock<mutex> lock( mMutex );
 	mQueue.push( fn );
+
+	LOG_DISPATCH( "total queued: " << mQueue.size() );
 
 	// Manual unlocking is done before notifying, to avoid waking up
 	// the waiting thread only to block again (see notify_one for details)
@@ -69,6 +74,8 @@ void DispatchQueue::dispatch( FunctionT&& fn )
 {
 	unique_lock<mutex> lock( mMutex );
 	mQueue.push( move( fn ) );
+
+	LOG_DISPATCH( "total queued: " << mQueue.size() );
 
 	// Manual unlocking is done before notifying, to avoid waking up
 	// the waiting thread only to block again (see notify_one for details)
@@ -94,7 +101,11 @@ void DispatchQueue::dispatchThreadEntry()
 			//unlock now that we're done messing with the queue
 			lock.unlock();
 
+			LOG_DISPATCH( "dispatching..." );
+
 			op();
+
+			LOG_DISPATCH( "complete. total queued: " << mQueue.size() );
 
 			lock.lock();
 		}
