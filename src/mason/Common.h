@@ -45,8 +45,8 @@ namespace mason {
 
 //! Initializes a bunch of global stuff. If `masonRootDir` is not empty, it is used to initialize file directories used during development.
 MA_API void				initialize( const ci::fs::path &masonRootDir = ci::fs::path() );
-//! Returns the path the current repositories root folder (walks up from the executable until '.git' is found.
-MA_API const ci::fs::path&		getRepoRootPath();
+//! Returns the path the current repositories root folder (walks up from the executable until a file named \a rootFile or '.git' is found.
+MA_API const ci::fs::path&		getRepoRootPath( const ci::fs::path &rootFile = ci::fs::path() );
 //! Returns a resolved a file path, removing any '..'s if they exist.
 MA_API ci::fs::path			normalizePath( const ci::fs::path &path );
 //! Returns the portion of fullPath relative to basePath

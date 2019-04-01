@@ -41,7 +41,7 @@ Rand sRand;
 
 } // anonymous namespace
 
-const fs::path& getRepoRootPath()
+const fs::path& getRepoRootPath( const ci::fs::path &rootFile )
 {
 	static fs::path	sRepoRootPath;
 
@@ -52,6 +52,14 @@ const fs::path& getRepoRootPath()
 		for( auto currentPath = app::getAppPath(); currentPath.has_parent_path(); currentPath = currentPath.parent_path() ) {
 			if( ++parentCount > maxDirectoryTraversals )
 				break;
+
+			if( ! rootFile.empty() ) {
+				const fs::path p = currentPath / rootFile;
+				if( fs::exists( p ) ) {
+					sRepoRootPath = currentPath;
+					break;
+				}
+			}
 
 			const fs::path currentGitPath = currentPath / ".git";
 			if( fs::exists( currentGitPath ) ) {
