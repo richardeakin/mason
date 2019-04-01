@@ -16,6 +16,17 @@ using namespace std;
 
 namespace mason {
 
+namespace {
+
+HMODULE	sLivePPModule = nullptr;
+
+} // anonymous namespace
+
+bool initLivePP( const fs::path &LivePPPath, const std::string &groupName )
+{	
+	return LivePPManager::instance()->initLivePP( LivePPPath, groupName );
+}
+
 // static
 LivePPManager* LivePPManager::instance()
 {
@@ -25,6 +36,26 @@ LivePPManager* LivePPManager::instance()
 
 LivePPManager::LivePPManager()
 {
+}
+
+bool LivePPManager::initLivePP( const fs::path &LivePPPath, const std::string &groupName )
+{	
+	sLivePPModule = lpp::lppLoadAndRegister( msw::toWideString( LivePPPath.string() ).c_str(), groupName.c_str() );
+	if( ! sLivePPModule ) {
+		auto appPath = app::Platform::get()->getExecutablePath();
+		CI_LOG_E( "failed to load LivePP Module specified with relative folder: " << LivePPPath << ". Path should be relative to .vcxproj folder. executable path: " << appPath );
+		return false;
+	}
+
+	lpp::lppEnableAllCallingModulesSync( sLivePPModule ); // TODO: try lppEnableAllCallingModulesAsync
+
+	// connect update loop to lppSyncPoint
+	auto app = ci::app::App::get();
+	if( app ) {
+		mConnUpdate = app->getSignalUpdate().connect( [this]() { lpp::lppSyncPoint( sLivePPModule ); } );
+	}
+
+	return true;
 }
 
 ci::signals::Connection LivePPManager::connectPrePatch( const std::function<void ()> &fn )
@@ -37,18 +68,6 @@ ci::signals::Connection LivePPManager::connectPostPatch( const std::function<voi
 	return instance()->getSignalPostPatch().connect( fn );
 }
 
-bool initLivePP( const fs::path &LivePPPath, const std::string groupName )
-{
-	HMODULE livePPModule = lpp::lppLoadAndRegister( msw::toWideString( LivePPPath.string() ).c_str(), groupName.c_str() );
-	if( ! livePPModule ) {
-		auto appPath = app::Platform::get()->getExecutablePath();
-		CI_LOG_E( "failed to load LivePP Module specified with relative folder: " << LivePPPath << ". Path should be relative to .vcxproj folder. executable path: " << appPath );
-		return false;
-	}
-
-	lpp::lppEnableAllCallingModulesSync( livePPModule );
-	return true;
-}
 
 void onLppCompileSuccess()
 {

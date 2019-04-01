@@ -1,9 +1,5 @@
 #pragma once
 
-#if defined( NW_DEBUG_RELEASE )
-#pragma optimize ( "", off )
-#endif
-
 #include "cinder/Filesystem.h"
 #include "cinder/Signals.h"
 
@@ -20,13 +16,19 @@ class LivePPManager {
 
 	ci::signals::Signal<void ()>&	getSignalPrePatch()		{ return mSignalPrePatch; }
 	ci::signals::Signal<void ()>&	getSignalPostPatch()	{ return mSignalPostPatch; }
-  private:
+
+	//! called from freestanding initLivePP method.
+	bool initLivePP( const ci::fs::path &LivePPPath, const std::string &groupName );
+
+private:
 	LivePPManager();
-	ci::signals::Signal<void ()> mSignalPrePatch, mSignalPostPatch;
+
+	ci::signals::Signal<void ()>	mSignalPrePatch, mSignalPostPatch;
+	ci::signals::ScopedConnection	mConnUpdate;
 };
 
 //! Called from the main app or executable to enabled Live++. Returns true on successful init.
 //! \a LivePPPathRelativeToProject is the relative path from the executable's vcxproj file to the LivePP folder.
-bool initLivePP( const ci::fs::path &LivePPPathRelativeToProject, const std::string groupName );
+bool initLivePP( const ci::fs::path &LivePPPathRelativeToProject, const std::string &groupName );
 
 } // namespace mason
