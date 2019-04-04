@@ -1,5 +1,5 @@
 #include "mason/LivePPManager.h"
-#include "mason/Notifications.h"
+//#include "mason/Notifications.h"
 #include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/app/App.h"
@@ -71,12 +71,12 @@ ci::signals::Connection LivePPManager::connectPostPatch( const std::function<voi
 
 void onLppCompileSuccess()
 {
-	ma::NotificationCenter::post( ma::NOTIFY_RESOURCE_RELOADED );
+	//ma::NotificationCenter::post( ma::NOTIFY_RESOURCE_RELOADED );
 }
 
 void onLppCompileError()
 {
-	ma::NotificationCenter::post( ma::NOTIFY_ERROR );
+	//ma::NotificationCenter::post( ma::NOTIFY_ERROR );
 }
 
 void onLppPrePatch()
