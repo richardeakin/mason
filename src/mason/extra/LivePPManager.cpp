@@ -1,15 +1,15 @@
-#include "mason/LivePPManager.h"
+#include "mason/extra/LivePPManager.h"
 //#include "mason/Notifications.h"
 #include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/app/App.h"
 
+// note: add LivePP/API to your include path
 #if ! defined( CINDER_SHARED )
-#include "../../thirdparty/LivePP/API/LPP_ForceLinkStaticRuntime.h"
+#include "LPP_ForceLinkStaticRuntime.h"
 #endif
 
-#include "../../thirdparty/LivePP/API/LPP_API.h"
-
+#include "LPP_API.h"
 
 using namespace ci;
 using namespace std;
