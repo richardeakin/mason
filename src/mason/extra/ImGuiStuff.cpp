@@ -27,7 +27,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
+#if defined( CINDER_IMGUI_BAKED )
 #include "imgui/imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
+#else
+#include "imgui_internal.h"
+#endif
 
 using namespace std;
 using namespace ci;
