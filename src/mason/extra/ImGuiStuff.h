@@ -85,4 +85,8 @@ bool XYPad( const char *name, const ImVec2& size, float v[2], const ImVec2 &min 
 void BeginDisabled( bool disableInteraction = true );
 void EndDisabled();
 
+//! Flashes the ImGui borders red on ma::NOTIFY_FAILURE (log levels > error) and green on ma::NOTIFY_SUCCESS
+void SetNotificationColors();
+
+
 } // namespace ImGuiStuff

@@ -21,6 +21,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "mason/extra/ImGuiStuff.h"
 #include "mason/Common.h"
+#include "mason/Notifications.h"
 #include "cinder/audio/Context.h"
 
 #if ! defined( IMGUI_DEFINE_MATH_OPERATORS )
@@ -335,6 +336,43 @@ void EndDisabled()
 {
 	ImGui::PopItemFlag();
 	ImGui::PopStyleVar();
+}
+
+void SetNotificationColors()
+{
+	const double timeShowingFailure = 1.0;
+	const double timeShowingSuccess = 1.0;
+
+	static double sTimeLastFailure = -1.0;
+	static double sTimeLastSuccess = -1.0;
+	static Color sOriginalBorderColor = ImGui::GetStyleColorVec4( ImGuiCol_Border );
+	static bool sRegistered = false;
+
+	if( ! sRegistered ) {
+		sRegistered = true;
+		ma::NotificationCenter::listen( ma::NOTIFY_ERROR, []( const ma::Notification &notification ) {
+			// note: don't log from here, it triggers when already logging.
+			sTimeLastFailure = ma::currentTime();
+		} );
+		ma::NotificationCenter::listen( ma::NOTIFY_RESOURCE_RELOADED, []( const ma::Notification &notification ) {
+			sTimeLastSuccess = ma::currentTime();
+		} );
+	}
+
+	double time = ma::currentTime();
+	if( time - sTimeLastFailure < timeShowingFailure ) {
+		float x = time - sTimeLastFailure;
+		auto col = Color( 1, 0, 0 ).lerp( x, sOriginalBorderColor );
+		ImGui::GetStyle().Colors[ImGuiCol_Border] = col;
+	}	
+	else if( time - sTimeLastSuccess < timeShowingSuccess ) {
+		float x = time - sTimeLastSuccess;
+		auto col = Color( 0, 1, 0 ).lerp( x, sOriginalBorderColor );
+		ImGui::GetStyle().Colors[ImGuiCol_Border] = col;
+	}
+	else {
+		ImGui::GetStyle().Colors[ImGuiCol_Border] = sOriginalBorderColor;
+	}
 }
 
 } // namespace ImGuiStuff
