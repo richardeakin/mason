@@ -360,19 +360,19 @@ void SetNotificationColors()
 	}
 
 	double time = ma::currentTime();
+	Color col = sOriginalBorderColor;
 	if( time - sTimeLastFailure < timeShowingFailure ) {
 		float x = time - sTimeLastFailure;
-		auto col = Color( 1, 0, 0 ).lerp( x, sOriginalBorderColor );
-		ImGui::GetStyle().Colors[ImGuiCol_Border] = col;
+		col = Color( 1, 0, 0 ).lerp( x, sOriginalBorderColor );
 	}	
 	else if( time - sTimeLastSuccess < timeShowingSuccess ) {
 		float x = time - sTimeLastSuccess;
-		auto col = Color( 0, 1, 0 ).lerp( x, sOriginalBorderColor );
-		ImGui::GetStyle().Colors[ImGuiCol_Border] = col;
+		col = Color( 0, 1, 0 ).lerp( x, sOriginalBorderColor );
 	}
-	else {
-		ImGui::GetStyle().Colors[ImGuiCol_Border] = sOriginalBorderColor;
-	}
+
+	auto &colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Border] = col;
+	colors[ImGuiCol_Separator] = col;
 }
 
 } // namespace ImGuiStuff
