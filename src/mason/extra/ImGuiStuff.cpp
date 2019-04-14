@@ -143,6 +143,35 @@ void FileSelectorIterateDirectoryImpl( const fs::path &initialPath, const fs::pa
 	}
 }
 
+// slightly shorter names than gl::constantToString()
+const char* textureFormatToString( GLenum format )
+{
+	switch( format ) {
+		case GL_RED: return "R8";
+		case GL_R8: return "R8";
+		case GL_RG: return "RG8";
+		case GL_RG8: return "RG8";
+		case GL_RGB: return "RGB8";
+		case GL_RGB8: return "RGB8";
+		case GL_RGBA: return "RGBA8";
+		case GL_RGBA8: return "RGBA8";
+		case GL_R32F: return "R32F";
+		case GL_RG32F: return "RG32F";
+		case GL_RGB32F: return "RGB32F";
+		case GL_RGBA32F: return "RGBA32F";
+		case GL_R16F: return "R16F";
+		case GL_RG16F: return "RG16F";
+		case GL_RGB16F: return "RGB16F";
+		case GL_RGBA16F: return "RGBA16F";
+		case GL_DEPTH_COMPONENT16: return "DEPTH16";
+		case GL_DEPTH_COMPONENT24: return "DEPTH24";
+		case GL_DEPTH_COMPONENT32: return "DEPTH32";
+		default:;
+	}
+
+	return "(unknown format)";
+}
+
 } // anonymous namespace
 
 bool ButtonToggle( const char* label, bool *value, const ImVec2& size )
@@ -286,6 +315,13 @@ void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 
 	if( scaled < size.y - delta ) {
 		draw_list->AddRectFilled( screenPos + vec2( 0, scaled ), screenPos + meterSize, ImColor( fillColor ) );
 	}
+}
+
+void TexturePreview( const std::string &label, const ci::gl::Texture2dRef &tex, const ci::Rectf &imageBounds, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col )
+{
+	ImGui::Text( "%s size: [%d, %d], format: %s", label.c_str(), tex->getWidth(), tex->getHeight(), textureFormatToString( tex->getInternalFormat() ) );
+	auto fitRect = Rectf( tex->getBounds() ).getCenteredFit( imageBounds, true );
+	ImGui::Image( tex, fitRect.getSize(), vec2( 0, 1 ), vec2( 1, 0 ), ColorA( 1, 1, 1, 1 ), ColorA::gray( 0.3f, 1 ) );
 }
 
 // TODO: draw label

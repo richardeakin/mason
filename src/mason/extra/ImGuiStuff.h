@@ -78,6 +78,7 @@ bool WaveformImage( const char* label, const ci::audio::BufferRef &buffer, const
 //! TODO: rename these to VMeter, add HMeter horizontal versions
 void VuMeter( const char* label, const ImVec2& size, float *value, float min = 0, float max = 1 );
 void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 &fillColor, float min = 0, float max = 1 );
+void TexturePreview( const std::string &label, const ci::gl::Texture2dRef &tex, const ci::Rectf &imageBounds, const ImVec2& uv0 = ImVec2(0,1), const ImVec2& uv1 = ImVec2(1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
 bool XYPad( const char *name, const ImVec2& size, float v[2], const ImVec2 &min = ImVec2( 0, 0 ), const ImVec2 &max = ImVec2( 1, 1 ) );
 
 //! If disableInteraction is false, will only dim current drawing scope
