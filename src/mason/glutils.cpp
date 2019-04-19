@@ -23,6 +23,7 @@ const char* textureFormatToString( GLenum format )
 	switch( format ) {
 		case GL_RED: return "R8";
 		case GL_R8: return "R8";
+		case GL_R8UI: return "R8UI";
 		case GL_RG: return "RG8";
 		case GL_RG8: return "RG8";
 		case GL_RGB: return "RGB8";

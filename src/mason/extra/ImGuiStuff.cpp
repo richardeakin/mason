@@ -291,6 +291,11 @@ void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 
 
 void TexturePreview( const std::string &label, const ci::gl::Texture2dRef &tex, const ci::Rectf &imageBounds, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col )
 {
+	if( ! tex ) {
+		ImGui::Text( "%s null", label.c_str() );
+		return;
+	}
+
 	ImGui::Text( "%s size: [%d, %d], format: %s", label.c_str(), tex->getWidth(), tex->getHeight(), ma::textureFormatToString( tex->getInternalFormat() ) );
 	auto fitRect = Rectf( tex->getBounds() ).getCenteredFit( imageBounds, true );
 	ImGui::Image( tex, fitRect.getSize(), vec2( 0, 1 ), vec2( 1, 0 ), ColorA( 1, 1, 1, 1 ), ColorA::gray( 0.3f, 1 ) );
