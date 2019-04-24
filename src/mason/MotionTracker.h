@@ -21,7 +21,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include "mason/Mason.h"
 #include "cinder/Vector.h"
+
+#include <list>
 
 namespace mason {
 
