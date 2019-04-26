@@ -217,10 +217,10 @@ void FlyCam::keyDown( ci::app::KeyEvent &event )
 
 	const char c = tolower( event.getChar() );
 
-	if( c == 'a' ) {
+	if( c == 'a' || event.getCode() == app::KeyEvent::KEY_LEFT ) {
 		mMoveDirection.x = - moveAmount;
 	}
-	else if( event.getCode() == 'd' ) {
+	else if( c == 'd' || event.getCode() == app::KeyEvent::KEY_RIGHT ) {
 		mMoveDirection.x = moveAmount;
 	}
 	else if( c == 'w' ) {
@@ -229,10 +229,10 @@ void FlyCam::keyDown( ci::app::KeyEvent &event )
 	else if( c == 's' ) {
 		mMoveDirection.y = - moveAmount;
 	}
-	else if( c == 'e' ) {
+	else if( c == 'e' || event.getCode() == app::KeyEvent::KEY_UP ) {
 		mMoveDirection.z = moveAmount;
 	}
-	else if( c == 'c' ) {
+	else if( c == 'c' || event.getCode() == app::KeyEvent::KEY_DOWN ) {
 		mMoveDirection.z = - moveAmount;
 	}
 	else
@@ -245,7 +245,7 @@ void FlyCam::keyUp( ci::app::KeyEvent &event )
 {
 	bool handled = true;
 	const char c = tolower( event.getChar() );
-	if( c == 'a' || c == 'd' ) {
+	if( c == 'a' || c == 'd' || event.getCode() == app::KeyEvent::KEY_LEFT || event.getCode() == app::KeyEvent::KEY_RIGHT ) {
 		mMoveDirection.x = 0;
 		mMoveAccel.x = 0;
 	}
@@ -253,7 +253,7 @@ void FlyCam::keyUp( ci::app::KeyEvent &event )
 		mMoveDirection.y = 0;
 		mMoveAccel.y = 0;
 	}
-	else if( c == 'e' || c == 'c' ) {
+	else if( c == 'e' || c == 'c' || event.getCode() == app::KeyEvent::KEY_UP || event.getCode() == app::KeyEvent::KEY_DOWN ) {
 		mMoveDirection.z = 0;
 		mMoveAccel.z = 0;
 	}
