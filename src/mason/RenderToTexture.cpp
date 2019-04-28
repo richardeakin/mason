@@ -48,7 +48,7 @@ void RenderToTexture::setSize( const ci::ivec2 &size )
 	auto fboFormat = gl::Fbo::Format();
 	fboFormat.colorTexture(
 		gl::Texture2d::Format()
-		.internalFormat( GL_RGBA )
+		.internalFormat( mFormat.mColorFormat )
 		.minFilter( GL_LINEAR ).magFilter( GL_LINEAR )
 		.loadTopDown( mFormat.mLoadTopDown )
 	);

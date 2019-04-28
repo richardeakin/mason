@@ -33,16 +33,19 @@ class RenderToTexture {
 public:
 	struct Format {
 		//! Specifies whether the Texture should store scanlines top-down in memory. Default is \c false. Also marks Texture as top-down when \c true.
+		// TODO: I'd like to make it so you can pass in your own gl::Texture::Format, but some things aren't exposed on that which I need when drawing (like whether the format is loadTopDown enabeled)
 		Format&		loadTopDown( bool loadTopDown = true ) { mLoadTopDown = loadTopDown; return *this; }
-
+		//! Specifies the gl::Texture's internalFormat.
+		Format&		colorFormat( GLint colorFormat )	{ mColorFormat = colorFormat; return *this; }
 		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 0.
 		Format&		msaa( int samples ) { mMsaaSamples = samples; return *this; }
 		//! Returns the number of samples used for Multisample Anti-Aliasing (MSAA).
 		int			getMsaa() const { return mMsaaSamples; }
 
 	private:
-		bool mLoadTopDown = false;
-		int  mMsaaSamples = 8;
+		bool	mLoadTopDown = false;
+		GLint	mColorFormat = GL_RGBA;
+		int		mMsaaSamples = 8;
 
 		friend RenderToTexture;
 	};
