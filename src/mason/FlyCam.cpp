@@ -200,7 +200,7 @@ void FlyCam::mouseWheel( float increment )
 	if( ! mCamera || ! mEnabled )
 		return;
 
-	mMoveDirection.y = mMoveIncrement * increment * 0.1f;
+	mMoveAccel.y = mMoveIncrement * increment * 7.0f; // TODO: expse multiplier as param
 }
 
 // TODO: need a way to disable using up these keys
