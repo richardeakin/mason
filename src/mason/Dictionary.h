@@ -26,6 +26,7 @@
 #include "cinder/Exception.h"
 #include "cinder/System.h"
 #include "cinder/Vector.h"
+#include "cinder/Quaternion.h"
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
 
@@ -276,6 +277,7 @@ bool MA_API getValue( const Dictionary::Value &value, ci::dvec4 *result );
 bool MA_API getValue( const Dictionary::Value &value, ci::ivec2 *result );
 bool MA_API getValue( const Dictionary::Value &value, ci::ivec3 *result );
 bool MA_API getValue( const Dictionary::Value &value, ci::ivec4 *result );
+bool MA_API getValue( const Dictionary::Value &value, ci::quat *result );
 bool MA_API getValue( const Dictionary::Value &value, ci::Rectf *result );
 bool MA_API getValue( const Dictionary::Value &value, ci::Color *result );
 bool MA_API getValue( const Dictionary::Value &value, ci::ColorA *result );

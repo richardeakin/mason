@@ -23,6 +23,7 @@
 
 #include "cinder/Utilities.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/CinderMath.h"
 #include "jsoncpp/json.h"
 
 using namespace ci;
@@ -367,6 +368,26 @@ bool getValue( const Dictionary::Value &value, ivec4 *result )
 	return true;
 }
 
+bool getValue( const Dictionary::Value &value, ci::quat *result )
+{
+	// First cast to vector<any>
+	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	if( !castedVector || castedVector->size() < 4 )
+		return false;
+
+	// Then fill result's elements from vector
+	if( ! getValue( ( *castedVector )[0], &result->x ) )
+		return false;
+	if( ! getValue( ( *castedVector )[1], &result->y ) )
+		return false;
+	if( ! getValue( ( *castedVector )[2], &result->z ) )
+		return false;
+	if( ! getValue( ( *castedVector )[3], &result->w ) )
+		return false;
+
+	return true;
+}
+
 bool getValue( const Dictionary::Value &value, Rectf *result )
 {
 	// First cast to vector<any>
@@ -605,6 +626,24 @@ Json::Value toJson( const Dictionary::Value &a )
 		result.append( v[0] );
 		result.append( v[1] );
 		result.append( v[2] );
+		return result;
+	}
+	else if( a.type() == typeid( vec4 ) ) {
+		auto v = boost::any_cast<vec4>( a );
+		Json::Value result;
+		result.append( v[0] );
+		result.append( v[1] );
+		result.append( v[2] );
+		result.append( v[3] );
+		return result;
+	}
+	else if( a.type() == typeid( glm::quat ) ) {
+		auto v = boost::any_cast<glm::quat>( a );
+		Json::Value result;
+		result.append( v[0] );
+		result.append( v[1] );
+		result.append( v[2] );
+		result.append( v[3] );
 		return result;
 	}
 	// FIXME: Json::Value::null doesn't seem to be exported with jsoncpp
