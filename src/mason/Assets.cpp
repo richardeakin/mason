@@ -319,12 +319,10 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 
 				notifyResourceReloaded();
 				mAssetErrors.erase( hash );
-
-				if( updateCallback )
-					updateCallback( texture );
-
-
 			}
+
+			if( texture && updateCallback )
+				updateCallback( texture );
 		}
 		catch( const exception &exc ) {
 			if( mAssetErrors.count( hash ) == 0 ) {
