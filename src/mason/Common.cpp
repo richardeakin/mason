@@ -28,12 +28,14 @@
 
 #include "mason/Assets.h"
 #include "mason/Hud.h"
-
+#include "mason/Profiling.h"
 
 using namespace ci;
 using namespace std;
 
 namespace mason {
+
+int Marker::id = 0; //! note that you don't need to include this .cpp in your build if you define this variable in your app
 
 namespace {
 
