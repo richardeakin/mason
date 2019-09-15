@@ -9,7 +9,7 @@
 #endif
 #include "Profiler.h"
 
-#include "cinder/gl/gl.h""
+#include "cinder/gl/gl.h"
 
 namespace mason {
 
