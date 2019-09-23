@@ -83,10 +83,10 @@ void FlyCam::connect( const app::WindowRef &window, const EventOptions &options 
 				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
 			mEventConnections += window->getSignalMouseWheel().connect( options.mPriority,
 				[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
-			mEventConnections += window->getSignalKeyDown().connect( options.mPriority,
-				[this]( app::KeyEvent &event ) { keyDown( event ); } );
 		}
 		if( options.mKeyboard ) {
+			mEventConnections += window->getSignalKeyDown().connect( options.mPriority,
+				[this]( app::KeyEvent &event ) { keyDown( event ); } );
 			mEventConnections += window->getSignalKeyUp().connect( options.mPriority,
 				[this]( app::KeyEvent &event ) { keyUp( event ); } );
 		}
