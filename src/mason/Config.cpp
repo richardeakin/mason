@@ -25,7 +25,12 @@ void setConfig( const ma::Dictionary &config )
 
 void loadConfig( const fs::path &filename, const fs::path &cascadingFilename )
 {
-	loadConfig( filename, vector<fs::path>{ cascadingFilename } );
+	if( ! cascadingFilename.empty() ) {
+		loadConfig( filename, vector<fs::path>{ cascadingFilename } );
+	}
+	else {
+		loadConfig( filename, vector<fs::path>() );
+	}
 }
 
 void loadConfig( const fs::path &filename, const vector<fs::path> &cascadingFilenames )
