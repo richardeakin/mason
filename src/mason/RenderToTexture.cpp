@@ -87,7 +87,10 @@ void RenderToTexture::render()
 	bool originUpperLeft = mFormat.mLoadTopDown;
 	gl::setMatricesWindow( size, originUpperLeft );
 
-	gl::clear( ColorA::zero() );
+	if( mClearEnabled ) {
+		gl::clear( ColorA::zero() );
+	}
+
 	mSignalDraw->emit();
 }
 

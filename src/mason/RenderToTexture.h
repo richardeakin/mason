@@ -55,6 +55,9 @@ public:
 	void		setSize( const ci::ivec2 &size );
 	ci::ivec2	getSize() const;
 
+	void		setClearEnabled( bool enable )	{ mClearEnabled = enable; }
+	bool		isClearEnabled() const			{ return mClearEnabled; }
+
 	ci::signals::Signal<void ()>&	getSignalDraw()	{ return *mSignalDraw; }
 	ci::gl::Texture2dRef			getTexture() const;
 
@@ -65,6 +68,7 @@ private:
 
 	ci::gl::FboRef		mFbo;
 	Format				mFormat;
+	bool				mClearEnabled = true;
 
 	std::unique_ptr<ci::signals::Signal<void ()>>	mSignalDraw;
 };
