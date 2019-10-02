@@ -32,6 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <condition_variable>
 
+#include "cinder/gl/Context.h"
+
 namespace mason {
 
 //! Basic DispatchQueue class - a thread-pool with mutex synchronization.
@@ -62,6 +64,42 @@ private:
 	void dispatchThreadEntry();
 
 	std::string					mName;
+	mutable std::mutex			mMutex;
+	std::condition_variable		mCondition;
+	std::vector<std::thread>	mThreads;
+	std::queue<FunctionT>		mQueue;
+	bool						mQuit = false;
+};
+
+//! DispatchQueueGl - can run OpenGL operations on a background thread using a shared context
+class DispatchQueueGl {
+	typedef std::function<void( void )> FunctionT;
+
+public:
+	DispatchQueueGl( std::string name, const cinder::gl::ContextRef &sharedContext, size_t thread_cnt = 1 );
+	~DispatchQueueGl();
+
+	//! dispatch and copy, async. `readFn` is called once all async OpenGL operations have completed, passing back a void* for userData.
+	void dispatch( void *userData, const std::function<void( void )>& loadFn, const std::function<void( void* )>& readyFn );
+	//! dispatch and move, async
+	//void dispatch( FunctionT&& fn );
+	//! dispatches fn on main thread (currently uses app's update loop / io_service)
+	void dispatchOnMain( const FunctionT& fn );
+
+	//! Returns number of operations currently in queue.
+	size_t getNumQueuedOperations() const;
+
+	// Deleted operations
+	DispatchQueueGl( const DispatchQueueGl& rhs ) = delete;
+	DispatchQueueGl& operator=( const DispatchQueueGl& rhs ) = delete;
+	DispatchQueueGl( DispatchQueueGl&& rhs ) = delete;
+	DispatchQueueGl& operator=( DispatchQueueGl&& rhs ) = delete;
+
+private:
+	void dispatchThreadEntry();
+
+	std::string					mName;
+	cinder::gl::ContextRef		mSharedGlContext = nullptr;
 	mutable std::mutex			mMutex;
 	std::condition_variable		mCondition;
 	std::vector<std::thread>	mThreads;
