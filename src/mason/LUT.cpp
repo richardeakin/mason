@@ -50,7 +50,7 @@ ColorLUT<ColorT>::ColorLUT( const ci::ImageSourceRef &imageSource )
 template <typename ColorT>
 const ColorT& ColorLUT<ColorT>::lookup( float f )
 {
-	size_t i = clamp<size_t>( (size_t)round( f * (float)mLUT.size() ), 0, mLUT.size() - 1 );
+	size_t i = glm::clamp<size_t>( (size_t)round( f * (float)mLUT.size() ), 0, mLUT.size() - 1 );
 	return mLUT[i];
 }
 
@@ -103,8 +103,8 @@ void ColorLUT<ColorT>::fillTable()
 		const auto &stop0 = mStops[s];
 		const auto &stop1 = mStops[s + 1];
 
-		size_t startIndex = clamp<size_t>( round( stop0.percent * mLUT.size() ), 0, mLUT.size() - 1 );
-		size_t stopIndex = clamp<size_t>( round( stop1.percent * mLUT.size() ), 0, mLUT.size() - 1 );
+		size_t startIndex = glm::clamp<size_t>( round( stop0.percent * mLUT.size() ), 0, mLUT.size() - 1 );
+		size_t stopIndex = glm::clamp<size_t>( round( stop1.percent * mLUT.size() ), 0, mLUT.size() - 1 );
 
 
 		size_t numBins = stopIndex - startIndex;

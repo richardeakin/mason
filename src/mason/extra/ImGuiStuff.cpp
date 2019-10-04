@@ -276,7 +276,7 @@ void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 
 	}
 
 	const float delta = 0.0001f;
-	float scaled = clamp<float>( lmap<float>( *value, min, max, size.y, 0 ), 0, size.y );
+	float scaled = glm::clamp<float>( lmap<float>( *value, min, max, size.y, 0 ), 0, size.y );
 
 	if( scaled > delta ) {
 		ColorA backgroundColor = ImGui::GetStyleColorVec4( ImGuiCol_FrameBg );
@@ -321,8 +321,8 @@ bool XYPad( const char *label, const ImVec2& size, float v[2], const ImVec2 &min
 		//ImGui::GetWindowDrawList()->AddLine( { ImGui::GetMousePos().x, ImGui::GetItemRectMin().y }, { ImGui::GetMousePos().x, ImGui::GetItemRectMax().y }, IM_COL32( 255, 255, 0, 255 ), 2 );
 
 		vec2 mouseNorm = mouse / vec2( ImGui::GetItemRectSize() );
-		v[0] = clamp( mouseNorm.x, min.x, max.x );
-		v[1] = clamp( 1 - mouseNorm.y, min.y, max.y );
+		v[0] = glm::clamp( mouseNorm.x, min.x, max.x );
+		v[1] = glm::clamp( 1 - mouseNorm.y, min.y, max.y );
 		active = true;
 	}
 	ImGui::PopButtonRepeat();

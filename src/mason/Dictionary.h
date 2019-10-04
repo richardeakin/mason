@@ -33,8 +33,12 @@
 #include <memory>
 #include <map>
 
-// TODO: switch to std::any on toolsets that supply it
+#if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1923 ) )
+#define MA_HAVE_STD_ANY
+#include <any>
+#else
 #include <boost/any.hpp>
+#endif
 
 #include "mason/Mason.h"
 
@@ -42,38 +46,45 @@ namespace mason {
 
 using DictionaryRef = std::shared_ptr<class Dictionary>;
 
+#if defined( MA_HAVE_STD_ANY )
+using std::any;
+using std::any_cast;
+#else
+using boost::any;
+using boost::any_cast;
+#endif
+
 
 //! Object for storing dynamic data in a hierarchical form, key = string, value = any.
 class MA_API Dictionary {
   public:
 
-	using AnyT = boost::any;
-	class Value : public AnyT {
+	class Value : public any {
 	  public:
 
-		Value() BOOST_NOEXCEPT
-			: AnyT()
+		Value() noexcept
+			: any()
 		{}
 
 		template<typename T>
 		Value( const T &value )
-			: AnyT( static_cast<const AnyT &>( value ) )
+			: any( static_cast<const any &>( value ) )
 		{}
 
 		Value( const Value &other )
-			: AnyT( static_cast<const AnyT &>( other ) )
+			: any( static_cast<const any &>( other ) )
 		{}
 
 		Value & operator=( const Value& rhs )
 		{
-			AnyT::operator=( static_cast<const AnyT &>( rhs ) );
+			any::operator=( static_cast<const any &>( rhs ) );
 			return *this;
 		}
 
 		// move assignement
-		Value & operator=( Value&& rhs ) BOOST_NOEXCEPT
+		Value & operator=( Value&& rhs ) noexcept
 		{
-			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
+			any::operator=( static_cast<any &&>( rhs ) );
 			return *this;
 		}
 
@@ -81,7 +92,7 @@ class MA_API Dictionary {
 		template <class T>
 		Value & operator=( T&& rhs )
 		{
-			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
+			any::operator=( static_cast<any &&>( rhs ) );
 			return *this;
 		}
 
@@ -89,7 +100,7 @@ class MA_API Dictionary {
 		template <class T>
 		Value & operator=( std::vector<T>&& rhs )
 		{
-			AnyT::operator=( static_cast<AnyT &&>( rhs ) );
+			any::operator=( static_cast<any &&>( rhs ) );
 			return *this;
 		}
 
@@ -236,14 +247,14 @@ bool getValue( const Dictionary::Value &value, T *result )
 		return false;
 	}
 
-	*result = boost::any_cast<T>( value );
+	*result = any_cast<T>( value );
 	return true;
 }
 
 template<typename T>
 bool getValue( const Dictionary::Value &value, std::vector<T> *result )
 {
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
 	if( castedVector ) {
 		result->resize( castedVector->size() );
 		for( size_t i = 0; i < result->size(); i++ ) {
@@ -359,7 +370,7 @@ const T& Dictionary::getStrict( const std::string &key ) const
 		throw DictionaryBadTypeExc( key, value, typeid( T ) );
 	}
 
-	return boost::any_cast<const T&>( value );
+	return any_cast<const T&>( value );
 }
 
 template<typename T>
@@ -376,7 +387,7 @@ const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) 
 		throw DictionaryBadTypeExc( key, value, typeid( T ) );
 	}
 
-	return boost::any_cast<const T&>( value );
+	return any_cast<const T&>( value );
 }
 
 // ----------------------------------------------------

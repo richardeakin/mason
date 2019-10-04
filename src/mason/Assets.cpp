@@ -547,7 +547,11 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 // ----------------------------------------------------------------------------------------------------
 
 #if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
+#if ( _MSC_VER >= 1923 )
+#define ASSET_INITIAL_TIME_MODIFIED std::filesystem::file_time_type::clock::now()
+#else
 #define ASSET_INITIAL_TIME_MODIFIED std::chrono::system_clock::now()
+#endif
 #else
 #define ASSET_INITIAL_TIME_MODIFIED std::time_t( 0 )
 #endif

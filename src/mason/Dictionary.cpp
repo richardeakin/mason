@@ -75,10 +75,10 @@ void Dictionary::merge( const Dictionary &other )
 		if( mp.second.type() == typeid( Dictionary ) ) {
 			// if we have that key, check if it is also a Dictionary.
 			// - if yes then recursive merge. if no, blow away our current contents with other's.
-			const Dictionary *b = boost::any_cast<Dictionary>( &mp.second );
+			const Dictionary *b = any_cast<Dictionary>( &mp.second );
 			auto it = mData.find( mp.first );
 			if( it != mData.end() && it->second.type() == typeid( Dictionary ) ) {				
-				Dictionary *a = boost::any_cast<Dictionary>( &it->second );
+				Dictionary *a = any_cast<Dictionary>( &it->second );
 				a->merge( *b );
 			}
 			else {
@@ -89,10 +89,10 @@ void Dictionary::merge( const Dictionary &other )
 		//	// iterate over each array type to look for Dictionaries or values
 		//	// - check if we have a key and it is also an array.
 		//	// - if yes then merge the two, if no then replace our key
-		//	const vector<any> *b = boost::any_cast<vector<any>>( &mp.second );
+		//	const vector<any> *b = any_cast<vector<any>>( &mp.second );
 		//	auto it = mData.find( mp.first );
 		//	if( it != mData.end() && it->second.type() == typeid( std::vector<any> ) ) {
-		//		vector<any> *a = boost::any_cast<vector<any>>( &it->second );
+		//		vector<any> *a = any_cast<vector<any>>( &it->second );
 		//		for( const auto &c : *b ) {
 
 		//		}
@@ -132,19 +132,19 @@ namespace detail {
 
 bool getValue( const Dictionary::Value &value, float *result )
 {
-	const auto castedFloat = boost::any_cast<float>( &value );
+	const auto castedFloat = any_cast<float>( &value );
 	if( castedFloat ) {
 		*result = *castedFloat;
 		return true;
 	}
 
-	const auto castedDouble = boost::any_cast<double>( &value );
+	const auto castedDouble = any_cast<double>( &value );
 	if( castedDouble ) {
 		*result = static_cast<float>( *castedDouble );
 		return true;
 	}
 
-	const auto castedInt = boost::any_cast<int>( &value );
+	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
 		*result = static_cast<float>( *castedInt );
 		return true;
@@ -155,19 +155,19 @@ bool getValue( const Dictionary::Value &value, float *result )
 
 bool getValue( const Dictionary::Value &value, double *result )
 {
-	const auto castedDouble = boost::any_cast<double>( &value );
+	const auto castedDouble = any_cast<double>( &value );
 	if( castedDouble ) {
 		*result = *castedDouble;
 		return true;
 	}
 
-	const auto castedFloat = boost::any_cast<float>( &value );
+	const auto castedFloat = any_cast<float>( &value );
 	if( castedFloat ) {
 		*result = static_cast<double>( *castedFloat );
 		return true;
 	}
 
-	const auto castedInt = boost::any_cast<int>( &value );
+	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
 		*result = static_cast<double>( *castedInt );
 		return true;
@@ -178,7 +178,7 @@ bool getValue( const Dictionary::Value &value, double *result )
 
 bool getValue( const Dictionary::Value &value, size_t *result )
 {
-	const auto castedInt = boost::any_cast<int>( &value );
+	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
 		*result = static_cast<size_t>( *castedInt );
 		return true;
@@ -188,7 +188,7 @@ bool getValue( const Dictionary::Value &value, size_t *result )
 
 bool MA_API getValue( const Dictionary::Value &value, int32_t *result )
 {
-	const auto castedInt = boost::any_cast<int>( &value );
+	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
 		*result = static_cast<int32_t>( *castedInt );
 		return true;
@@ -198,7 +198,7 @@ bool MA_API getValue( const Dictionary::Value &value, int32_t *result )
 
 bool MA_API getValue( const Dictionary::Value &value, uint32_t *result )
 {
-	const auto castedInt = boost::any_cast<int>( &value );
+	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
 		*result = static_cast<uint32_t>( *castedInt );
 		return true;
@@ -209,11 +209,11 @@ bool MA_API getValue( const Dictionary::Value &value, uint32_t *result )
 bool getValue( const Dictionary::Value &value, vec2 *result )
 {
 	if( value.type() == typeid( vec2 ) ) {
-		*result = boost::any_cast<vec2>( value );
+		*result = any_cast<vec2>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
 	if( ! castedVector || castedVector->size() < 2 )
 		return false;
 
@@ -228,11 +228,11 @@ bool getValue( const Dictionary::Value &value, vec2 *result )
 bool getValue( const Dictionary::Value &value, vec3 *result )
 {
 	if( value.type() == typeid( vec3 ) ) {
-		*result = boost::any_cast<vec3>( value );
+		*result = any_cast<vec3>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -249,11 +249,11 @@ bool getValue( const Dictionary::Value &value, vec3 *result )
 bool getValue( const Dictionary::Value &value, vec4 *result )
 {
 	if( value.type() == typeid( vec4 ) ) {
-		*result = boost::any_cast<vec4>( value );
+		*result = any_cast<vec4>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -272,11 +272,11 @@ bool getValue( const Dictionary::Value &value, vec4 *result )
 bool getValue( const Dictionary::Value &value, dvec2 *result )
 {
 	if( value.type() == typeid( dvec2 ) ) {
-		*result = boost::any_cast<dvec2>( value );
+		*result = any_cast<dvec2>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
 	if( ! castedVector || castedVector->size() < 2 )
 		return false;
 
@@ -291,11 +291,11 @@ bool getValue( const Dictionary::Value &value, dvec2 *result )
 bool getValue( const Dictionary::Value &value, dvec3 *result )
 {
 	if( value.type() == typeid( dvec3 ) ) {
-		*result = boost::any_cast<dvec3>( value );
+		*result = any_cast<dvec3>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -312,11 +312,11 @@ bool getValue( const Dictionary::Value &value, dvec3 *result )
 bool getValue( const Dictionary::Value &value, dvec4 *result )
 {
 	if( value.type() == typeid( dvec4 ) ) {
-		*result = boost::any_cast<dvec4>( value );
+		*result = any_cast<dvec4>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -335,11 +335,11 @@ bool getValue( const Dictionary::Value &value, dvec4 *result )
 bool getValue( const Dictionary::Value &value, ivec2 *result )
 {
 	if( value.type() == typeid( ivec2 ) ) {
-		*result = boost::any_cast<ivec2>( value );
+		*result = any_cast<ivec2>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
 	if( !castedVector || castedVector->size() < 2 )
 		return false;
 
@@ -354,11 +354,11 @@ bool getValue( const Dictionary::Value &value, ivec2 *result )
 bool getValue( const Dictionary::Value &value, ivec3 *result )
 {
 	if( value.type() == typeid( ivec3 ) ) {
-		*result = boost::any_cast<ivec3>( value );
+		*result = any_cast<ivec3>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( !castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -375,11 +375,11 @@ bool getValue( const Dictionary::Value &value, ivec3 *result )
 bool getValue( const Dictionary::Value &value, ivec4 *result )
 {
 	if( value.type() == typeid( ivec4 ) ) {
-		*result = boost::any_cast<ivec4>( value );
+		*result = any_cast<ivec4>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( !castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -398,11 +398,11 @@ bool getValue( const Dictionary::Value &value, ivec4 *result )
 bool getValue( const Dictionary::Value &value, ci::quat *result )
 {
 	if( value.type() == typeid( quat ) ) {
-		*result = boost::any_cast<quat>( value );
+		*result = any_cast<quat>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( !castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -421,11 +421,11 @@ bool getValue( const Dictionary::Value &value, ci::quat *result )
 bool getValue( const Dictionary::Value &value, Rectf *result )
 {
 	if( value.type() == typeid( Rectf ) ) {
-		*result = boost::any_cast<Rectf>( value );
+		*result = any_cast<Rectf>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -444,11 +444,11 @@ bool getValue( const Dictionary::Value &value, Rectf *result )
 bool getValue( const Dictionary::Value &value, Color *result )
 {
 	if( value.type() == typeid( Color ) ) {
-		*result = boost::any_cast<Color>( value );
+		*result = any_cast<Color>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -465,11 +465,11 @@ bool getValue( const Dictionary::Value &value, Color *result )
 bool getValue( const Dictionary::Value &value, ColorA *result )
 {
 	if( value.type() == typeid( ColorA ) ) {
-		*result = boost::any_cast<ColorA>( value );
+		*result = any_cast<ColorA>( value );
 		return true;
 	}
 
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -495,11 +495,11 @@ bool getValue( const Dictionary::Value &value, ColorA *result )
 bool getValue( const Dictionary::Value &value, ci::fs::path *result )
 {
 	if( value.type() == typeid( ci::fs::path ) ) {
-		*result = boost::any_cast<ci::fs::path>( value );
+		*result = any_cast<ci::fs::path>( value );
 		return true;
 	}
 
-	const auto castedString = boost::any_cast<std::string>( &value );
+	const auto castedString = any_cast<std::string>( &value );
 	if( castedString ) {
 		*result = *castedString;
 		return true;
@@ -510,7 +510,7 @@ bool getValue( const Dictionary::Value &value, ci::fs::path *result )
 
 bool getValue( const Dictionary::Value &value, vector<Dictionary::Value> *result )
 {
-	const auto castedVector = boost::any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
 	if( castedVector ) {
 		*result = *castedVector;
 		return true;
@@ -527,7 +527,7 @@ bool getValue( const Dictionary::Value &value, vector<Dictionary::Value> *result
 
 const Dictionary::Value& Dictionary::Value::operator[]( const std::string &key ) const
 { 
-	const auto &dict = boost::any_cast<const Dictionary &>( *this );
+	const auto &dict = any_cast<const Dictionary &>( *this );
 	return dict.getStrict<Dictionary::Value>( key );
 }
 
@@ -535,7 +535,7 @@ Dictionary::Value& Dictionary::Value::operator[]( const std::string &key )
 {
 	// check if this is a Dictionary. If yes, typecast to get the dictionary, then value from key
 	if( type() == typeid( Dictionary ) ) {
-		auto &dict = boost::any_cast<Dictionary &>( *this );
+		auto &dict = any_cast<Dictionary &>( *this );
 		return dict[key];
 	}
 	else {
@@ -630,42 +630,42 @@ Json::Value toJson( const vector<Dictionary::Value> &arr )
 Json::Value toJson( const Dictionary::Value &a )
 {
 	if( a.type() == typeid( Dictionary ) ) {
-		return toJson( boost::any_cast<Dictionary>( a ) );
+		return toJson( any_cast<Dictionary>( a ) );
 	}
 //	else if( a.type() == typeid( vector<Dictionary> ) ) {
 //		// TODO NEXT: implement this either with for loop over vector or another toJson overload()
-////		return toJson( boost::any_cast<vector<Dictionary::Value>>( a ) );
+////		return toJson( any_cast<vector<Dictionary::Value>>( a ) );
 //	}
 	else if( a.type() == typeid( vector<Dictionary::Value> ) ) {
-		return toJson( boost::any_cast<vector<Dictionary::Value>>( a ) );
+		return toJson( any_cast<vector<Dictionary::Value>>( a ) );
 	}
 	else if( a.type() == typeid( int ) ) {
-		return Json::Value( boost::any_cast<int>( a ) );
+		return Json::Value( any_cast<int>( a ) );
 	}
 	else if( a.type() == typeid( bool ) ) {
-		return Json::Value( boost::any_cast<bool>( a ) );
+		return Json::Value( any_cast<bool>( a ) );
 	}
 	else if( a.type() == typeid( float ) ) {
-		return Json::Value( boost::any_cast<float>( a ) );
+		return Json::Value( any_cast<float>( a ) );
 	}
 	else if( a.type() == typeid( double ) ) {
-		return Json::Value( boost::any_cast<double>( a ) );
+		return Json::Value( any_cast<double>( a ) );
 	}
 	else if( a.type() == typeid( string ) ) {
-		return Json::Value( boost::any_cast<string>( a ) );
+		return Json::Value( any_cast<string>( a ) );
 	}
 	else if( a.type() == typeid( const char* ) ) {
-		return Json::Value( boost::any_cast<const char *>( a ) );
+		return Json::Value( any_cast<const char *>( a ) );
 	}
 	else if( a.type() == typeid( vec2 ) ) {
-		auto v = boost::any_cast<vec2>( a );
+		auto v = any_cast<vec2>( a );
 		Json::Value result;
 		result.append( v[0] );
 		result.append( v[1] );
 		return result;
 	}
 	else if( a.type() == typeid( vec3 ) ) {
-		auto v = boost::any_cast<vec3>( a );
+		auto v = any_cast<vec3>( a );
 		Json::Value result;
 		result.append( v[0] );
 		result.append( v[1] );
@@ -673,7 +673,7 @@ Json::Value toJson( const Dictionary::Value &a )
 		return result;
 	}
 	else if( a.type() == typeid( vec4 ) ) {
-		auto v = boost::any_cast<vec4>( a );
+		auto v = any_cast<vec4>( a );
 		Json::Value result;
 		result.append( v[0] );
 		result.append( v[1] );
@@ -682,7 +682,7 @@ Json::Value toJson( const Dictionary::Value &a )
 		return result;
 	}
 	else if( a.type() == typeid( glm::quat ) ) {
-		auto v = boost::any_cast<glm::quat>( a );
+		auto v = any_cast<glm::quat>( a );
 		Json::Value result;
 		result.append( v[0] );
 		result.append( v[1] );
