@@ -179,6 +179,9 @@ void FlyCam::mouseDown( const vec2 &mousePos )
 
 void FlyCam::mouseUp( const vec2 &mousePos )
 {
+	if( ! mCamera || ! mEnabled )
+		return;
+
 	mLookEnabled = false;
 	mLookDelta = vec2( 0 );
 	mInitialCam = *mCamera;
@@ -206,6 +209,9 @@ void FlyCam::mouseWheel( float increment )
 // TODO: need a way to disable using up these keys
 void FlyCam::keyDown( ci::app::KeyEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	// skip if any modifier key is being pressed, except shift which is used to decrease speed.
 	if( event.isAltDown() || event.isControlDown() || event.isMetaDown() )
 		return;
