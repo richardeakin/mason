@@ -64,8 +64,8 @@
     <ClCompile Include="..\..\src\mason\Common.cpp" />
     <ClCompile Include="..\..\src\mason\Config.cpp" />
     <ClCompile Include="..\..\src\mason\Dictionary.cpp" />
+    <ClCompile Include="..\..\src\mason\glutils.cpp" />
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
-    <ClCompile Include="..\..\src\mason\LivePPManager.cpp" />
     <ClCompile Include="..\..\src\mason\LUT.cpp" />
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp" />
@@ -113,8 +113,8 @@
     <ClInclude Include="..\..\src\mason\Config.h" />
     <ClInclude Include="..\..\src\mason\Dictionary.h" />
     <ClInclude Include="..\..\src\mason\Export.h" />
+    <ClInclude Include="..\..\src\mason\glutils.h" />
     <ClInclude Include="..\..\src\mason\Hud.h" />
-    <ClInclude Include="..\..\src\mason\LivePPManager.h" />
     <ClInclude Include="..\..\src\mason\LUT.h" />
     <ClInclude Include="..\..\src\mason\Mason.h" />
     <ClInclude Include="..\..\src\mason\MotionTracker.h" />
