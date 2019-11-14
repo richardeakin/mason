@@ -58,4 +58,14 @@ float range( float val, float inMin, float inMax, float outMin, float outMax )
 	return outMin + (outMax - outMin) * ( (val - inMin) / (inMax - inMin) );
 }
 
+vec3 range( vec3 val, vec3 inMin, vec3 inMax, vec3 outMin, vec3 outMax )
+{
+    return outMin + (outMax - outMin) * ( (val - inMin) / (inMax - inMin) );
+}
+
+vec3 range( vec3 val, float inMin, float inMax, float outMin, float outMax )
+{
+    return outMin + (outMax - outMin) * ( (val - inMin) / (inMax - inMin) );
+}
+
 #endif // MASON_UTIL_GLSL
