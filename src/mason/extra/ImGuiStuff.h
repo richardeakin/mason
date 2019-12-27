@@ -70,7 +70,7 @@ struct ScopedId : public ci::Noncopyable {
 
 } // namespace ImGui
 
-namespace ImGuiStuff {
+namespace imx {
 
 bool ButtonToggle( const char* label, bool *value, const ImVec2& size = ImVec2( 0,0 ) );
 bool FileSelector( const char* label, ci::fs::path* selectedPath, const ci::fs::path &initialPath, const std::vector<std::string> &extensions = {} );
@@ -90,4 +90,4 @@ void EndDisabled();
 void SetNotificationColors();
 
 
-} // namespace ImGuiStuff
+} // namespace imx

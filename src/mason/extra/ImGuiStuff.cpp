@@ -92,7 +92,7 @@ ScopedId::~ScopedId()
 
 } // namespace ImGui
 
-namespace ImGuiStuff {
+namespace imx {
 
 namespace {
 
@@ -384,4 +384,4 @@ void SetNotificationColors()
 	colors[ImGuiCol_Separator] = col;
 }
 
-} // namespace ImGuiStuff
+} // namespace imx
