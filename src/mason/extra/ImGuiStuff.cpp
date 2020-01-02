@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "imgui/imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
 
+#include <deque>
+
 using namespace std;
 using namespace ci;
 using namespace ImGui;
@@ -382,6 +384,289 @@ void SetNotificationColors()
 	auto &colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_Border] = col;
 	colors[ImGuiCol_Separator] = col;
+}
+
+// ----------------------------------------------------------------------------------------------------
+// Logs
+// ----------------------------------------------------------------------------------------------------
+// code initially from Simon - thanks! https://gist.github.com/simongeilfus/5ba7528835a9b51b0d0a16e4682c76b4
+
+namespace {
+
+class Logger : public ci::log::Logger {
+public:
+	Logger()
+		: mLevelFilters( { true, true, true, true, true, true } ),
+		mMetaFormat( { true, true, false, true } ), 
+		mCompact( false ), mCompactEnd( 0 ), mCurrentLineCount( 1 ),
+		mAutoScroll( true ), mMaxLines( 10000 ),
+		mFilteredLogsCached( false )
+	{
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		mLevelColors = {
+			colors[ImGuiCol_FrameBg],
+			colors[ImGuiCol_TextDisabled],
+			colors[ImGuiCol_NavWindowingDimBg],
+			colors[ImGuiCol_NavWindowingHighlight],
+			colors[ImGuiCol_HeaderActive],
+			colors[ImGuiCol_PlotLinesHovered]
+		};
+	}
+
+	void clear()
+	{
+		mCompactEnd = 0;
+		mCurrentLineCount = 1;
+		mLogs.clear();
+		mFilteredLogs.clear();
+		mFilteredLogsCached = false;
+	}	
+
+	void write( const ci::log::Metadata &meta, const std::string &text ) override
+	{
+		if( ! mCompact ) {
+			mLogs.push_back( Log( meta, text ) );			}
+		else {
+			bool exists = false;
+			for( int i = (int) mLogs.size() - 1; i >= mCompactEnd; --i ) {
+				if( mLogs[i].mMetaData.mLocation.getLineNumber() == meta.mLocation.getLineNumber() ) {
+					mLogs[i].mAppearance++;
+					mLogs[i].mMessage = text;
+					mLogs[i].mIsMessageCached = false;
+
+					if( i < mLogs.size() - mCurrentLineCount ) {
+						Log log = mLogs[i];
+						mLogs.erase( mLogs.begin() + i );
+						mLogs.push_back( log );
+					}
+
+					exists = true;
+					break;
+				}
+			}
+			if( ! exists ) {
+				mLogs.push_back( Log( meta, text ) );
+			}
+		}
+		mScrollToBottom = true;
+		mFilteredLogsCached = false;
+	}
+
+	void draw( const std::string &label )
+	{
+		if( ImGui::Button( "Clear" ) ) { 
+			clear();
+		}
+		ImGui::SameLine();
+
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		mLevelColors = {
+			colors[ImGuiCol_NavWindowingDimBg],
+			colors[ImGuiCol_TextDisabled],
+			colors[ImGuiCol_Text],
+			colors[ImGuiCol_HeaderActive],
+			colors[ImGuiCol_Header],
+			colors[ImGuiCol_HeaderHovered]
+		};
+
+		if( mTextFilter.Draw( "Filter", -200.0f ) ) {
+			mFilteredLogsCached = false;
+		}
+
+		ImGui::SameLine();
+		ImGui::PushItemWidth( 75.0f );
+		if( ImGui::BeginCombo( "##Options", "Options", ImGuiComboFlags_HeightLarge ) ) {
+			bool invalidateCache = false;
+			ImGui::Text( "Format" );
+			static const std::string metaNames[4] = { "Level", "Function", "Filename", "Line" };
+			for( size_t i = 0; i < mMetaFormat.size(); ++i ) {
+				invalidateCache |= ImGui::Checkbox( metaNames[i].c_str(), &mMetaFormat[i] );
+			}
+
+			ImGui::Separator();
+			ImGui::Text( "Options" );
+			if( ImGui::Checkbox( "Compact Mode", &mCompact ) ) {
+				invalidateCache = true;
+				mFilteredLogsCached = false;
+				mCompactEnd = static_cast<int>( mLogs.size() );
+			}
+
+			ImGui::Checkbox( "Auto Scroll", &mAutoScroll );
+			ImGui::Checkbox( "Limit Lines", &mLimitLines );
+			if( mAutoScroll ) {
+				ImGui::PushItemWidth( 80.0f );
+				ImGui::DragInt( "Max Lines", &mMaxLines );
+				ImGui::PopItemWidth();
+			}
+
+			if( invalidateCache ) {
+				for( size_t i = 0; i < mLogs.size(); ++i ) {
+					mLogs[i].mIsMessageCached = false;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
+
+		ImGui::SameLine();
+		ImGui::PushItemWidth( 70.0f );
+		if( ImGui::BeginCombo( "##Levels", "Levels" ) ) {
+			static const std::string levelsNames[6] = { "VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL" };
+			for( size_t i = 0; i < mLevelFilters.size(); ++i ) {
+				ImGui::PushID( static_cast<int>( i ) );
+				if( ImGui::Checkbox( "##Level", &mLevelFilters[i] ) ) {
+					mFilteredLogsCached = false;
+				}
+				ImGui::SameLine();
+				ImGui::ColorEdit3( levelsNames[i].c_str(), &mLevelColors[i].x, ImGuiColorEditFlags_NoInputs );
+				ImGui::PopID();
+			}
+
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
+
+		ImGui::Separator();
+		ImGui::BeginChild( "scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar );
+
+		mCurrentLineCount = 0;
+
+		if( mLimitLines && mLogs.size() > mMaxLines ) {
+			mLogs.pop_front();
+			if( ! mFilteredLogs.empty() && mFilteredLogs.front() == 0 ) {
+				mFilteredLogs.pop_front();
+				for( auto &i : mFilteredLogs ) {
+					i--;
+				}
+			}
+		}
+
+		if( ! mFilteredLogsCached ) {
+			mFilteredLogs.clear();
+			for( size_t i = 0; i < mLogs.size(); i++ ) {
+				if( ! mTextFilter.IsActive() || mTextFilter.PassFilter( mLogs[i].mMessageFull.c_str(), mLogs[i].mMessageFull.c_str() + mLogs[i].mMessageFull.length() ) ) {
+					if( mLevelFilters[mLogs[i].mMetaData.mLevel] ) {
+						mFilteredLogs.push_back( i );
+					}
+				}
+			}
+			mFilteredLogsCached = true;
+		}
+
+		// TODO: Using clipper and filtering at the same times requires pre-filtering the
+		// list and keeping a cached filtered version of mLogs to be able to pass the actual
+		// number of items to the clipper constructor...
+
+		ImGuiListClipper clipper( static_cast<int>( mFilteredLogs.size() ), ImGui::GetTextLineHeightWithSpacing() );
+		while( clipper.Step() ) {
+			//for( size_t i = 0; i < mLogs.size(); i++ ) {
+			for( size_t i = clipper.DisplayStart; i < clipper.DisplayEnd; i++ ) {
+				size_t logId = mFilteredLogs[i];
+				//if( ! mTextFilter.IsActive() || mTextFilter.PassFilter( mLogs[i].mMessageFull.c_str(), mLogs[i].mMessageFull.c_str() + mLogs[i].mMessageFull.length() ) ) {
+				//if( mLevelFilters[mLogs[i].mMetaData.mLevel] ) {
+				ImGui::PushStyleColor( ImGuiCol_Text, mLevelColors[mLogs[logId].mMetaData.mLevel] );
+				ImGui::TextUnformatted( mLogs[logId].getCached( mMetaFormat ).c_str() );
+				ImGui::PopStyleColor();
+				if( mLogs[logId].mAppearance > 1 ) {
+					ImGui::SameLine();
+					ImGui::PushStyleColor( ImGuiCol_Text, mLevelColors[1] );
+					ImGui::Text( "(%i)", (int) mLogs[logId].mAppearance );
+					ImGui::PopStyleColor();
+				}
+				mCurrentLineCount++;
+			}
+			//}
+			//}
+		}
+
+		if( mAutoScroll && mScrollToBottom ) {
+			ImGui::SetScrollHereY(1.0f);
+		}
+		mScrollToBottom = false;
+		ImGui::EndChild();
+	}
+
+protected:
+
+	struct Log {
+		Log( const ci::log::Metadata &metaData, const std::string &message ) 
+			: mMetaData( metaData ), mMessage( message ), mIsMessageCached( false ), mAppearance( 1 )
+		{
+			stringstream ss;
+			ss << metaData.mLevel;
+			ss << metaData.mLocation.getFileName();
+			ss << "[" << metaData.mLocation.getLineNumber() << "]";
+			ss << " " << metaData.mLocation.getFunctionName();
+			ss << " " << message;
+			mMessageFull = ss.str();
+		}
+
+		string getCached( const std::array<bool,4> &format )
+		{
+			if( ! mIsMessageCached ) {
+				stringstream ss;
+				if( format[0] ) ss << mMetaData.mLevel;
+				if( format[2] ) {
+					if( format[2] ) ss << mMetaData.mLocation.getFileName();
+					if( format[3] ) ss << "[" << mMetaData.mLocation.getLineNumber() << "]";
+				}
+				if( format[1] ) ss << " " << mMetaData.mLocation.getFunctionName();
+				if( format[3] && ! format[2] ) ss << "[" << mMetaData.mLocation.getLineNumber() << "]";
+				ss << " " << mMessage;
+
+				mMessageCached = ss.str();
+				mIsMessageCached = true;
+			}
+
+			return mMessageCached;
+		}
+
+		uint32_t mAppearance;
+		bool mIsMessageCached;
+		ci::log::Metadata mMetaData;
+		std::string mMessage, mMessageFull, mMessageCached;
+	};
+
+	std::deque<Log>	mLogs;
+	std::deque<size_t>	mFilteredLogs;
+	std::array<bool,6>	mLevelFilters;
+	std::array<ImVec4,6> mLevelColors;
+	std::array<bool,4>	mMetaFormat;
+	bool				mAutoScroll, mScrollToBottom;
+	bool				mFilteredLogsCached;
+	bool				mCompact;
+	int					mCompactEnd;
+	size_t				mCurrentLineCount;
+	bool				mLimitLines;
+	int					mMaxLines;
+
+	ImGuiTextFilter     mTextFilter;
+};
+
+Logger* getLogger( ImGuiID logId ) 
+{
+	ImGuiStorage* storage = ImGui::GetStateStorage();
+	Logger* appLog = (Logger*) storage->GetVoidPtr( logId );
+	if( ! appLog ) {
+		auto logger = log::makeLogger<Logger>();
+		appLog = logger.get();
+		storage->SetVoidPtr( logId, (void*) logger.get() );
+	}
+	return appLog;
+}
+
+} // anonymous namespace
+
+void Logs( const char* label, bool* open )
+{
+	if( ImGui::Begin( label, open ) ) {
+		if( Logger* appLog = getLogger( ImGui::GetID( "Logger::instance" ) ) ) {
+			appLog->draw( label );
+		}
+	}
+
+	ImGui::End();
 }
 
 } // namespace imx
