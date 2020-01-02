@@ -459,16 +459,6 @@ public:
 		}
 		ImGui::SameLine();
 
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		mLevelColors = {
-			colors[ImGuiCol_NavWindowingDimBg],
-			colors[ImGuiCol_TextDisabled],
-			colors[ImGuiCol_Text],
-			colors[ImGuiCol_HeaderActive],
-			colors[ImGuiCol_Header],
-			colors[ImGuiCol_HeaderHovered]
-		};
-
 		if( mTextFilter.Draw( "Filter", -200.0f ) ) {
 			mFilteredLogsCached = false;
 		}
@@ -512,7 +502,7 @@ public:
 		ImGui::SameLine();
 		ImGui::PushItemWidth( 70.0f );
 		if( ImGui::BeginCombo( "##Levels", "Levels" ) ) {
-			static const std::string levelsNames[6] = { "VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL" };
+			static const std::string levelsNames[6] = { "verbose", "debug", "info", "warning", "error", "fatal" };
 			for( size_t i = 0; i < mLevelFilters.size(); ++i ) {
 				ImGui::PushID( static_cast<int>( i ) );
 				if( ImGui::Checkbox( "##Level", &mLevelFilters[i] ) ) {
@@ -543,6 +533,7 @@ public:
 		}
 
 		if( ! mFilteredLogsCached ) {
+			// TODO: implement word-wrap here?
 			mFilteredLogs.clear();
 			for( size_t i = 0; i < mLogs.size(); i++ ) {
 				if( ! mTextFilter.IsActive() || mTextFilter.PassFilter( mLogs[i].mMessageFull.c_str(), mLogs[i].mMessageFull.c_str() + mLogs[i].mMessageFull.length() ) ) {
@@ -554,7 +545,7 @@ public:
 			mFilteredLogsCached = true;
 		}
 
-		// TODO: Using clipper and filtering at the same times requires pre-filtering the
+		// TODO: Using clipper and filtering at the same times requires pre-filtering (right above this comment) the
 		// list and keeping a cached filtered version of mLogs to be able to pass the actual
 		// number of items to the clipper constructor...
 
@@ -568,6 +559,8 @@ public:
 				ImGui::PushStyleColor( ImGuiCol_Text, mLevelColors[mLogs[logId].mMetaData.mLevel] );
 				ImGui::TextUnformatted( mLogs[logId].getCached( mMetaFormat ).c_str() );
 				ImGui::PopStyleColor();
+
+				// When Compact Mode is enabled, mAppearance will grow for identical logs
 				if( mLogs[logId].mAppearance > 1 ) {
 					ImGui::SameLine();
 					ImGui::PushStyleColor( ImGuiCol_Text, mLevelColors[1] );
@@ -635,7 +628,7 @@ protected:
 	std::array<bool,4>	mMetaFormat;
 	bool				mAutoScroll, mScrollToBottom;
 	bool				mFilteredLogsCached;
-	bool				mCompact;
+	bool				mCompact; //! Compact Mode - writes same log statements on one line only, with a count after the message
 	int					mCompactEnd;
 	size_t				mCurrentLineCount;
 	bool				mLimitLines;
