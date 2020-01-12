@@ -44,7 +44,7 @@
 
 namespace mason {
 
-using DictionaryRef = std::shared_ptr<class Dictionary>;
+using InfoRef = std::shared_ptr<class Info>;
 
 #if defined( MA_HAVE_STD_ANY )
 using std::any;
@@ -56,7 +56,7 @@ using boost::any_cast;
 
 
 //! Object for storing dynamic data in a hierarchical form, key = string, value = any.
-class MA_API Dictionary {
+class MA_API Info {
   public:
 
 	class Value : public any {
@@ -110,14 +110,14 @@ class MA_API Dictionary {
 		{
 			T result;
 			if( ! detail::getValue( *this, &result ) ) {
-				throw DictionaryBadTypeExc( *this, typeid( T ) );
+				throw InfoBadTypeExc( *this, typeid( T ) );
 			}
 
 			return result;
 		}
 
-		const Dictionary::Value& operator[]( const std::string &key ) const;
-		Dictionary::Value& operator[]( const std::string &key );
+		const Info::Value& operator[]( const std::string &key ) const;
+		Info::Value& operator[]( const std::string &key );
 	};
 
 	using Container = std::map<std::string, Value>;
@@ -125,27 +125,27 @@ class MA_API Dictionary {
 	using ConstIterator = Container::const_iterator;
 
 
-	//! Constructs an empty Dictionary on the stack
-	Dictionary();
-	//! Creates an empty Dictionary and returns it in a shared_ptr
-	static DictionaryRef	create()	{ return std::make_shared<Dictionary>(); }
+	//! Constructs an empty Info on the stack
+	Info();
+	//! Creates an empty Info and returns it in a shared_ptr
+	static InfoRef	create()	{ return std::make_shared<Info>(); }
 
 	template<typename DataT>
-	static Dictionary		convert( const DataT &data );
+	static Info		convert( const DataT &data );
 
 	template<typename DataT>
-	static Dictionary		convert( const ci::DataSourceRef &dataSource );
+	static Info		convert( const ci::DataSourceRef &dataSource );
 
 	template<typename DataT>
-	static Dictionary		convert( const ci::fs::path &filePath );
+	static Info		convert( const ci::fs::path &filePath );
 
-	//! Converts and returns this Dictionary as type DataT.
+	//! Converts and returns this Info as type DataT.
 	template<typename DataT>
 	DataT		convert() const;
 
 	// TODO: possible to reuse above converts but store in shared_ptr?
 //	template<typename DataT, typename... Args>
-//	static DictionaryRef	convertShared( Args... )
+//	static InfoRef	convertShared( Args... )
 
 	template<typename T>
 	void		set( const std::string &key, const T &value );
@@ -153,11 +153,11 @@ class MA_API Dictionary {
 	void set( const std::string &key, const std::vector<T> &value );
 
 	//! Returns a copy of the value associated with T. Some type conversions are allowed (like double -> float), hence why a copy is necessary.
-	//! A DictionaryExc is thrown if the key doesn't exist or it can't be converted to type T.
+	//! A InfoExc is thrown if the key doesn't exist or it can't be converted to type T.
 	template<typename T>
 	T	get( const std::string &key ) const;
 	//! Same as above but will return \a defaultValue if the key doesn't exist.
-	//! A DictionaryExc is thrown if the key exists but can't be converted to type T.
+	//! A InfoExc is thrown if the key exists but can't be converted to type T.
 	template<typename T>
 	T	get( const std::string &key, const T &defaultValue ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly.
@@ -165,7 +165,7 @@ class MA_API Dictionary {
 	template<typename T>
 	const T&	getStrict( const std::string &key ) const;
 	template<>
-	const Value& getStrict<Dictionary::Value>( const std::string &key ) const;
+	const Value& getStrict<Info::Value>( const std::string &key ) const;
 	//! Returns a reference to the value associated with T. The typeid must match exactly. Returns \a defaultValue if the key doesn't exist.
 	template<typename T>
 	const T&	getStrict( const std::string &key, const T &defaultValue ) const;
@@ -174,8 +174,8 @@ class MA_API Dictionary {
 
 	bool contains( const std::string &key ) const;
 
-	//! Recursively copy the values of other into this Dictionary.
-	void merge( const Dictionary &other );
+	//! Recursively copy the values of other into this Info.
+	void merge( const Info &other );
 
 	Iterator			begin()			{ return mData.begin(); }
 	const ConstIterator	begin() const	{ return mData.begin(); }
@@ -190,31 +190,31 @@ class MA_API Dictionary {
 	bool isEmpty() const		{ return mData.empty(); }
 
 	//! operator enabling lookup by key. Enables syntax like `float x = dict["x"];`.
-	const Dictionary::Value& operator[]( const std::string &key ) const;
+	const Info::Value& operator[]( const std::string &key ) const;
 	//! operator enabling lookup by key. Enables syntax like `dict["x"] = 1.0f`.
-	Dictionary::Value& operator[]( const std::string &key );
-	//! Convert this Dictionary to a string representation.
+	Info::Value& operator[]( const std::string &key );
+	//! Convert this Info to a string representation.
 	std::string	toString() const;
 
 
-	friend MA_API std::ostream& operator<<( std::ostream &os, const Dictionary &rhs );
+	friend MA_API std::ostream& operator<<( std::ostream &os, const Info &rhs );
 
   private:
 
 	std::map<std::string, Value>	mData;
 };
 
-class MA_API DictionaryExc : public ci::Exception {
+class MA_API InfoExc : public ci::Exception {
   public:
-	DictionaryExc( const std::string &description )
+	InfoExc( const std::string &description )
 			: Exception( description )
 	{ }
 };
 
-class MA_API DictionaryBadTypeExc : public DictionaryExc {
+class MA_API InfoBadTypeExc : public InfoExc {
   public:
-	DictionaryBadTypeExc( const Dictionary::Value &value, const std::type_info &typeInfo )
-		: DictionaryExc( "" )
+	InfoBadTypeExc( const Info::Value &value, const std::type_info &typeInfo )
+		: InfoExc( "" )
 	{
 		std::string descr = "Failed to convert value during type conversion, from native type '";
 		descr += ci::System::demangleTypeName( value.type().name() ) + "' to requested type '";
@@ -222,8 +222,8 @@ class MA_API DictionaryBadTypeExc : public DictionaryExc {
 		setDescription( descr );
 	}
 
-	DictionaryBadTypeExc( const std::string &key, const Dictionary::Value &value, const std::type_info &typeInfo )
-		: DictionaryExc( "" )
+	InfoBadTypeExc( const std::string &key, const Info::Value &value, const std::type_info &typeInfo )
+		: InfoExc( "" )
 	{
 		std::string descr = "Failed to convert value for key '" + key + "', from native type '";
 		descr += ci::System::demangleTypeName( value.type().name() ) + "' to requested type '";
@@ -241,7 +241,7 @@ class MA_API DictionaryBadTypeExc : public DictionaryExc {
 namespace detail {
 
 template<typename T>
-bool getValue( const Dictionary::Value &value, T *result )
+bool getValue( const Info::Value &value, T *result )
 {
 	if( value.type() != typeid( T ) ) {
 		return false;
@@ -252,9 +252,9 @@ bool getValue( const Dictionary::Value &value, T *result )
 }
 
 template<typename T>
-bool getValue( const Dictionary::Value &value, std::vector<T> *result )
+bool getValue( const Info::Value &value, std::vector<T> *result )
 {
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>>( &value );
 	if( castedVector ) {
 		result->resize( castedVector->size() );
 		for( size_t i = 0; i < result->size(); i++ ) {
@@ -274,44 +274,44 @@ bool getValue( const Dictionary::Value &value, std::vector<T> *result )
 	return false;
 }
 
-bool MA_API getValue( const Dictionary::Value &value, float *result );
-bool MA_API getValue( const Dictionary::Value &value, double *result );
-bool MA_API getValue( const Dictionary::Value &value, size_t *result );
-bool MA_API getValue( const Dictionary::Value &value, int32_t *result );
-bool MA_API getValue( const Dictionary::Value &value, uint32_t *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::vec2 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::vec3 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::vec4 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::dvec2 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::dvec3 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::dvec4 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::ivec2 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::ivec3 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::ivec4 *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::quat *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::Rectf *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::Color *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::ColorA *result );
-bool MA_API getValue( const Dictionary::Value &value, ci::fs::path *result );
-bool MA_API getValue( const Dictionary::Value &value, std::vector<Dictionary::Value> *result );
+bool MA_API getValue( const Info::Value &value, float *result );
+bool MA_API getValue( const Info::Value &value, double *result );
+bool MA_API getValue( const Info::Value &value, size_t *result );
+bool MA_API getValue( const Info::Value &value, int32_t *result );
+bool MA_API getValue( const Info::Value &value, uint32_t *result );
+bool MA_API getValue( const Info::Value &value, ci::vec2 *result );
+bool MA_API getValue( const Info::Value &value, ci::vec3 *result );
+bool MA_API getValue( const Info::Value &value, ci::vec4 *result );
+bool MA_API getValue( const Info::Value &value, ci::dvec2 *result );
+bool MA_API getValue( const Info::Value &value, ci::dvec3 *result );
+bool MA_API getValue( const Info::Value &value, ci::dvec4 *result );
+bool MA_API getValue( const Info::Value &value, ci::ivec2 *result );
+bool MA_API getValue( const Info::Value &value, ci::ivec3 *result );
+bool MA_API getValue( const Info::Value &value, ci::ivec4 *result );
+bool MA_API getValue( const Info::Value &value, ci::quat *result );
+bool MA_API getValue( const Info::Value &value, ci::Rectf *result );
+bool MA_API getValue( const Info::Value &value, ci::Color *result );
+bool MA_API getValue( const Info::Value &value, ci::ColorA *result );
+bool MA_API getValue( const Info::Value &value, ci::fs::path *result );
+bool MA_API getValue( const Info::Value &value, std::vector<Info::Value> *result );
 
 } // namespace mason::detail
 
 template<typename T>
-void Dictionary::set( const std::string &key, const T &value )
+void Info::set( const std::string &key, const T &value )
 {
 	mData[key] = value;
 }
 
 template<typename T>
-void Dictionary::set( const std::string &key, const std::vector<T> &value )
+void Info::set( const std::string &key, const std::vector<T> &value )
 {
-	// Force internal storage to be of type vector<Dictionary::Value> to simplify output converters
-	if( typeid( value ) == typeid( vector<Dictionary::Value> ) ) {
+	// Force internal storage to be of type vector<Info::Value> to simplify output converters
+	if( typeid( value ) == typeid( vector<Info::Value> ) ) {
 		mData[key] = value;
 	}
 	else {
-		std::vector<Dictionary::Value> valueCoerced;
+		std::vector<Info::Value> valueCoerced;
 		valueCoerced.reserve( value.size() );
 		for( const auto &x : value ) {
 			valueCoerced.push_back( x );
@@ -321,25 +321,25 @@ void Dictionary::set( const std::string &key, const std::vector<T> &value )
 }
 
 template<typename T>
-T Dictionary::get( const std::string &key ) const
+T Info::get( const std::string &key ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
-		throw DictionaryExc( "no key named '" + key + "'" );
+		throw InfoExc( "no key named '" + key + "'" );
 	}
 
 	T result;
 	const auto &value = it->second;
 
 	if( ! detail::getValue( value, &result ) ) {
-		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+		throw InfoBadTypeExc( key, value, typeid( T ) );
 	}
 
 	return result;
 }
 
 template<typename T>
-T Dictionary::get( const std::string &key, const T &defaultValue ) const
+T Info::get( const std::string &key, const T &defaultValue ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
@@ -350,31 +350,31 @@ T Dictionary::get( const std::string &key, const T &defaultValue ) const
 	const auto &value = it->second;
 
 	if( ! detail::getValue( value, &result ) ) {
-		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+		throw InfoBadTypeExc( key, value, typeid( T ) );
 	}
 
 	return result;
 }
 
 template<typename T>
-const T& Dictionary::getStrict( const std::string &key ) const
+const T& Info::getStrict( const std::string &key ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
-		throw DictionaryExc( "no key named '" + key + "'" );
+		throw InfoExc( "no key named '" + key + "'" );
 	}
 
 	const auto &value = it->second;
 
 	if( value.type() != typeid( T ) ) {
-		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+		throw InfoBadTypeExc( key, value, typeid( T ) );
 	}
 
 	return any_cast<const T&>( value );
 }
 
 template<typename T>
-const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) const
+const T& Info::getStrict( const std::string &key, const T &defaultValue ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
@@ -384,7 +384,7 @@ const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) 
 	const auto &value = it->second;
 
 	if( value.type() != typeid( T ) ) {
-		throw DictionaryBadTypeExc( key, value, typeid( T ) );
+		throw InfoBadTypeExc( key, value, typeid( T ) );
 	}
 
 	return any_cast<const T&>( value );
@@ -394,11 +394,11 @@ const T& Dictionary::getStrict( const std::string &key, const T &defaultValue ) 
 // TODO: move these to cpp
 
 template<>
-const Dictionary::Value& Dictionary::getStrict<Dictionary::Value>( const std::string &key ) const
+const Info::Value& Info::getStrict<Info::Value>( const std::string &key ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
-		throw DictionaryExc( "no key named '" + key + "'" );
+		throw InfoExc( "no key named '" + key + "'" );
 	}
 
 	return it->second;

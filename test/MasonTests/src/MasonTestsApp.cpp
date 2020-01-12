@@ -63,7 +63,7 @@ void MasonTestsApp::reload()
 	ma::loadConfig();
 
 	try {
-		auto appConfig = ma::config()->get<ma::Dictionary>( "app" );
+		auto appConfig = ma::config()->get<ma::Info>( "app" );
 
 		size_t testIndex = appConfig["test"];
 		mSuite->select( testIndex );

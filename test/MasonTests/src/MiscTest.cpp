@@ -29,19 +29,19 @@ MiscTest::MiscTest()
 	try {
 		mConnDict = FileWatcher::instance().watch( JSON_FILENAME, [this] ( const WatchEvent &event ) {
 			try {
-				auto dict = ma::Dictionary::convert<Json::Value>( loadFile( event.getFile() ) );
+				auto dict = ma::Info::convert<Json::Value>( loadFile( event.getFile() ) );
 				testDict( dict );
 				testConvertBack( dict );
 
 				CI_LOG_I( "testDict completed." );
 			}
 			catch( exception &exc ) {
-				CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
+				CI_LOG_EXCEPTION( "failed to load Info", exc );
 			}
 		} );
 	}
 	catch( exception &exc ) {
-		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
+		CI_LOG_EXCEPTION( "failed to load Info", exc );
 	}
 
 	testPrintingDict();
@@ -49,7 +49,7 @@ MiscTest::MiscTest()
 	testMergegDict();
 }
 
-void MiscTest::testDict( const ma::Dictionary &dict )
+void MiscTest::testDict( const ma::Info &dict )
 {
 	CI_LOG_I( "number of elements: " << dict.getSize() );
 
@@ -75,12 +75,12 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 		CI_LOG_I( "a: " << a << ", b: " << b << ", bAsDouble: " << bAsDouble << ", c: " << c );
 	}
 
-	// nested Dictionary, copied
-	auto nested = dict.get<ma::Dictionary>( "nested" );
+	// nested Info, copied
+	auto nested = dict.get<ma::Info>( "nested" );
 	CI_LOG_I( "nested blah string: " << nested.get<string>( "blah" ) );
 
-	// nested Dictionary without copying
-	const auto &nestedRef = dict.getStrict<ma::Dictionary>( "nested" );
+	// nested Info without copying
+	const auto &nestedRef = dict.getStrict<ma::Info>( "nested" );
 	CI_LOG_I( "nestedRef days: " << nestedRef.get<int>( "days" ) );
 
 	// nested using operator conversion syntax
@@ -107,7 +107,7 @@ void MiscTest::testDict( const ma::Dictionary &dict )
 	CI_LOG_I( "num elements in oddNumbers: " << oddNumbers.size() << ", values: " << oddNumbersStr );
 }
 
-void MiscTest::testConvertBack( const ma::Dictionary &dict )
+void MiscTest::testConvertBack( const ma::Info &dict )
 {
 	auto json = dict.convert<Json::Value>();
 	CI_LOG_I( "dict -> json:\n" << json );
@@ -115,7 +115,7 @@ void MiscTest::testConvertBack( const ma::Dictionary &dict )
 
 void MiscTest::testPrintingDict()
 {
-	ma::Dictionary d;
+	ma::Info d;
 	d.set( "a", 2 );
 	d.set( "b", "blah" );
 	d.set( "float", 3.14f );
@@ -123,7 +123,7 @@ void MiscTest::testPrintingDict()
 	d.set( "a", 2 );
 	d.set( "vec2", vec2( 0, 1 ) );
 
-	vector<ma::Dictionary::Value> vectorDictValue = { 0, "a", 2.5, "blue" };
+	vector<ma::Info::Value> vectorDictValue = { 0, "a", 2.5, "blue" };
 	d.set( "vectorDictValue", vectorDictValue );
 
 	vector<int> vectorInt = { 0, 1, 2 };
@@ -134,14 +134,14 @@ void MiscTest::testPrintingDict()
 
 void MiscTest::testSetDictWithOperators()
 {
-	ma::Dictionary d;
+	ma::Info d;
 	d["a"] = 2;
 	d["b"] = "blah";
 	d["float"] = 3.14f;
 	d["double"] = 3.14;
 	d["vec2"] = vec2( 0, 1 );
 
-	vector<ma::Dictionary::Value> vectorDictValue = { 0, "a", 2.5, "blue" };
+	vector<ma::Info::Value> vectorDictValue = { 0, "a", 2.5, "blue" };
 	d["vectorDictValue"] = vectorDictValue;
 
 	vector<int> vectorInt = { 0, 1, 2 };
@@ -159,30 +159,30 @@ void MiscTest::testSetDictWithOperators()
 
 void MiscTest::testMergegDict()
 {
-	ma::Dictionary a;
+	ma::Info a;
 	a.set( "a", 2 );
 	//a.set( "aa", "hey" );
 
 	{
-		ma::Dictionary sub;
+		ma::Info sub;
 		sub.set( "b", "blah" );
 		sub.set( "vec2", vec2( 0, 1 ) );
 
 		a.set( "sub", sub );
 
 		// TODO: what to do about if a user adds a vector<int> or something like that?
-		vector<ma::Dictionary::Value> arr = { 1, 2, 3, 4 } ;
+		vector<ma::Info::Value> arr = { 1, 2, 3, 4 } ;
 		a.set( "array", arr );
 	}
-	ma::Dictionary b;
+	ma::Info b;
 	b.set( "a", 3 );
 	{
-		ma::Dictionary sub;
+		ma::Info sub;
 		sub.set( "b", "updated" );
 
 		b.set( "sub", sub );
 
-		vector<ma::Dictionary::Value> arr = { 2, "yo"} ;
+		vector<ma::Info::Value> arr = { 2, "yo"} ;
 		b.set( "array", arr );
 	}
 
@@ -206,7 +206,7 @@ void MiscTest::addStressTestWatches()
 		}
 	}
 	catch( exception &exc ) {
-		CI_LOG_EXCEPTION( "failed to load Dictionary", exc );
+		CI_LOG_EXCEPTION( "failed to load Info", exc );
 	}
 }
 

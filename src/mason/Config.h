@@ -25,21 +25,21 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "mason/Mason.h"
-#include "mason/Dictionary.h"
+#include "mason/Info.h"
 
 namespace mason {
 
-//! Global Dictionary used for configuration
-MA_API ma::Dictionary*	config();
+//! Global Info used for configuration
+MA_API ma::Info*	config();
 
-//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilename will be merged into the resulting Dictionary.
+//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilename will be merged into the resulting Info.
 MA_API void loadConfig( const ci::fs::path &filename = "config.json", const ci::fs::path &cascadingFilename = {} );
-//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilenames will be merged into the resulting Dictionary.
+//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilenames will be merged into the resulting Info.
 MA_API void loadConfig( const ci::fs::path &filename, const std::vector<ci::fs::path> &cascadingFilenames );
 
 namespace detail {
 
-MA_API void setConfig( const ma::Dictionary &config );
+MA_API void setConfig( const ma::Info &config );
 
 } // namepsace mason::detail
 

@@ -394,12 +394,12 @@ void AudioAnalyzer::setMasterGain( float value, double rampSeconds )
 	mMasterGain->getParam()->applyRamp( value, rampSeconds, ci::audio::Param::Options().rampFn( &ci::audio::rampOutQuad ) );
 }
 
-void AudioAnalyzer::initialize( const Dictionary &config )
+void AudioAnalyzer::initialize( const Info &config )
 {
 	initEntry( config );
 }
 
-void AudioAnalyzer::initEntry( const ma::Dictionary &config )
+void AudioAnalyzer::initEntry( const ma::Info &config )
 {
 	bool audioEnabled = config.get<bool>( "enabled" );
 	float masterGain = config.get<float>( "masterGain", 1.0f );
@@ -422,7 +422,7 @@ void AudioAnalyzer::initEntry( const ma::Dictionary &config )
 	setEnabled( audioEnabled );
 }
 
-void AudioAnalyzer::initContext( const ma::Dictionary &config )
+void AudioAnalyzer::initContext( const ma::Info &config )
 {
 	auto ctx = ci::audio::master();
 	ctx->disable();
@@ -466,9 +466,9 @@ void AudioAnalyzer::initContext( const ma::Dictionary &config )
 	mMasterGain >> ctx->getOutput();	
 }
 
-void AudioAnalyzer::initTracks( const ma::Dictionary &config )
+void AudioAnalyzer::initTracks( const ma::Info &config )
 {
-	auto tracks = config.get<std::vector<ma::Dictionary>>( "tracks" );
+	auto tracks = config.get<std::vector<ma::Info>>( "tracks" );
 	auto fftSize = config.get<size_t>( "fftSize", 1024 );
 	auto windowSize = config.get<size_t>( "windowSize", 512 );
 

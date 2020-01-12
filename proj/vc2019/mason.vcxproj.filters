@@ -100,9 +100,6 @@
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\mason\Dictionary.cpp">
-      <Filter>Source Files\mason</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layout.cpp">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
@@ -161,6 +158,9 @@
       <Filter>Source Files\mason</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mason\glutils.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\Info.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
   </ItemGroup>
@@ -240,9 +240,6 @@
     <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\mason\Dictionary.h">
-      <Filter>Source Files\mason</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layout.h">
       <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
@@ -319,6 +316,9 @@
       <Filter>Source Files\mason</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\glutils.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\Info.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>

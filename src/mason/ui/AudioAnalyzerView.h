@@ -23,7 +23,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "ui/View.h"
 #include "mason/Mason.h"
-#include "mason/Dictionary.h"
+#include "mason/Info.h"
 #include "mason/audio/AudioAnalyzer.h"
 #include "mason/ui/AudioViews.h"
 
@@ -46,7 +46,7 @@ class MA_API AudioAnalyzerView : public ::ui::View {
 	AudioAnalyzerView( const ci::Rectf &bounds = ci::Rectf::zero() );
 	~AudioAnalyzerView();
 
-	void load( const ma::Dictionary &config );
+	void load( const ma::Info &config );
 
 	void setup();
 
@@ -59,7 +59,7 @@ class MA_API AudioAnalyzerView : public ::ui::View {
   private:
 	void reloadConfig();
 
-	ma::Dictionary	mLastConfig;
+	ma::Info	mLastConfig;
 
 	std::vector<AudioTrackViewRef>			mTrackViews;
 	ci::signals::ConnectionList				mConnections;

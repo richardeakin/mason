@@ -19,7 +19,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "mason/Dictionary.h"
+#include "mason/Info.h"
 
 #include "cinder/Utilities.h"
 #include "cinder/CinderAssert.h"
@@ -31,18 +31,18 @@ using namespace std;
 
 namespace mason {
 
-Dictionary::Dictionary()
+Info::Info()
 {
 }
 
 // static
 template<typename DataT>
-Dictionary	Dictionary::convert( const ci::fs::path &filePath )
+Info	Info::convert( const ci::fs::path &filePath )
 {
 	return convert<DataT>( loadFile( filePath ) );
 }
 
-vector<string> Dictionary::getAllKeys() const
+vector<string> Info::getAllKeys() const
 {
 	vector<string> result;
 	result.reserve( mData.size() );
@@ -53,32 +53,32 @@ vector<string> Dictionary::getAllKeys() const
 	return result;
 }
 
-bool Dictionary::contains( const std::string &key ) const
+bool Info::contains( const std::string &key ) const
 {
 	return mData.count( key ) != 0;
 }
 
-const std::type_info& Dictionary::getType( const std::string &key ) const
+const std::type_info& Info::getType( const std::string &key ) const
 {
 	auto it = mData.find( key );
 	if( it == mData.end() ) {
-		throw DictionaryExc( "no key named '" + key + "'" );
+		throw InfoExc( "no key named '" + key + "'" );
 	}
 
 	return it->second.type();
 }
 
-void Dictionary::merge( const Dictionary &other )
+void Info::merge( const Info &other )
 {
 	for( const auto& mp : other.getData() ) {
 		const string &key = mp.first;
-		if( mp.second.type() == typeid( Dictionary ) ) {
-			// if we have that key, check if it is also a Dictionary.
+		if( mp.second.type() == typeid( Info ) ) {
+			// if we have that key, check if it is also a Info.
 			// - if yes then recursive merge. if no, blow away our current contents with other's.
-			const Dictionary *b = any_cast<Dictionary>( &mp.second );
+			const Info *b = any_cast<Info>( &mp.second );
 			auto it = mData.find( mp.first );
-			if( it != mData.end() && it->second.type() == typeid( Dictionary ) ) {				
-				Dictionary *a = any_cast<Dictionary>( &it->second );
+			if( it != mData.end() && it->second.type() == typeid( Info ) ) {				
+				Info *a = any_cast<Info>( &it->second );
 				a->merge( *b );
 			}
 			else {
@@ -107,17 +107,17 @@ void Dictionary::merge( const Dictionary &other )
 	}
 }
 
-const Dictionary::Value& Dictionary::operator[]( const std::string &key ) const
+const Info::Value& Info::operator[]( const std::string &key ) const
 {
-	return getStrict<Dictionary::Value>( key );
+	return getStrict<Info::Value>( key );
 }
 
-Dictionary::Value& Dictionary::operator[]( const std::string &key )
+Info::Value& Info::operator[]( const std::string &key )
 {
 	return mData[key];
 }
 
-std::string	Dictionary::toString() const
+std::string	Info::toString() const
 {
 	stringstream ss;
 	ss << *this;
@@ -130,7 +130,7 @@ std::string	Dictionary::toString() const
 
 namespace detail {
 
-bool getValue( const Dictionary::Value &value, float *result )
+bool getValue( const Info::Value &value, float *result )
 {
 	const auto castedFloat = any_cast<float>( &value );
 	if( castedFloat ) {
@@ -153,7 +153,7 @@ bool getValue( const Dictionary::Value &value, float *result )
 	return false;
 }
 
-bool getValue( const Dictionary::Value &value, double *result )
+bool getValue( const Info::Value &value, double *result )
 {
 	const auto castedDouble = any_cast<double>( &value );
 	if( castedDouble ) {
@@ -176,7 +176,7 @@ bool getValue( const Dictionary::Value &value, double *result )
 	return false;
 }
 
-bool getValue( const Dictionary::Value &value, size_t *result )
+bool getValue( const Info::Value &value, size_t *result )
 {
 	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
@@ -186,7 +186,7 @@ bool getValue( const Dictionary::Value &value, size_t *result )
 	return false;
 }
 
-bool MA_API getValue( const Dictionary::Value &value, int32_t *result )
+bool MA_API getValue( const Info::Value &value, int32_t *result )
 {
 	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
@@ -196,7 +196,7 @@ bool MA_API getValue( const Dictionary::Value &value, int32_t *result )
 	return false;
 }
 
-bool MA_API getValue( const Dictionary::Value &value, uint32_t *result )
+bool MA_API getValue( const Info::Value &value, uint32_t *result )
 {
 	const auto castedInt = any_cast<int>( &value );
 	if( castedInt ) {
@@ -206,14 +206,14 @@ bool MA_API getValue( const Dictionary::Value &value, uint32_t *result )
 	return false;
 }
 
-bool getValue( const Dictionary::Value &value, vec2 *result )
+bool getValue( const Info::Value &value, vec2 *result )
 {
 	if( value.type() == typeid( vec2 ) ) {
 		*result = any_cast<vec2>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>>( &value );
 	if( ! castedVector || castedVector->size() < 2 )
 		return false;
 
@@ -225,14 +225,14 @@ bool getValue( const Dictionary::Value &value, vec2 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, vec3 *result )
+bool getValue( const Info::Value &value, vec3 *result )
 {
 	if( value.type() == typeid( vec3 ) ) {
 		*result = any_cast<vec3>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -246,14 +246,14 @@ bool getValue( const Dictionary::Value &value, vec3 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, vec4 *result )
+bool getValue( const Info::Value &value, vec4 *result )
 {
 	if( value.type() == typeid( vec4 ) ) {
 		*result = any_cast<vec4>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -269,14 +269,14 @@ bool getValue( const Dictionary::Value &value, vec4 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, dvec2 *result )
+bool getValue( const Info::Value &value, dvec2 *result )
 {
 	if( value.type() == typeid( dvec2 ) ) {
 		*result = any_cast<dvec2>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>>( &value );
 	if( ! castedVector || castedVector->size() < 2 )
 		return false;
 
@@ -288,14 +288,14 @@ bool getValue( const Dictionary::Value &value, dvec2 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, dvec3 *result )
+bool getValue( const Info::Value &value, dvec3 *result )
 {
 	if( value.type() == typeid( dvec3 ) ) {
 		*result = any_cast<dvec3>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -309,14 +309,14 @@ bool getValue( const Dictionary::Value &value, dvec3 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, dvec4 *result )
+bool getValue( const Info::Value &value, dvec4 *result )
 {
 	if( value.type() == typeid( dvec4 ) ) {
 		*result = any_cast<dvec4>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -332,14 +332,14 @@ bool getValue( const Dictionary::Value &value, dvec4 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, ivec2 *result )
+bool getValue( const Info::Value &value, ivec2 *result )
 {
 	if( value.type() == typeid( ivec2 ) ) {
 		*result = any_cast<ivec2>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>>( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>>( &value );
 	if( !castedVector || castedVector->size() < 2 )
 		return false;
 
@@ -351,14 +351,14 @@ bool getValue( const Dictionary::Value &value, ivec2 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, ivec3 *result )
+bool getValue( const Info::Value &value, ivec3 *result )
 {
 	if( value.type() == typeid( ivec3 ) ) {
 		*result = any_cast<ivec3>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( !castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -372,14 +372,14 @@ bool getValue( const Dictionary::Value &value, ivec3 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, ivec4 *result )
+bool getValue( const Info::Value &value, ivec4 *result )
 {
 	if( value.type() == typeid( ivec4 ) ) {
 		*result = any_cast<ivec4>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( !castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -395,14 +395,14 @@ bool getValue( const Dictionary::Value &value, ivec4 *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, ci::quat *result )
+bool getValue( const Info::Value &value, ci::quat *result )
 {
 	if( value.type() == typeid( quat ) ) {
 		*result = any_cast<quat>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( !castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -418,14 +418,14 @@ bool getValue( const Dictionary::Value &value, ci::quat *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, Rectf *result )
+bool getValue( const Info::Value &value, Rectf *result )
 {
 	if( value.type() == typeid( Rectf ) ) {
 		*result = any_cast<Rectf>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 4 )
 		return false;
 
@@ -441,14 +441,14 @@ bool getValue( const Dictionary::Value &value, Rectf *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, Color *result )
+bool getValue( const Info::Value &value, Color *result )
 {
 	if( value.type() == typeid( Color ) ) {
 		*result = any_cast<Color>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -462,14 +462,14 @@ bool getValue( const Dictionary::Value &value, Color *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, ColorA *result )
+bool getValue( const Info::Value &value, ColorA *result )
 {
 	if( value.type() == typeid( ColorA ) ) {
 		*result = any_cast<ColorA>( value );
 		return true;
 	}
 
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( ! castedVector || castedVector->size() < 3 )
 		return false;
 
@@ -492,7 +492,7 @@ bool getValue( const Dictionary::Value &value, ColorA *result )
 	return true;
 }
 
-bool getValue( const Dictionary::Value &value, ci::fs::path *result )
+bool getValue( const Info::Value &value, ci::fs::path *result )
 {
 	if( value.type() == typeid( ci::fs::path ) ) {
 		*result = any_cast<ci::fs::path>( value );
@@ -508,9 +508,9 @@ bool getValue( const Dictionary::Value &value, ci::fs::path *result )
 	return false;
 }
 
-bool getValue( const Dictionary::Value &value, vector<Dictionary::Value> *result )
+bool getValue( const Info::Value &value, vector<Info::Value> *result )
 {
-	const auto castedVector = any_cast<std::vector<Dictionary::Value>> ( &value );
+	const auto castedVector = any_cast<std::vector<Info::Value>> ( &value );
 	if( castedVector ) {
 		*result = *castedVector;
 		return true;
@@ -522,44 +522,44 @@ bool getValue( const Dictionary::Value &value, vector<Dictionary::Value> *result
 } // namespace mason::detail
 
 // ----------------------------------------------------------------------------------------------------
-// Dictionary::Value
+// Info::Value
 // ----------------------------------------------------------------------------------------------------
 
-const Dictionary::Value& Dictionary::Value::operator[]( const std::string &key ) const
+const Info::Value& Info::Value::operator[]( const std::string &key ) const
 { 
-	const auto &dict = any_cast<const Dictionary &>( *this );
-	return dict.getStrict<Dictionary::Value>( key );
+	const auto &dict = any_cast<const Info &>( *this );
+	return dict.getStrict<Info::Value>( key );
 }
 
-Dictionary::Value& Dictionary::Value::operator[]( const std::string &key )
+Info::Value& Info::Value::operator[]( const std::string &key )
 {
-	// check if this is a Dictionary. If yes, typecast to get the dictionary, then value from key
-	if( type() == typeid( Dictionary ) ) {
-		auto &dict = any_cast<Dictionary &>( *this );
+	// check if this is a Info. If yes, typecast to get the dictionary, then value from key
+	if( type() == typeid( Info ) ) {
+		auto &dict = any_cast<Info &>( *this );
 		return dict[key];
 	}
 	else {
-		// if not, then blow away current contents with an empty Dictionary,
+		// if not, then blow away current contents with an empty Info,
 		// add an element for the key and return the value.		
-		//emplace( Dictionary ); // TODO: want to use this, need the C++17 version
-		*this = Dictionary();
+		//emplace( Info ); // TODO: want to use this, need the C++17 version
+		*this = Info();
 		return (*this)[key];
 	}
 }
 
 // ----------------------------------------------------------------------------------------------------
-// Dictionary <-> JSON
+// Info <-> JSON
 // ----------------------------------------------------------------------------------------------------
 
 namespace {
 
 // TODO: rename to toValue()
-Dictionary::Value toAny( const Json::Value &value );
-Json::Value toJson( const Dictionary::Value &a );
+Info::Value toAny( const Json::Value &value );
+Json::Value toJson( const Info::Value &a );
 
-Dictionary toDictionary( const Json::Value &value )
+Info toInfo( const Json::Value &value )
 {
-	Dictionary result;
+	Info result;
 
 	for( auto childIt = value.begin(); childIt != value.end(); ++childIt ) {
 		string key = childIt.key().asString();
@@ -570,13 +570,13 @@ Dictionary toDictionary( const Json::Value &value )
 	return result;
 }
 
-Dictionary::Value toAny( const Json::Value &value )
+Info::Value toAny( const Json::Value &value )
 {
 	if( value.isObject() ) {
-		return toDictionary( value );
+		return toInfo( value );
 	}
 	else if( value.isArray() ) {
-		vector<Dictionary::Value> arr;
+		vector<Info::Value> arr;
 		arr.reserve( value.size() );
 
 		for( const auto &child : value )
@@ -607,7 +607,7 @@ Dictionary::Value toAny( const Json::Value &value )
 	return nullptr;
 }
 
-Json::Value toJson( const Dictionary &dict )
+Json::Value toJson( const Info &dict )
 {
 	Json::Value result;
 	for( const auto &mp : dict.getData() ) {
@@ -617,7 +617,7 @@ Json::Value toJson( const Dictionary &dict )
 	return result;
 }
 
-Json::Value toJson( const vector<Dictionary::Value> &arr )
+Json::Value toJson( const vector<Info::Value> &arr )
 {
 	Json::Value result;
 	for( const auto &a : arr ) {
@@ -627,17 +627,17 @@ Json::Value toJson( const vector<Dictionary::Value> &arr )
 	return result;
 }
 
-Json::Value toJson( const Dictionary::Value &a )
+Json::Value toJson( const Info::Value &a )
 {
-	if( a.type() == typeid( Dictionary ) ) {
-		return toJson( any_cast<Dictionary>( a ) );
+	if( a.type() == typeid( Info ) ) {
+		return toJson( any_cast<Info>( a ) );
 	}
-//	else if( a.type() == typeid( vector<Dictionary> ) ) {
+//	else if( a.type() == typeid( vector<Info> ) ) {
 //		// TODO NEXT: implement this either with for loop over vector or another toJson overload()
-////		return toJson( any_cast<vector<Dictionary::Value>>( a ) );
+////		return toJson( any_cast<vector<Info::Value>>( a ) );
 //	}
-	else if( a.type() == typeid( vector<Dictionary::Value> ) ) {
-		return toJson( any_cast<vector<Dictionary::Value>>( a ) );
+	else if( a.type() == typeid( vector<Info::Value> ) ) {
+		return toJson( any_cast<vector<Info::Value>>( a ) );
 	}
 	else if( a.type() == typeid( int ) ) {
 		return Json::Value( any_cast<int>( a ) );
@@ -707,15 +707,15 @@ Json::Value toJson( const Dictionary::Value &a )
 
 // static
 template<>
-MA_API Dictionary Dictionary::convert<Json::Value>( const Json::Value &data )
+MA_API Info Info::convert<Json::Value>( const Json::Value &data )
 {
-	Dictionary result =	toDictionary( data );
+	Info result =	toInfo( data );
 	return result;
 }
 
 // static
 template<>
-MA_API Dictionary Dictionary::convert<Json::Value>( const DataSourceRef &dataSource )
+MA_API Info Info::convert<Json::Value>( const DataSourceRef &dataSource )
 {
 	string dataString = loadString( dataSource );
 
@@ -725,21 +725,21 @@ MA_API Dictionary Dictionary::convert<Json::Value>( const DataSourceRef &dataSou
 	bool success = reader.parse( dataString, data );
 	if( ! success ) {
 		string errorMessage = reader.getFormattedErrorMessages();
-		throw DictionaryExc( "Json::Reader failed to parse source, error message: " + errorMessage );
+		throw InfoExc( "Json::Reader failed to parse source, error message: " + errorMessage );
 	}
 
 	return convert( data );
 }
 
 template<>
-MA_API Json::Value Dictionary::convert<Json::Value>() const
+MA_API Json::Value Info::convert<Json::Value>() const
 {
 	Json::Value result = toJson( *this );	
 	return result;
 }
 
 // TODO: implement this natively. using jsoncpp for now
-std::ostream& operator<<( std::ostream &os, const Dictionary &rhs )
+std::ostream& operator<<( std::ostream &os, const Info &rhs )
 {
 	auto json = rhs.convert<Json::Value>();
 	os << json;

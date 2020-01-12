@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Signals.h"
 
 #include "mason/Export.h"
-#include "mason/Dictionary.h"
+#include "mason/Info.h"
 
 #include <array>
 
@@ -163,7 +163,7 @@ class MA_API AudioAnalyzer {
 public:
 
 	//! Call whenever configuration changes
-	void initialize( const Dictionary &config );
+	void initialize( const Info &config );
 	
 	AudioAnalyzer();
 	AudioAnalyzer( const AudioAnalyzer& ) = delete;
@@ -204,9 +204,9 @@ public:
 	SignalResolvePath&	getSignalResolvePath()	{ return mSignalResolvePath; }
 
 private:
-	void initEntry( const Dictionary &config );
-	void initContext( const Dictionary &config );
-	void initTracks( const Dictionary &config );
+	void initEntry( const Info &config );
+	void initContext( const Info &config );
+	void initTracks( const Info &config );
 	ci::fs::path resolvePathFromUrl( const std::string &url );
 
 	void keyDown( ci::app::KeyEvent &event );

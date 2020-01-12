@@ -71,7 +71,7 @@ void AudioAnalyzerView::reloadConfig()
 	load( mLastConfig );
 }
 
-void AudioAnalyzerView::load( const ma::Dictionary &config )
+void AudioAnalyzerView::load( const ma::Info &config )
 {
 	mLastConfig = config;
 

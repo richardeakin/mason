@@ -14,9 +14,9 @@ namespace mason {
 
 namespace detail {
 
-static ma::Dictionary sConfig;
+static ma::Info sConfig;
 
-void setConfig( const ma::Dictionary &config )
+void setConfig( const ma::Info &config )
 {
 	sConfig = config;
 }
@@ -37,12 +37,12 @@ void loadConfig( const fs::path &filename, const vector<fs::path> &cascadingFile
 {
 	try {
 		// load main config
-		auto config = ma::Dictionary::convert<Json::Value>( app::loadAsset( filename ) );
+		auto config = ma::Info::convert<Json::Value>( app::loadAsset( filename ) );
 
 		for( const auto &fp : cascadingFilenames ) {
 			auto fullPath = app::getAssetPath( fp );
 			if( ! fullPath.empty() ) {
-				auto j = ma::Dictionary::convert<Json::Value>( loadFile( fullPath ) );
+				auto j = ma::Info::convert<Json::Value>( loadFile( fullPath ) );
 				config.merge( j );
 			}
 		}
@@ -55,7 +55,7 @@ void loadConfig( const fs::path &filename, const vector<fs::path> &cascadingFile
 	}
 }
 
-ma::Dictionary*	config()
+ma::Info*	config()
 {
 	return &detail::sConfig;
 }

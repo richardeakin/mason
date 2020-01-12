@@ -63,7 +63,7 @@
     <ClCompile Include="..\..\src\mason\FlyCam.cpp" />
     <ClCompile Include="..\..\src\mason\Common.cpp" />
     <ClCompile Include="..\..\src\mason\Config.cpp" />
-    <ClCompile Include="..\..\src\mason\Dictionary.cpp" />
+    <ClCompile Include="..\..\src\mason\Info.cpp" />
     <ClCompile Include="..\..\src\mason\glutils.cpp" />
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
     <ClCompile Include="..\..\src\mason\LUT.cpp" />
@@ -111,7 +111,7 @@
     <ClInclude Include="..\..\src\mason\FlyCam.h" />
     <ClInclude Include="..\..\src\mason\Common.h" />
     <ClInclude Include="..\..\src\mason\Config.h" />
-    <ClInclude Include="..\..\src\mason\Dictionary.h" />
+    <ClInclude Include="..\..\src\mason\Info.h" />
     <ClInclude Include="..\..\src\mason\Export.h" />
     <ClInclude Include="..\..\src\mason\glutils.h" />
     <ClInclude Include="..\..\src\mason\Hud.h" />
