@@ -91,7 +91,7 @@ void MiscTest::testDict( const ma::Info &dict )
 	}
 
 	// vector with mixed types
-	auto mixedArray = dict.get<vector<boost::any>>( "mixedArray" );
+	auto mixedArray = dict.get<vector<std::any>>( "mixedArray" );
 	string typesStr;
 	for( size_t i = 0; i < mixedArray.size(); i++ ) {
 		typesStr += "[" + to_string( i ) + "] " + System::demangleTypeName( mixedArray[i].type().name() ) + ", ";
