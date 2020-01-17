@@ -120,6 +120,7 @@
     <ClInclude Include="..\..\src\mason\MotionTracker.h" />
     <ClInclude Include="..\..\src\mason\Notifications.h" />
     <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h" />
+    <ClInclude Include="..\..\src\mason\prepareAppSettings.h" />
     <ClInclude Include="..\..\src\mason\Profiling.h" />
     <ClInclude Include="..\..\src\mason\RenderToTexture.h" />
     <ClInclude Include="..\..\src\mason\ShaderControls.h" />

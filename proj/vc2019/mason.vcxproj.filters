@@ -321,5 +321,8 @@
     <ClInclude Include="..\..\src\mason\Info.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\mason\prepareAppSettings.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
