@@ -53,6 +53,11 @@ float impulse( float k, float x )
     return h * exp( 1.0 - h );
 }
 
+float rgbToLuma( in vec3 rgb )
+{
+    return dot( rgb, vec3( 0.2126, 0.7152, 0.0722 ) );
+}
+
 float range( float val, float inMin, float inMax, float outMin, float outMax )
 {
 	return outMin + (outMax - outMin) * ( (val - inMin) / (inMax - inMin) );
