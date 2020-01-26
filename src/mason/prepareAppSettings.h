@@ -40,9 +40,9 @@ extern void prepareAppSettings( ci::app::App::Settings *settings )
 
 	auto appConfig = ma::config()->get<ma::Info>( "app" );
 
-	bool fullScreen = appConfig.get<bool>( "fullScreen" );
-	bool borderless = appConfig.get<bool>( "borderless", false );
-	int screenIndex = appConfig.get<int>( "screenIndex" );
+	bool fullScreen = appConfig.get( "fullScreen", false );
+	bool borderless = appConfig.get( "borderless", false );
+	int screenIndex = appConfig.get( "screenIndex", 0 );
 	if( screenIndex >= ci::Display::getDisplays().size() ) {
 		CI_LOG_W( "config's app.screenIndex out of range (" << screenIndex << ")" );
 		screenIndex = 0;
@@ -56,8 +56,8 @@ extern void prepareAppSettings( ci::app::App::Settings *settings )
 	settings->setDisplay( display );
 
 
-	ci::ivec2 windowPos = appConfig.get<ci::ivec2>( "windowPos", ci::ivec2( 0, 50 ) );
-	ci::ivec2 windowSize = appConfig.get<ci::ivec2>( "windowSize", ci::ivec2( 1200, 800 ) );
+	ci::ivec2 windowPos = appConfig.get( "windowPos", ci::ivec2( 8, 50 ) );
+	ci::ivec2 windowSize = appConfig.get( "windowSize", ci::ivec2( 1200, 800 ) );
 
 	if( fullScreen && borderless ) {
 		// 'fullscreen + borderless' mode, which overcomes some issues with fullscreen on windows
