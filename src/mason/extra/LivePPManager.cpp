@@ -1,12 +1,15 @@
+// note: add LivePP/API to your include path
+
 #include "mason/extra/LivePPManager.h"
-//#include "mason/Notifications.h"
+//#include "mason/Notifications.h" // TODO: move this somewhere outside of this file so it's not a depedency
 #include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/app/App.h"
 
-// note: add LivePP/API to your include path
 #if ! defined( CINDER_SHARED )
-#include "LPP_ForceLinkStaticRuntime.h"
+// You're supposed to include this to cover some edge cases, but it causes compile errors with latest v142 toolset.
+// note from author: "In 99% of cases you won't need it and you'll probably be fine not including it (LPP_ForceLinkStaticRuntime.h)
+//#include "LPP_ForceLinkStaticRuntime.h"
 #endif
 
 #include "LPP_API.h"
