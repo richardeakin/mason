@@ -4,7 +4,7 @@
 
 #include "mason/Mason.h"
 #include "cinder/FileWatcher.h"
-#include "mason/Dictionary.h"
+#include "mason/Info.h"
 #include "ui/Control.h"
 
 class MiscTest : public ui::SuiteView {
@@ -18,7 +18,12 @@ class MiscTest : public ui::SuiteView {
 	bool keyDown( ci::app::KeyEvent &event ) override;
 
   private:
-	void testDict( const ma::Dictionary &dict );
+	void testDict( const ma::Info &dict );
+	void testConvertBack( const ma::Info &dict );
+	void testPrintingDict();
+	void testSetDictWithOperators();
+	void testMergegDict();
+
 	void addStressTestWatches();
 
 	ci::signals::ScopedConnection		mConnDict;

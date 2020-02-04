@@ -299,11 +299,15 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 		try {
 			auto dataSource = findFile( texturePath );
 
+			auto group = getAssetGroupRef( hash );
+			group->addAsset( getAssetRef( dataSource->getFilePath() ) );
+
 			gl::Texture2dRef texture = mTextures[hash].lock();
 			if( ! texture || mGroups[hash]->isModified() ) {
 				Surface surface = loadImage( dataSource );
 
 #if USE_DEEP_LOADING
+				// TODO: I think this should always be on. test in MasonTests
 				if( texture && texture->getSize() == surface.getSize() ) {
 					texture->update( surface, 0 );
 				}
@@ -318,12 +322,10 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 
 				notifyResourceReloaded();
 				mAssetErrors.erase( hash );
-
-				if( updateCallback )
-					updateCallback( texture );
-
-
 			}
+
+			if( texture && updateCallback )
+				updateCallback( texture );
 		}
 		catch( const exception &exc ) {
 			if( mAssetErrors.count( hash ) == 0 ) {
@@ -334,9 +336,6 @@ signals::Connection AssetManager::getTexture( const ci::fs::path &texturePath, c
 	};
 
 	auto group = getAssetGroupRef( hash );
-	group->addAsset( getAssetRef( texturePath ) );
-	group->setModified( false );
-
 	auto connection = group->addModifiedCallback( textureModifiedCallback );
 
 	// ensure the callback specific to this request is fired on initial request
@@ -479,6 +478,8 @@ ci::DataSourceRef AssetManager::findFile( const ci::fs::path &filePath )
 
 void AssetManager::onFileChanged( const WatchEvent &event )
 {
+	//CI_LOG_I( "path: " << event.getFile( 0 ) );
+
 	// Flag groups as modified if asset was modified since the last check.
 	// Groups remain modified until they are reloaded, so we only need to flag them once.
 	auto asset = getAssetRef( event.getFile() );
@@ -488,6 +489,7 @@ void AssetManager::onFileChanged( const WatchEvent &event )
 		for( auto &ref : asset->mGroups ) {
 			auto group = ref.lock();
 			if( group ) {
+				//CI_LOG_I( "marking asset modified for: " << group->getUuid() );
 				group->setModified( true );
 				inUse = true;
 
@@ -545,7 +547,11 @@ void AssetManager::readArchive( const ci::DataSourceRef &dataSource )
 // ----------------------------------------------------------------------------------------------------
 
 #if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
+#if ( _MSC_VER >= 1923 )
+#define ASSET_INITIAL_TIME_MODIFIED std::filesystem::file_time_type::clock::now()
+#else
 #define ASSET_INITIAL_TIME_MODIFIED std::chrono::system_clock::now()
+#endif
 #else
 #define ASSET_INITIAL_TIME_MODIFIED std::time_t( 0 )
 #endif

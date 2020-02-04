@@ -111,7 +111,7 @@ void Hud::initViews()
 	auto window = app::getWindow();
 
 	mGraph = make_shared<ui::Graph>();
-	mGraph->setSize( window->getSize() );
+	mGraph->setSize( window->toPixels( window->getSize() ) );
 	mGraph->connectEvents( ui::Graph::EventOptions().priority( 100 ) );
 	mGraph->setLabel( "Hud Graph" );
 
@@ -266,11 +266,16 @@ void Hud::showInfo( size_t rowIndex, const std::vector<std::string> &textColumns
 	mInfoLabel->setRow( rowIndex, textColumns );
 }
 
+void Hud::showInfo( size_t rowIndex, const std::string &leftText, const std::string &rightText )
+{
+	mInfoLabel->setRow( rowIndex, { leftText, rightText } );
+}
+
 void Hud::layout()
 {
 	if( mFullScreen ) {
 		mGraph->setPos( vec2( 0 ) );
-		mGraph->setSize( app::getWindowSize() );
+		mGraph->setSize( app::toPixels( app::getWindowSize() ) );
 	}
 	else
 		mGraph->setNeedsLayout();

@@ -136,6 +136,33 @@
     <ClCompile Include="..\..\src\mason\audio\OfflineContext.cpp">
       <Filter>Source Files\mason\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\LivePPManager.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\AudioViews.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\ui\AudioMonitor.cpp">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\Effects.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\Gens.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\CompressorNode.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\audio\ProfilerNode.cpp">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\Dispatch.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\RenderToTexture.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -260,6 +287,39 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\audio\OfflineContext.h">
       <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\LivePPManager.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\AudioViews.h">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\ui\AudioMonitor.h">
+      <Filter>Source Files\mason\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\audio.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\Effects.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\Gens.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\CompressorNode.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\audio\ProfilerNode.h">
+      <Filter>Source Files\mason\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\MotionTracker.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\Dispatch.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\RenderToTexture.h">
+      <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

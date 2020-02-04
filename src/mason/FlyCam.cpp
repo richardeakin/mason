@@ -83,10 +83,10 @@ void FlyCam::connect( const app::WindowRef &window, const EventOptions &options 
 				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
 			mEventConnections += window->getSignalMouseWheel().connect( options.mPriority,
 				[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
-			mEventConnections += window->getSignalKeyDown().connect( options.mPriority,
-				[this]( app::KeyEvent &event ) { keyDown( event ); } );
 		}
 		if( options.mKeyboard ) {
+			mEventConnections += window->getSignalKeyDown().connect( options.mPriority,
+				[this]( app::KeyEvent &event ) { keyDown( event ); } );
 			mEventConnections += window->getSignalKeyUp().connect( options.mPriority,
 				[this]( app::KeyEvent &event ) { keyUp( event ); } );
 		}
@@ -179,6 +179,9 @@ void FlyCam::mouseDown( const vec2 &mousePos )
 
 void FlyCam::mouseUp( const vec2 &mousePos )
 {
+	if( ! mCamera || ! mEnabled )
+		return;
+
 	mLookEnabled = false;
 	mLookDelta = vec2( 0 );
 	mInitialCam = *mCamera;
@@ -200,12 +203,15 @@ void FlyCam::mouseWheel( float increment )
 	if( ! mCamera || ! mEnabled )
 		return;
 
-	mMoveDirection.y = mMoveIncrement * increment * 0.1f;
+	mMoveAccel.y = mMoveIncrement * increment * 7.0f; // TODO: expse multiplier as param
 }
 
 // TODO: need a way to disable using up these keys
 void FlyCam::keyDown( ci::app::KeyEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	// skip if any modifier key is being pressed, except shift which is used to decrease speed.
 	if( event.isAltDown() || event.isControlDown() || event.isMetaDown() )
 		return;
@@ -217,10 +223,10 @@ void FlyCam::keyDown( ci::app::KeyEvent &event )
 
 	const char c = tolower( event.getChar() );
 
-	if( c == 'a' ) {
+	if( c == 'a' || event.getCode() == app::KeyEvent::KEY_LEFT ) {
 		mMoveDirection.x = - moveAmount;
 	}
-	else if( event.getCode() == 'd' ) {
+	else if( c == 'd' || event.getCode() == app::KeyEvent::KEY_RIGHT ) {
 		mMoveDirection.x = moveAmount;
 	}
 	else if( c == 'w' ) {
@@ -229,10 +235,10 @@ void FlyCam::keyDown( ci::app::KeyEvent &event )
 	else if( c == 's' ) {
 		mMoveDirection.y = - moveAmount;
 	}
-	else if( c == 'e' ) {
+	else if( c == 'e' || event.getCode() == app::KeyEvent::KEY_UP ) {
 		mMoveDirection.z = moveAmount;
 	}
-	else if( c == 'c' ) {
+	else if( c == 'c' || event.getCode() == app::KeyEvent::KEY_DOWN ) {
 		mMoveDirection.z = - moveAmount;
 	}
 	else
@@ -245,7 +251,7 @@ void FlyCam::keyUp( ci::app::KeyEvent &event )
 {
 	bool handled = true;
 	const char c = tolower( event.getChar() );
-	if( c == 'a' || c == 'd' ) {
+	if( c == 'a' || c == 'd' || event.getCode() == app::KeyEvent::KEY_LEFT || event.getCode() == app::KeyEvent::KEY_RIGHT ) {
 		mMoveDirection.x = 0;
 		mMoveAccel.x = 0;
 	}
@@ -253,7 +259,7 @@ void FlyCam::keyUp( ci::app::KeyEvent &event )
 		mMoveDirection.y = 0;
 		mMoveAccel.y = 0;
 	}
-	else if( c == 'e' || c == 'c' ) {
+	else if( c == 'e' || c == 'c' || event.getCode() == app::KeyEvent::KEY_UP || event.getCode() == app::KeyEvent::KEY_DOWN ) {
 		mMoveDirection.z = 0;
 		mMoveAccel.z = 0;
 	}

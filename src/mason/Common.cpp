@@ -28,12 +28,14 @@
 
 #include "mason/Assets.h"
 #include "mason/Hud.h"
-
+#include "mason/Profiling.h"
 
 using namespace ci;
 using namespace std;
 
 namespace mason {
+
+int Marker::id = 0; //! note that you don't need to include this .cpp in your build if you define this variable in your app
 
 namespace {
 
@@ -41,7 +43,7 @@ Rand sRand;
 
 } // anonymous namespace
 
-const fs::path& getRepoRootPath()
+const fs::path& getRepoRootPath( const ci::fs::path &rootFile )
 {
 	static fs::path	sRepoRootPath;
 
@@ -52,6 +54,14 @@ const fs::path& getRepoRootPath()
 		for( auto currentPath = app::getAppPath(); currentPath.has_parent_path(); currentPath = currentPath.parent_path() ) {
 			if( ++parentCount > maxDirectoryTraversals )
 				break;
+
+			if( ! rootFile.empty() ) {
+				const fs::path p = currentPath / rootFile;
+				if( fs::exists( p ) ) {
+					sRepoRootPath = currentPath;
+					break;
+				}
+			}
 
 			const fs::path currentGitPath = currentPath / ".git";
 			if( fs::exists( currentGitPath ) ) {
@@ -99,6 +109,19 @@ fs::path normalizePath( const fs::path &path )
 	}
 
 	return result;
+}
+
+// TODO: remove this and use filesystem::relative() when it is available on windows
+std::string stripBasePath( const ci::fs::path &fullPath, const ci::fs::path &basePath )
+{
+	auto fullString = fullPath.generic_string();
+	auto baseString = basePath.generic_string();
+	auto remainderPos = fullString.find( baseString );
+
+	if( remainderPos == string::npos )
+		return fullString;
+
+	return fullString.substr( baseString.size() + 1 );
 }
 
 ci::Timeline* timeline()

@@ -3,92 +3,61 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/app/App.h"
+
+#include "jsoncpp/json.h"
 
 using namespace ci;
 using namespace std;
 
 namespace mason {
 
-// static
-Config* Config::instance()
+namespace detail {
+
+static ma::Info sConfig;
+
+void setConfig( const ma::Info &config )
 {
-	static Config sInstance;
-	return &sInstance;
+	sConfig = config;
 }
 
-bool Config::read( const DataSourceRef &source )
-{
-	mSource = source;
+} // namespace mason::detail
 
-	if( mSource->isFilePath() ) {
-		mTarget = DataTargetPath::createRef( mSource->getFilePath() );
+void loadConfig( const fs::path &filename, const fs::path &cascadingFilename )
+{
+	if( ! cascadingFilename.empty() ) {
+		loadConfig( filename, vector<fs::path>{ cascadingFilename } );
 	}
 	else {
-		// We can only write to files on disk.
-		mTarget.reset();
+		loadConfig( filename, vector<fs::path>() );
 	}
+}
 
+void loadConfig( const fs::path &filename, const vector<fs::path> &cascadingFilenames )
+{
 	try {
-		string data = loadString( source );
-	
-		Json::Reader reader;
-		bool success = reader.parse( data, mRoot );
-		if( ! success ) {
-			string errorMessage = reader.getFormattedErrorMessages();
-			throw ConfigExc( "Json::Reader failed to parse source, error message: " + errorMessage );
+		// load main config
+		auto config = ma::Info::convert<Json::Value>( app::loadAsset( filename ) );
+
+		for( const auto &fp : cascadingFilenames ) {
+			auto fullPath = app::getAssetPath( fp );
+			if( ! fullPath.empty() ) {
+				auto j = ma::Info::convert<Json::Value>( loadFile( fullPath ) );
+				config.merge( j );
+			}
 		}
 
-		mDirty = false;
+		//CI_LOG_I( "config (merged):\n" << config );
+		ma::detail::setConfig( config );
 	}
-	catch( std::exception &exc ) {
-		CI_LOG_EXCEPTION( "failed to read source", exc );
-		return false;
+	catch( exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load config file: " << filename, exc );
 	}
-
-	return true;
 }
 
-bool Config::write( const DataTargetRef &target )
+ma::Info*	config()
 {
-	if( target ) {
-		const fs::path &path = target->getFilePath();
-		if( ! fs::exists( path ) ) {
-			fs::create_directories( path.parent_path() );
-			mDirty = true;
-		}
-
-		if( mDirty ) {
-			Json::StyledWriter writer;
-			string data = writer.write( mRoot );
-
-			ofstream ostream( path.c_str() );
-			ostream << data;
-			ostream.close();
-		}
-
-		return true;
-	}
-
-	return false;
+	return &detail::sConfig;
 }
-
-fs::path Config::getTargetFilePath() const
-{
-	if( ! mTarget )
-		return {};
-
-	return mTarget->getFilePath();
-}
-
-ma::Dictionary Config::getGroupAsDictionary( const std::string &category ) const
-{
-	if( ! mRoot.isMember( category ) ) {
-		throw ConfigExc( "no category with name: " + category );
-	}
-
-	const auto &group = getGroup( category );
-	return Dictionary::convert( group );
-}
-
 
 } // namespace mason

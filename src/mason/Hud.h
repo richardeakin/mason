@@ -108,6 +108,7 @@ class MA_API Hud : public VarOwner {
 	ui::CheckBoxRef checkBox( const std::string &label, bool defaultValue = false, const Options &options = Options() );
 	//! Adds a CheckBox to the Hud that manipulates \c x in 'persistent mode', and is only removed once `x` is destroyed (it is not owned by the Hud).
 	ui::CheckBoxRef checkBox( Var<bool> *x, const std::string &label, Options options = Options() );
+	// TODO: add overloads that take step, min, and max sampe as ImGui
 	//!
 	template <typename T>
 	std::shared_ptr<ui::NumberBoxT<T>> numBox( T *x, const std::string &label, Options options = Options() );
@@ -119,6 +120,8 @@ class MA_API Hud : public VarOwner {
 	void showFps( bool show = true )	{ mShowFps = show; }
 	//! Displays a set of strings at the provided row index.
 	void showInfo( size_t rowIndex, const std::vector<std::string> &textColumns );
+	//! Displays a pair of strings at the provided row index.
+	void showInfo( size_t rowIndex, const std::string &leftText, const std::string &rightText );
 	//! Hides the Hud, it will still update but not be drawn
 	void	setHidden( bool hidden = true )			{ mGraph->setHidden( hidden ); }
 	bool	isHidden() const						{ return mGraph->isHidden(); }

@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Signals.h"
 
 #include "mason/Export.h"
-#include "mason/Dictionary.h"
+#include "mason/Info.h"
 
 #include <array>
 
@@ -156,11 +156,14 @@ enum class InputType {
 using TrackRef = std::shared_ptr<mason::audio::Track>;
 using AudioAnalyzerRef = std::shared_ptr<class mason::audio::AudioAnalyzer>;
 
+//! The Signal type used for for AudioAnalyyzer::getSignalResolvePath(). Returns a non-empty path if succeeded to resolve the path
+typedef ci::signals::Signal<ci::fs::path ( const std::string & )>	SignalResolvePath;
+
 class MA_API AudioAnalyzer {
 public:
 
 	//! Call whenever configuration changes
-	void initialize( const Dictionary &config );
+	void initialize( const Info &config );
 	
 	AudioAnalyzer();
 	AudioAnalyzer( const AudioAnalyzer& ) = delete;
@@ -198,11 +201,13 @@ public:
 		
 	ci::signals::Signal<void ()>&	getSignalTracksChanged()	{ return mSignalTracksChanged; }
 
+	SignalResolvePath&	getSignalResolvePath()	{ return mSignalResolvePath; }
+
 private:
-	void initEntry( const Dictionary &config );
-	void initContext( const Dictionary &config );
-	void initTracks( const Dictionary &config );
-	ci::fs::path resolvePath( const std::string &url );
+	void initEntry( const Info &config );
+	void initContext( const Info &config );
+	void initTracks( const Info &config );
+	ci::fs::path resolvePathFromUrl( const std::string &url );
 
 	void keyDown( ci::app::KeyEvent &event );
 	void printInfo();
@@ -210,6 +215,7 @@ private:
 	ci::audio::GainNodeRef			mMasterGain;
 	std::vector<TrackRef>			mTracks;
 	ci::signals::Signal<void ()>	mSignalTracksChanged;
+	SignalResolvePath				mSignalResolvePath;
 	bool							mIsPaused = true;
 	double							mSeekRampSeconds = 0.02;
 

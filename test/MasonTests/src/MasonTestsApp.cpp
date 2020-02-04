@@ -12,10 +12,16 @@
 
 #include "HudTest.h"
 #include "MiscTest.h"
-//#include "BlendingTest.h"
 
 #define USE_SECONDARY_SCREEN 1
 #define MSAA 4
+#define LIVEPP_ENABLED 1
+
+#if LIVEPP_ENABLED
+
+#include "mason/LivePPManager.h"
+
+#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -30,7 +36,6 @@ class MasonTestsApp : public App {
 	void draw() override;
 
 	void reload();
-	void saveConfig();
 
 	ui::SuiteRef	mSuite;
 	bool			mDrawHud = true;
@@ -55,27 +60,17 @@ void MasonTestsApp::setup()
 
 void MasonTestsApp::reload()
 {
-	// TODO: this should work without getAssetPath() too
-	ma::assets()->getFile( app::getAssetPath( "config.json" ), [this]( DataSourceRef dataSource ) {
-		CI_LOG_I( "config.json reloaded" );
+	ma::loadConfig();
 
-		ma::config()->read( dataSource );
+	try {
+		auto appConfig = ma::config()->get<ma::Info>( "app" );
 
-		size_t testIndex = (size_t)ma::config()->get<int>( "app", "test" );
+		size_t testIndex = appConfig["test"];
 		mSuite->select( testIndex );
-	} );
-}
-
-void MasonTestsApp::saveConfig()
-{
-	// first disable config.json watch, so it doesn't trigger an app reload
-	FileWatcher::instance().disable( ma::config()->getTargetFilePath() );
-
-	ma::config()->set<size_t>( "app", "test", mSuite->getCurrentIndex() );
-
-	ma::config()->write();
-
-	FileWatcher::instance().enable( ma::config()->getTargetFilePath() );
+	}
+	catch( exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load reload", exc );
+	}
 }
 
 void MasonTestsApp::keyDown( app::KeyEvent event )
@@ -100,10 +95,6 @@ void MasonTestsApp::keyDown( app::KeyEvent event )
 		}
 		else if( event.getChar() == 'l' ) {
 			mDrawProfiling = ! mDrawProfiling;
-		}
-		else if( event.getChar() == 's' ) {
-			CI_LOG_I( "saving config.json" );
-			saveConfig();
 		}
 	}
 }
@@ -150,22 +141,17 @@ void MasonTestsApp::draw()
 
 void prepareSettings( App::Settings *settings )
 {
+#if LIVEPP_ENABLED
+	bool liveppEnabled = ma::initLivePP( "../../../../../../tools/LivePP", "MasonTests" );
+	CI_LOG_I( "Live++ " << string( liveppEnabled ? "enabled" : "disabled" ) );
+#endif
+
 	bool useSecondaryScreen = ( USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1 );
 
 	if( useSecondaryScreen ) {
-		for( const auto &display : Display::getDisplays() ) {
-			//CI_LOG_I( "display name: " << display->getName() );
-			if( display->getName() == "Color LCD" ) {
-				// macbook
-				settings->setDisplay( display );
-				settings->setWindowSize( 1280, 720 );
-			}
-			else if( display->getName() == "Generic PnP Monitor" ) {
-				// gechic 1303i 13"touch display
-				settings->setDisplay( display );
-				settings->setFullScreen( true );
-			}
-		}
+		const auto &display = Display::getDisplays()[1];
+		settings->setDisplay( display );
+		settings->setFullScreen( true );
 	}
 	else {
 #if defined( CINDER_MAC )
