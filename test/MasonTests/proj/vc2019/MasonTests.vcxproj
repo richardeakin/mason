@@ -96,7 +96,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\..\..\tools\LivePP\API;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -134,7 +134,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\..\..\tools\LivePP\API;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CINDER_DLL;MASON_SHARED;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -178,7 +178,7 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\..\..\tools\LivePP\API;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -215,7 +215,7 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\..\..\tools\LivePP\API;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CINDER_DLL;MASON_SHARED;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -261,6 +261,7 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\mason\extra\LivePPManager.cpp" />
     <ClCompile Include="..\..\src\EmptyTest.cpp" />
     <ClCompile Include="..\..\src\HudTest.cpp" />
     <ClCompile Include="..\..\src\MasonTestsApp.cpp" />
@@ -268,6 +269,7 @@ xcopy /y /d /f "$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(Platfo
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\mason\extra\LivePPManager.h" />
     <ClInclude Include="..\..\src\EmptyTest.h" />
     <ClInclude Include="..\..\src\HudTest.h" />
     <ClInclude Include="..\..\src\MiscTest.h" />

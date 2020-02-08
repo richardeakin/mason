@@ -9,6 +9,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Source Files\mason">
+      <UniqueIdentifier>{5c5e4b65-978a-40b7-a005-35c7607ef37d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mason\extra">
+      <UniqueIdentifier>{1bcc53f1-a7e4-49ef-9c44-6e1f38a9dfd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\EmptyTest.cpp">
@@ -23,6 +29,9 @@
     <ClCompile Include="..\..\src\MiscTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\mason\extra\LivePPManager.cpp">
+      <Filter>Source Files\mason\extra</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\EmptyTest.h">
@@ -33,6 +42,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\MiscTest.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mason\extra\LivePPManager.h">
+      <Filter>Source Files\mason\extra</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@
 
 #if LIVEPP_ENABLED
 
-#include "mason/LivePPManager.h"
+#include "mason/extra/LivePPManager.h"
 
 #endif
 
