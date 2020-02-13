@@ -31,7 +31,7 @@ DraggableView::DraggableView( const ci::Rectf &bounds )
 {
 }
 
-void DraggableView::draw( ::ui::Renderer *ren )
+void DraggableView::draw( ::vu::Renderer *ren )
 {
 	//ren->setColor( Color( 0, 0, 1 ) );
 	//ren->drawStrokedRect( getBoundsLocal(), 3 );

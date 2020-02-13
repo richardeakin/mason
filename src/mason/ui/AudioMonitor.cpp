@@ -21,7 +21,7 @@
 
 #include "mason/ui/AudioMonitor.h"
 #include "mason/Hud.h"
-#include "ui/TextManager.h"
+#include "vu/TextManager.h"
 
 #include "cinder/gl/gl.h"
 #include "cinder/gl/TextureFont.h"
@@ -63,7 +63,7 @@ AudioMonitorView::AudioMonitorView( const Rectf &bounds, size_t windowSize )
 		mWindowSize = windowSize;
 
 	initMonitorNode();
-	mLabelText = ui::TextManager::loadText( "Arial", 14 );
+	mLabelText = vu::TextManager::loadText( "Arial", 14 );
 }
 
 void AudioMonitorView::initMonitorNode()
@@ -87,7 +87,7 @@ void AudioMonitorView::setParam( const ci::audio::NodeRef &paramOwningNode, ci::
 	adapter >> mMonitorNode;
 }
 
-void AudioMonitorView::draw( ui::Renderer *ren )
+void AudioMonitorView::draw( vu::Renderer *ren )
 {
 	if( ! mMonitorNode || ! mLabelText )
 		return;
@@ -184,22 +184,22 @@ namespace {
 	const Rectf DEFAULT_BOUNDS = Rectf( 10, 10, 210, 90 );
 }
 
-mui::AudioMonitorViewRef addNodeMonitor( const ci::audio::NodeRef &node, const string &label, size_t windowSize )
+mason::mui::AudioMonitorViewRef addNodeMonitor( const ci::audio::NodeRef &node, const string &label, size_t windowSize )
 {
 	CI_ASSERT( node );
 
-	auto monitorView = make_shared<mui::AudioMonitorView>( DEFAULT_BOUNDS, windowSize );
+	auto monitorView = make_shared<mason::mui::AudioMonitorView>( DEFAULT_BOUNDS, windowSize );
 	monitorView->setNode( node );
 
 	Hud::instance()->addView( monitorView, label );
 	return monitorView;
 }
 
-mui::AudioMonitorViewRef addParamMonitor( const ci::audio::NodeRef &paramOwningNode, audio::Param *param, const string &label, size_t windowSize )
+mason::mui::AudioMonitorViewRef addParamMonitor( const ci::audio::NodeRef &paramOwningNode, audio::Param *param, const string &label, size_t windowSize )
 {
 	CI_ASSERT( param );
 
-	auto monitorView = make_shared<mui::AudioMonitorView>( DEFAULT_BOUNDS, windowSize );
+	auto monitorView = make_shared<mason::mui::AudioMonitorView>( DEFAULT_BOUNDS, windowSize );
 	monitorView->setParam( paramOwningNode, param );
 
 	Hud::instance()->addView( monitorView, label );

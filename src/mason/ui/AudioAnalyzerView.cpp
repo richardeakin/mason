@@ -21,7 +21,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "mason/ui/AudioAnalyzerView.h"
-#include "ui/Layout.h"
+#include "vu/Layout.h"
 #include "fmt/format.h"
 
 #include "cinder/Log.h"
@@ -49,7 +49,7 @@ AudioAnalyzerView::AudioAnalyzerView( const ci::Rectf &bounds )
 	: View( bounds )
 {	
 	// TODO: use GridLayout (once it exists), so tracks can be stacked
-	auto layout = make_shared<::ui::HorizontalLayout>();
+	auto layout = make_shared<::vu::HorizontalLayout>();
 	layout->setPadding( 12 ); // TODO: why is affecting the top portion of a single Track? Shouldn't.
 	layout->setMargin( Rectf( 10, 10, 10, 10 ) );
 	setLayout( layout );
@@ -141,7 +141,7 @@ void AudioAnalyzerView::update()
 	}
 }
 
-void AudioAnalyzerView::draw( ::ui::Renderer *ren )
+void AudioAnalyzerView::draw( ::vu::Renderer *ren )
 {
 	if( 0 ) {
 		gl::ScopedColor red( 1, 1, 0 );
@@ -180,7 +180,7 @@ AudioTrackView::~AudioTrackView()
 	//CI_LOG_I( "this: " << hex << this << dec << ", trackIndex: " << mTrackIndex );
 }
 
-// TODO: use ui::Label instead
+// TODO: use vu::Label instead
 gl::TextureFontRef getTrackViewFont()
 {
 	static gl::TextureFontRef sTextFont;
@@ -225,7 +225,7 @@ void AudioTrackView::update()
 	mFreqBandsView->updateData( track );
 }
 
-void AudioTrackView::draw( ::ui::Renderer *ren )
+void AudioTrackView::draw( ::vu::Renderer *ren )
 {
 	auto track = ma::audio::analyzer()->getTrack( mTrackIndex );
 	if( ! track ) {

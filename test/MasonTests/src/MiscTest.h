@@ -1,19 +1,19 @@
 #pragma once
 
-#include "ui/Suite.h"
+#include "vu/Suite.h"
 
 #include "mason/Mason.h"
 #include "cinder/FileWatcher.h"
 #include "mason/Info.h"
-#include "ui/Control.h"
+#include "vu/Control.h"
 
-class MiscTest : public ui::SuiteView {
+class MiscTest : public vu::SuiteView {
   public:
 	MiscTest();
 
 	void layout() override;
 	void update() override;
-	void draw( ui::Renderer *ren )	override;
+	void draw( vu::Renderer *ren )	override;
 
 	bool keyDown( ci::app::KeyEvent &event ) override;
 

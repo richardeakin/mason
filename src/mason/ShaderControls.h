@@ -21,20 +21,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "ui/Control.h"
+#include "vu/Control.h"
 #include "mason/Mason.h"
 
 namespace mason {
 
-//! Maps a ui Control to a data type \t T. \t V is used when there are variations of a ControlType<T> to ui::Control mapping.
+//! Maps a ui Control to a data type \t T. \t V is used when there are variations of a ControlType<T> to vu::Control mapping.
 template<typename T, int V> struct ControlType {};
 
-template<> struct ControlType<bool, 0>			{ typedef ui::CheckBox TYPE; };
-template<> struct ControlType<float, 0>			{ typedef ui::NumberBox1 TYPE; };
-template<> struct ControlType<float, 1>			{ typedef ui::HSlider TYPE; };
-template<> struct ControlType<ci::vec2, 0>		{ typedef ui::NumberBox2 TYPE; };
-template<> struct ControlType<ci::vec3, 0>		{ typedef ui::NumberBox3 TYPE; };
-template<> struct ControlType<ci::vec4, 0>		{ typedef ui::NumberBox4 TYPE; };
+template<> struct ControlType<bool, 0>			{ typedef vu::CheckBox TYPE; };
+template<> struct ControlType<float, 0>			{ typedef vu::NumberBox1 TYPE; };
+template<> struct ControlType<float, 1>			{ typedef vu::HSlider TYPE; };
+template<> struct ControlType<ci::vec2, 0>		{ typedef vu::NumberBox2 TYPE; };
+template<> struct ControlType<ci::vec3, 0>		{ typedef vu::NumberBox3 TYPE; };
+template<> struct ControlType<ci::vec4, 0>		{ typedef vu::NumberBox4 TYPE; };
 
 struct ShaderControlGroup;
 

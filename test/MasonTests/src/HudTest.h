@@ -1,19 +1,19 @@
 #pragma once
 
-#include "ui/Suite.h"
+#include "vu/Suite.h"
 
 #include "mason/Mason.h"
 #include "mason/FlyCam.h"
 #include "mason/Var.h"
 
-class HudTest : public ui::SuiteView {
+class HudTest : public vu::SuiteView {
   public:
 	HudTest();
 
 	void layout() override;
 	bool keyDown( ci::app::KeyEvent &event ) override;
 	void update() override;
-	void draw( ui::Renderer *ren )	override;
+	void draw( vu::Renderer *ren )	override;
 
   private:
 	void loadGlsl();

@@ -37,7 +37,7 @@ void HudTest::testHudVars()
 	mBoolVar = true;
 	auto checkBox = ma::hud()->checkBox( &mBoolVar, "Var<bool>" );
 	checkBox->getSignalValueChanged().connect( -1, [this] {
-		// FIXME: |warning| void ui::Graph::propagateTouchesEnded(app::TouchEvent &)[374] stray touch attempted to be removed
+		// FIXME: |warning| void vu::Graph::propagateTouchesEnded(app::TouchEvent &)[374] stray touch attempted to be removed
 		CI_LOG_I( "mBoolVar: " << mBoolVar );
 	} );
 
@@ -108,7 +108,7 @@ void HudTest::update()
 	}
 }
 
-void HudTest::draw( ui::Renderer *ren )
+void HudTest::draw( vu::Renderer *ren )
 {
 	ren->setColor( Color( 0.2f, 0.1f, 0.1f ) );
 	ren->drawSolidRect( getBoundsLocal() );

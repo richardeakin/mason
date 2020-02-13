@@ -21,7 +21,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "ui/View.h"
+#include "vu/View.h"
 #include "mason/Mason.h"
 #include "mason/Info.h"
 #include "mason/audio/AudioAnalyzer.h"
@@ -34,14 +34,14 @@ using TrackRef = std::shared_ptr<class Track>;
 
 } } // namespace mason::audio
 
-// note: using namespace mason::mui so as not to conflict with ui::*. Oh well..
+// note: using namespace mason::mui so as not to conflict with vu::*. Oh well..
 // TODO: move files to mui folder
 namespace mason { namespace mui {
 
 using AudioAnalyzerViewRef		= std::shared_ptr<class AudioAnalyzerView>;
 using AudioTrackViewRef			= std::shared_ptr<class AudioTrackView>;
 
-class MA_API AudioAnalyzerView : public ::ui::View {
+class MA_API AudioAnalyzerView : public ::vu::View {
   public:
 	AudioAnalyzerView( const ci::Rectf &bounds = ci::Rectf::zero() );
 	~AudioAnalyzerView();
@@ -54,7 +54,7 @@ class MA_API AudioAnalyzerView : public ::ui::View {
 
 	void layout() override;
 	void update() override;
-	void draw( ::ui::Renderer *ren ) override;
+	void draw( ::vu::Renderer *ren ) override;
 
   private:
 	void reloadConfig();
@@ -67,7 +67,7 @@ class MA_API AudioAnalyzerView : public ::ui::View {
 	friend class AudioTrackView;
 };
 
-class MA_API AudioTrackView : public ::ui::View {
+class MA_API AudioTrackView : public ::vu::View {
   public:
 	AudioTrackView( AudioAnalyzerView *parent, int trackIndex, const ci::Rectf &bounds = ci::Rectf::zero() );
 	~AudioTrackView();
@@ -75,7 +75,7 @@ class MA_API AudioTrackView : public ::ui::View {
   protected:
 	void layout() override;
 	void update() override;
-	void draw( ::ui::Renderer *ren ) override;
+	void draw( ::vu::Renderer *ren ) override;
 
   private:
 	const std::string&	getTitle( const audio::TrackRef &track );

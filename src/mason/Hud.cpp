@@ -110,39 +110,39 @@ void Hud::initViews()
 {
 	auto window = app::getWindow();
 
-	mGraph = make_shared<ui::Graph>();
+	mGraph = make_shared<vu::Graph>();
 	mGraph->setSize( window->toPixels( window->getSize() ) );
-	mGraph->connectEvents( ui::Graph::EventOptions().priority( 100 ) );
+	mGraph->connectEvents( vu::Graph::EventOptions().priority( 100 ) );
 	mGraph->setLabel( "Hud Graph" );
 
-	mInfoLabel = make_shared<ui::LabelGrid>();
+	mInfoLabel = make_shared<vu::LabelGrid>();
 	mInfoLabel->setTextColor( Color::white() );
 	mInfoLabel->getBackground()->setColor( ColorA::gray( 0, 0.3f ) );
 	mGraph->addSubview( mInfoLabel );
 
-	mUserViewsGrid = make_shared<ui::View>();
+	mUserViewsGrid = make_shared<vu::View>();
 	mUserViewsGrid->setLabel( "user views (grid)" );
 	mUserViewsGrid->setHidden( true );
 	mUserViewsGrid->getBackground()->setColor( ColorA( 0, 0, 0.2f, 0.3f ) );
 	mGraph->addSubview( mUserViewsGrid );
 
 	{
-		auto layout =  make_shared<ui::VerticalLayout>();
+		auto layout =  make_shared<vu::VerticalLayout>();
 		layout->setPadding( 4 );
 		mUserViewsGrid->setLayout( layout );
 	}
 
-	mUserViewsFreeFloating = make_shared<ui::View>();
+	mUserViewsFreeFloating = make_shared<vu::View>();
 	mUserViewsFreeFloating->setLabel( "user views (free floating)" );
 	mUserViewsFreeFloating->setHidden( true );
 	mUserViewsFreeFloating->setFillParentEnabled();
 	mGraph->addSubview( mUserViewsFreeFloating );
 
 	// FIXME: not adhearing to resize (even with setFillsParent)
-	mBorderView = make_shared<ui::StrokedRectView>();
+	mBorderView = make_shared<vu::StrokedRectView>();
 	mBorderView->setFillParentEnabled();
 	mBorderView->setLineWidth( 12 );
-	mBorderView->setPlacement( ui::StrokedRectView::Placement::INSIDE );
+	mBorderView->setPlacement( vu::StrokedRectView::Placement::INSIDE );
 	mBorderView->setColor( ColorA::zero() );
 	mGraph->addSubview( mBorderView );
 }
@@ -160,7 +160,7 @@ void Hud::setFillWindow()
 	layout();
 }
 
-void Hud::addView( const ui::ViewRef &view, const string &label, const Options &options )
+void Hud::addView( const vu::ViewRef &view, const string &label, const Options &options )
 {
 	if( const auto &previousView = findView( label ) ) {
 		LOG_HUD( "removing old subview for label: " << label );
@@ -182,7 +182,7 @@ void Hud::addView( const ui::ViewRef &view, const string &label, const Options &
 	attribs.mOptions = options;
 }
 
-const ui::ViewRef& Hud::findView( const std::string &label ) const
+const vu::ViewRef& Hud::findView( const std::string &label ) const
 {
 	for( const auto &vp : mViewAttribs ) {
 		CI_ASSERT( vp.first );
@@ -192,11 +192,11 @@ const ui::ViewRef& Hud::findView( const std::string &label ) const
 	}
 
 	// return a null ViewRef when we can't find a View with the corresponding label.
-	static ui::ViewRef sNullView;
+	static vu::ViewRef sNullView;
 	return sNullView;
 }
 
-void Hud::removeView( const ui::ViewRef &view )
+void Hud::removeView( const vu::ViewRef &view )
 {
 	auto it = mViewAttribs.find( view );
 	if( it == mViewAttribs.end() ) {
@@ -222,7 +222,7 @@ void Hud::removeView( const ui::ViewRef &view )
 
 void Hud::removeViewsWithPrefix( const std::string &prefix )
 {
-	vector<ui::ViewRef> viewsToRemove;
+	vector<vu::ViewRef> viewsToRemove;
 	for( const auto &va : mViewAttribs ) {
 		const auto &view = va.first;
 
@@ -243,7 +243,7 @@ void Hud::removeViewsWithPrefix( const std::string &prefix )
 
 void Hud::clearViewsMarkedForRemoval()
 {
-	vector<ui::ViewRef>	viewsToRemove;
+	vector<vu::ViewRef>	viewsToRemove;
 	for( const auto &va : mViewAttribs ) {
 		if( va.second.mMarkedForRemoval )
 			viewsToRemove.push_back( va.first );
@@ -362,7 +362,7 @@ const Rectf DEFAULT_NUMBOX_BOUNDS = Rectf( 0, 0, 190, 40 );
 const Rectf DEFAULT_CHECKBOX_BOUNDS = Rectf( 0, 0, 100, 30 );
 }
 
-ui::HSliderRef Hud::slider( float *x, const std::string &label, Options options )
+vu::HSliderRef Hud::slider( float *x, const std::string &label, Options options )
 {
 	options.immediateMode( true );
 	auto slider = findOrMakeSlider( *x, label, options, nullptr );
@@ -372,7 +372,7 @@ ui::HSliderRef Hud::slider( float *x, const std::string &label, Options options 
 	return slider;
 }
 
-ui::HSliderRef Hud::slider( Var<float> *x, const std::string &label, Options options )
+vu::HSliderRef Hud::slider( Var<float> *x, const std::string &label, Options options )
 {
 	options.immediateMode( false );
 	x->setOwner( this );
@@ -384,7 +384,7 @@ ui::HSliderRef Hud::slider( Var<float> *x, const std::string &label, Options opt
 				   } );
 
 	// When the value changes, we use the slider to look up the current Attrib and then update the user's value pointer.
-	auto sliderWeakPtr = weak_ptr<ui::HSlider>( slider );
+	auto sliderWeakPtr = weak_ptr<vu::HSlider>( slider );
 	slider->getSignalValueChanged().connect( [this, sliderWeakPtr] {
 		auto slider = sliderWeakPtr.lock();
 		if( ! slider )
@@ -402,7 +402,7 @@ ui::HSliderRef Hud::slider( Var<float> *x, const std::string &label, Options opt
 }
 
 template <typename T>
-std::shared_ptr<ui::NumberBoxT<T>> Hud::numBox( T *x, const std::string &label, Options options )
+std::shared_ptr<vu::NumberBoxT<T>> Hud::numBox( T *x, const std::string &label, Options options )
 {
 	options.immediateMode( true );
 	auto nbox = findOrMakeNumberBoxN( *x, label, options, nullptr );
@@ -413,7 +413,7 @@ std::shared_ptr<ui::NumberBoxT<T>> Hud::numBox( T *x, const std::string &label, 
 }
 
 template <typename T>
-std::shared_ptr<ui::NumberBoxT<T>> Hud::numBox( Var<T> *x, const std::string &label, Options options )
+std::shared_ptr<vu::NumberBoxT<T>> Hud::numBox( Var<T> *x, const std::string &label, Options options )
 {
 	options.immediateMode( false );
 	x->setOwner( this );
@@ -425,7 +425,7 @@ std::shared_ptr<ui::NumberBoxT<T>> Hud::numBox( Var<T> *x, const std::string &la
 	} );
 
 	// When the value changes, we use the slider to look up the current Attrib and then update the user's value pointer.
-	auto nboxWeakPtr = weak_ptr<ui::NumberBoxT<T>>( nbox );
+	auto nboxWeakPtr = weak_ptr<vu::NumberBoxT<T>>( nbox );
 	nbox->getSignalValueChanged().connect( [this, nboxWeakPtr] {
 		auto nbox = nboxWeakPtr.lock();
 		if( ! nbox )
@@ -442,7 +442,7 @@ std::shared_ptr<ui::NumberBoxT<T>> Hud::numBox( Var<T> *x, const std::string &la
 	return nbox;
 }
 
-ui::CheckBoxRef Hud::checkBox( bool *x, const std::string &label, Options options )
+vu::CheckBoxRef Hud::checkBox( bool *x, const std::string &label, Options options )
 {
 	options.immediateMode( true );
 
@@ -452,13 +452,13 @@ ui::CheckBoxRef Hud::checkBox( bool *x, const std::string &label, Options option
 	return checkBox;
 }
 
-ui::CheckBoxRef Hud::checkBox( const std::string &label, bool defaultValue, const Options &options )
+vu::CheckBoxRef Hud::checkBox( const std::string &label, bool defaultValue, const Options &options )
 {
 	bool x = defaultValue;
 	return checkBox( &x, label, options );
 }
 
-ui::CheckBoxRef Hud::checkBox( Var<bool> *x, const std::string &label, Options options )
+vu::CheckBoxRef Hud::checkBox( Var<bool> *x, const std::string &label, Options options )
 {
 	options.immediateMode( false );
 	x->setOwner( this );
@@ -470,7 +470,7 @@ ui::CheckBoxRef Hud::checkBox( Var<bool> *x, const std::string &label, Options o
 					   } );
 
 	// When the value changes, we use the slider to look up the current Attrib and then update the user's value pointer.
-	auto checkBoxWeakPtr = weak_ptr<ui::CheckBox>( checkBox );
+	auto checkBoxWeakPtr = weak_ptr<vu::CheckBox>( checkBox );
 	checkBox->getSignalValueChanged().connect( [this, checkBoxWeakPtr] {
 		auto checkBox = checkBoxWeakPtr.lock();
 		if( ! checkBox )
@@ -487,12 +487,12 @@ ui::CheckBoxRef Hud::checkBox( Var<bool> *x, const std::string &label, Options o
 	return checkBox;
 }
 
-ui::HSliderRef Hud::findOrMakeSlider( float initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn )
+vu::HSliderRef Hud::findOrMakeSlider( float initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn )
 {
 	const auto &view = findView( label );
-	auto slider = dynamic_pointer_cast<ui::HSlider>( view );
+	auto slider = dynamic_pointer_cast<vu::HSlider>( view );
 	if( ! slider ) {
-		slider = make_shared<ui::HSlider>( DEFAULT_SLIDER_BOUNDS );
+		slider = make_shared<vu::HSlider>( DEFAULT_SLIDER_BOUNDS );
 		slider->setTitle( label );
 		slider->getBackground()->setColor( ColorA::gray( 0, 0.6f ) );
 		slider->setValue( initialValue );
@@ -515,12 +515,12 @@ ui::HSliderRef Hud::findOrMakeSlider( float initialValue, const std::string &lab
 	return slider;
 }
 
-ui::CheckBoxRef Hud::findOrMakeCheckBox( bool initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn )
+vu::CheckBoxRef Hud::findOrMakeCheckBox( bool initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn )
 {
 	const auto &view = findView( label );
-	auto checkBox = dynamic_pointer_cast<ui::CheckBox>( view );
+	auto checkBox = dynamic_pointer_cast<vu::CheckBox>( view );
 	if( ! checkBox ) {
-		checkBox = make_shared<ui::CheckBox>( DEFAULT_CHECKBOX_BOUNDS );
+		checkBox = make_shared<vu::CheckBox>( DEFAULT_CHECKBOX_BOUNDS );
 		checkBox->setTitle( label );
 		checkBox->setTitleColor( ColorA( 1, 1, 1, 1 ) );
 		checkBox->setEnabled( initialValue );
@@ -539,12 +539,12 @@ ui::CheckBoxRef Hud::findOrMakeCheckBox( bool initialValue, const std::string &l
 }
 
 template <typename T>
-shared_ptr<ui::NumberBoxT<T>> Hud::findOrMakeNumberBoxN( const T &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn )
+shared_ptr<vu::NumberBoxT<T>> Hud::findOrMakeNumberBoxN( const T &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn )
 {
 	const auto &view = findView( label );
-	auto nbox = dynamic_pointer_cast<ui::NumberBoxT<T>>( view );
+	auto nbox = dynamic_pointer_cast<vu::NumberBoxT<T>>( view );
 	if( ! nbox ) {
-		nbox = make_shared<ui::NumberBoxT<T>>( DEFAULT_NUMBOX_BOUNDS );
+		nbox = make_shared<vu::NumberBoxT<T>>( DEFAULT_NUMBOX_BOUNDS );
 		nbox->setTitle( label );
 		nbox->getBackground()->setColor( ColorA::gray( 0, 0.6f ) );
 		nbox->setValue( initialValue );
@@ -1009,17 +1009,17 @@ void Hud::addShaderControls( const ci::gl::GlslProgRef &shader, const std::vecto
 	}
 }
 
-template std::shared_ptr<ui::NumberBoxT<float>>		Hud::findOrMakeNumberBoxN( const float &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template std::shared_ptr<ui::NumberBoxT<ci::vec2>>	Hud::findOrMakeNumberBoxN( const ci::vec2 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template std::shared_ptr<ui::NumberBoxT<ci::vec3>>	Hud::findOrMakeNumberBoxN( const ci::vec3 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template std::shared_ptr<ui::NumberBoxT<ci::vec4>>	Hud::findOrMakeNumberBoxN( const ci::vec4 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-template MA_API std::shared_ptr<ui::NumberBoxT<float>>		Hud::numBox( float *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<ci::vec2>>	Hud::numBox( ci::vec2 *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<ci::vec3>>	Hud::numBox( ci::vec3 *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<ci::vec4>>	Hud::numBox( ci::vec4 *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<float>>		Hud::numBox( Var<float> *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<ci::vec2>>	Hud::numBox( Var<ci::vec2> *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<ci::vec3>>	Hud::numBox( Var<ci::vec3> *x, const std::string &label, Options options );
-template MA_API std::shared_ptr<ui::NumberBoxT<ci::vec4>>	Hud::numBox( Var<ci::vec4> *x, const std::string &label, Options options );
+template std::shared_ptr<vu::NumberBoxT<float>>		Hud::findOrMakeNumberBoxN( const float &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<vu::NumberBoxT<ci::vec2>>	Hud::findOrMakeNumberBoxN( const ci::vec2 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<vu::NumberBoxT<ci::vec3>>	Hud::findOrMakeNumberBoxN( const ci::vec3 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template std::shared_ptr<vu::NumberBoxT<ci::vec4>>	Hud::findOrMakeNumberBoxN( const ci::vec4 &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+template MA_API std::shared_ptr<vu::NumberBoxT<float>>		Hud::numBox( float *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<ci::vec2>>	Hud::numBox( ci::vec2 *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<ci::vec3>>	Hud::numBox( ci::vec3 *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<ci::vec4>>	Hud::numBox( ci::vec4 *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<float>>		Hud::numBox( Var<float> *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<ci::vec2>>	Hud::numBox( Var<ci::vec2> *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<ci::vec3>>	Hud::numBox( Var<ci::vec3> *x, const std::string &label, Options options );
+template MA_API std::shared_ptr<vu::NumberBoxT<ci::vec4>>	Hud::numBox( Var<ci::vec4> *x, const std::string &label, Options options );
 
 } // namespace mason

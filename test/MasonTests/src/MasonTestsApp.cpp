@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 
-#include "ui/Suite.h"
+#include "vu/Suite.h"
 #include "mason/Hud.h"
 #include "mason/Common.h"
 #include "mason/Config.h"
@@ -37,7 +37,7 @@ class MasonTestsApp : public App {
 
 	void reload();
 
-	ui::SuiteRef	mSuite;
+	vu::SuiteRef	mSuite;
 	bool			mDrawHud = true;
 	bool			mDrawProfiling = false;
 };
@@ -46,7 +46,7 @@ void MasonTestsApp::setup()
 {
 	ma::initialize( ma::getRepoRootPath() );
 
-	mSuite = make_shared<ui::Suite>();
+	mSuite = make_shared<vu::Suite>();
 
 	mSuite->registerSuiteView<HudTest>( "hud" );
 	mSuite->registerSuiteView<MiscTest>( "misc" );

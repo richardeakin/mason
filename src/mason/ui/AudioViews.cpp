@@ -44,7 +44,7 @@ namespace mason { namespace mui {
 
 namespace {
 
-// TODO: use ui::Label instead
+// TODO: use vu::Label instead
 gl::TextureFontRef getTrackViewFont()
 {
 	static gl::TextureFontRef sTextFont;
@@ -88,9 +88,9 @@ void calcAverageForSection( const float *buffer, size_t samplesPerSection, float
 // ----------------------------------------------------------------------------------------------------
 
 AudioBufferView::AudioBufferView( const ci::Rectf &bounds )
-	: ::ui::View( bounds )
+	: ::vu::View( bounds )
 {
-	mTitleLabel = make_shared<ui::Label>();
+	mTitleLabel = make_shared<vu::Label>();
 	mTitleLabel->setHidden( true );
 	mTitleLabel->setTextColor( Color( 1, 1, 1 ) );
 	//mTitleLabel->getBackground()->setColor( Color( 1, 0, 0 ) );
@@ -162,7 +162,7 @@ void AudioBufferView::update()
 {
 }
 
-void AudioBufferView::draw( ::ui::Renderer *ren )
+void AudioBufferView::draw( ::vu::Renderer *ren )
 {
 	if( ! mWaveformVbos.empty() ) {
 
@@ -217,7 +217,7 @@ void AudioSpectrumView::updateData( const audio::TrackRef &track )
 	mSpectralCentroidNormalized = spectralCentroid / mMaxSpectrumFreq;
 
 	if( mDrawValueAtMouse ) {
-		vec2 mousePos = app::App::get()->getMousePos() - app::getWindowPos(); // TODO: make this a property of the ui::Graph, or maybe ui::View
+		vec2 mousePos = app::App::get()->getMousePos() - app::getWindowPos(); // TODO: make this a property of the vu::Graph, or maybe vu::View
 		Rectf worldBounds = getWorldBounds();
 
 		if( worldBounds.contains( mousePos ) ) {
@@ -237,7 +237,7 @@ void AudioSpectrumView::updateData( const audio::TrackRef &track )
 	}
 }
 
-void AudioSpectrumView::draw( ::ui::Renderer *ren )
+void AudioSpectrumView::draw( ::vu::Renderer *ren )
 {
 	// draw main spectrum
 	{
@@ -542,7 +542,7 @@ void AudioSpectrogramView::update( const audio::TrackRef &track )
 
 }
 
-void AudioSpectrogramView::draw( ::ui::Renderer *ren )
+void AudioSpectrogramView::draw( ::vu::Renderer *ren )
 {
 	if( ! mSTFT.empty() && ! mTex ) {
 		makeTex();
@@ -670,7 +670,7 @@ void AudioFrequencyBandsView::updateData( const audio::TrackRef &track )
 	}
 }
 
-void AudioFrequencyBandsView::draw( ::ui::Renderer *ren )
+void AudioFrequencyBandsView::draw( ::vu::Renderer *ren )
 {
 	// draw frequency bands as bars
 	// TODO: draw with instanced rectangle batch

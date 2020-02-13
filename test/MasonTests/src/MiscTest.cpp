@@ -15,13 +15,13 @@ const fs::path JSON_FILENAME = "dictionary_test.json";
 
 MiscTest::MiscTest()
 {
-	auto nbox = make_shared<ui::NumberBox>( Rectf( 200, 360, 280, 400 ) );
+	auto nbox = make_shared<vu::NumberBox>( Rectf( 200, 360, 280, 400 ) );
 	nbox->setTitle( "val" );
 	//nbox->setBackgroundEnabled( false );
 	addSubview( nbox );
 
-	auto nbox3 = make_shared<ui::NumberBox3>( Rectf( 200, 410, 380, 450 ) );
-	ui::NumberBox3* nbox3Ptr = nbox3.get();
+	auto nbox3 = make_shared<vu::NumberBox3>( Rectf( 200, 410, 380, 450 ) );
+	vu::NumberBox3* nbox3Ptr = nbox3.get();
 //	nbox3->getSignalValueChanged().connect( [nbox3Ptr] { CI_LOG_I( "nbox3 value: " << nbox3Ptr->getValue(); ); } );
 
 	addSubview( nbox3 );
@@ -242,7 +242,7 @@ void MiscTest::update()
 {
 }
 
-void MiscTest::draw( ui::Renderer *ren )
+void MiscTest::draw( vu::Renderer *ren )
 {
 	gl::ScopedColor col( Color( 0.3f, 0.1f, 0 ) );
 	gl::drawSolidRect( Rectf( 0, 0, getWidth(), getHeight() ) );

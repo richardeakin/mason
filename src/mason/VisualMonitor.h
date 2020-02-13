@@ -23,8 +23,8 @@
 
 #include "mason/Mason.h"
 
-#include "ui/View.h"
-#include "ui/TextManager.h"
+#include "vu/View.h"
+#include "vu/TextManager.h"
 
 #include <vector>
 
@@ -41,7 +41,7 @@ namespace mason {
 typedef std::shared_ptr<class VisualMonitorView> VisualMonitorViewRef;
 
 // TODO: move to ma::ui namespace
-class MA_API VisualMonitorView : public ui::View {
+class MA_API VisualMonitorView : public vu::View {
   public:
 	VisualMonitorView( const ci::Rectf &bounds = ci::Rectf::zero(), size_t windowFrames = 0 );
 
@@ -54,7 +54,7 @@ class MA_API VisualMonitorView : public ui::View {
 
   protected:
 	void update()	override;
-	void draw( ui::Renderer *ren ) override;
+	void draw( vu::Renderer *ren ) override;
 
   private:
 	void drawVar( const ci::Rectf &rect ) const;
@@ -68,7 +68,7 @@ class MA_API VisualMonitorView : public ui::View {
 	float			mMinValue = 0;
 	float			mMaxValue = 1;
 
-	ui::TextRef	mLabelText;
+	vu::TextRef	mLabelText;
 };
 
 MA_API VisualMonitorViewRef addVarMonitor( float *var, const std::string &label = "", size_t windowSize = 0 );

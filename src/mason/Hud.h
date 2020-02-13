@@ -25,9 +25,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/Var.h"
 #include "mason/ShaderControls.h"
 
-#include "ui/Graph.h"
-#include "ui/Label.h"
-#include "ui/Control.h"
+#include "vu/Graph.h"
+#include "vu/Label.h"
+#include "vu/Control.h"
 
 #include "cinder/gl/GlslProg.h"
 
@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 namespace mason {
 
 // TODO: maybe Hud should be a View itself that defaults to the size of the window
-// - still want it to be able to create its own ui::Graph if one doesn't exist
+// - still want it to be able to create its own vu::Graph if one doesn't exist
 // - could also perhaps inherit from Graph
 //    - this is problematic as it means that Hud inherits all of Graph's public api, which isn't very nice
 class MA_API Hud : public VarOwner {
@@ -82,16 +82,16 @@ class MA_API Hud : public VarOwner {
 	//! Returns whether the bounds matches the size of the app::Window (true until you call setBounds()).
 	bool isFillWindowEnabled() const	{ return mFullScreen; }
 
-	ui::GraphRef getGraph() const					{ return mGraph; }
-	ui::StrokedRectViewRef	getBorderView() const	{ return mBorderView; }
+	vu::GraphRef getGraph() const					{ return mGraph; }
+	vu::StrokedRectViewRef	getBorderView() const	{ return mBorderView; }
 	//! Returns a LabelGrid that users can display information with.
-	ui::LabelGridRef    getInfoLabel() const { return mInfoLabel; }
+	vu::LabelGridRef    getInfoLabel() const { return mInfoLabel; }
 
-	void addView( const ui::ViewRef &view, const std::string &label, const Options &options = Options() );
-	void removeView( const ui::ViewRef &view );
+	void addView( const vu::ViewRef &view, const std::string &label, const Options &options = Options() );
+	void removeView( const vu::ViewRef &view );
 	void removeViewsWithPrefix( const std::string &prefix );
 
-	const ui::ViewRef&	findView( const std::string &label ) const;
+	const vu::ViewRef&	findView( const std::string &label ) const;
 
 	//! Parses the Shader's format and source, finds uniforms that have a 'hud:' id in them, adds controls for them.
 	void addShaderControls( const ci::gl::GlslProgRef &shader, const std::vector<std::pair<ci::fs::path, std::string>> &shaderSources );
@@ -99,22 +99,22 @@ class MA_API Hud : public VarOwner {
 	ma::Var<bool>* getVarDrawUpdateIndicators() { return &mDrawUpdateIndicators; }
 
 	//! Adds a slider to the Hud that manipulates \c x in 'immediate mode', that is it must be called once per draw loop.
-	ui::HSliderRef slider( float *x, const std::string &label, Options options = Options() );
+	vu::HSliderRef slider( float *x, const std::string &label, Options options = Options() );
 	//! Adds a slider to the Hud that manipulates \c x in 'persistent mode', and is only removed once `x` is destroyed (it is not owned by the Hud).
-	ui::HSliderRef slider( Var<float> *x, const std::string &label, Options options = Options() );
+	vu::HSliderRef slider( Var<float> *x, const std::string &label, Options options = Options() );
 	//! Adds a CheckBox to the Hud that manipulates \c x in 'immediate mode', that is it must be called once per draw loop.
-	ui::CheckBoxRef checkBox( bool *x, const std::string &label, Options options = Options() );
+	vu::CheckBoxRef checkBox( bool *x, const std::string &label, Options options = Options() );
 	//! Adds a CheckBox to the Hud in 'immediate mode', that is it must be called once per draw loop. Get the value by called `isEnabled()` on the result.
-	ui::CheckBoxRef checkBox( const std::string &label, bool defaultValue = false, const Options &options = Options() );
+	vu::CheckBoxRef checkBox( const std::string &label, bool defaultValue = false, const Options &options = Options() );
 	//! Adds a CheckBox to the Hud that manipulates \c x in 'persistent mode', and is only removed once `x` is destroyed (it is not owned by the Hud).
-	ui::CheckBoxRef checkBox( Var<bool> *x, const std::string &label, Options options = Options() );
+	vu::CheckBoxRef checkBox( Var<bool> *x, const std::string &label, Options options = Options() );
 	// TODO: add overloads that take step, min, and max sampe as ImGui
 	//!
 	template <typename T>
-	std::shared_ptr<ui::NumberBoxT<T>> numBox( T *x, const std::string &label, Options options = Options() );
+	std::shared_ptr<vu::NumberBoxT<T>> numBox( T *x, const std::string &label, Options options = Options() );
 	//!
 	template <typename T>
-	std::shared_ptr<ui::NumberBoxT<T>> numBox( Var<T> *x, const std::string &label, Options options = Options() );
+	std::shared_ptr<vu::NumberBoxT<T>> numBox( Var<T> *x, const std::string &label, Options options = Options() );
 
 	//! Displays the app's average frames per second at row index 0 in the info panel
 	void showFps( bool show = true )	{ mShowFps = show; }
@@ -154,22 +154,22 @@ private:
 	void clearViewsMarkedForRemoval();
 	void updateNotificationBorder();
 
-	ui::HSliderRef findOrMakeSlider( float initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
-	ui::CheckBoxRef findOrMakeCheckBox( bool initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+	vu::HSliderRef findOrMakeSlider( float initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+	vu::CheckBoxRef findOrMakeCheckBox( bool initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
 
 	template <typename T>
-	std::shared_ptr<ui::NumberBoxT<T>> findOrMakeNumberBoxN( const T &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
+	std::shared_ptr<vu::NumberBoxT<T>> findOrMakeNumberBoxN( const T &initialValue, const std::string &label, const Options &options, const std::function<void( Attribs &attribs )> &updateAttribsFn );
 
 	void layout();
 	void update();
 
-	ui::GraphRef			mGraph;
-	ui::StrokedRectViewRef	mBorderView;
-	ui::LabelGridRef		mInfoLabel;
-	ui::ViewRef				mUserViewsGrid; // child of mUserViews
-	ui::ViewRef				mUserViewsFreeFloating; // child of mUserViews
+	vu::GraphRef			mGraph;
+	vu::StrokedRectViewRef	mBorderView;
+	vu::LabelGridRef		mInfoLabel;
+	vu::ViewRef				mUserViewsGrid; // child of mUserViews
+	vu::ViewRef				mUserViewsFreeFloating; // child of mUserViews
 
-	std::map<ui::ViewRef, Attribs>	mViewAttribs;
+	std::map<vu::ViewRef, Attribs>	mViewAttribs;
 
 	ma::Var<bool>		mDrawUpdateIndicators = true;
 	bool		mShouldIndicateFailure = false;

@@ -29,9 +29,9 @@
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/Param.h"
 
-#include "ui/View.h"
-#include "ui/Suite.h"
-#include "ui/TextManager.h"
+#include "vu/View.h"
+#include "vu/Suite.h"
+#include "vu/TextManager.h"
 
 namespace cinder {
 
@@ -45,7 +45,7 @@ namespace mason { namespace mui {
 
 typedef std::shared_ptr<class AudioMonitorView> AudioMonitorViewRef;
 
-class AudioMonitorView : public ui::View {
+class AudioMonitorView : public vu::View {
   public:
 	AudioMonitorView( const ci::Rectf &bounds = ci::Rectf::zero(), size_t windowSize = 0 );
 
@@ -60,7 +60,7 @@ class AudioMonitorView : public ui::View {
 
   protected:
 
-	void draw( ui::Renderer *ren ) override;
+	void draw( vu::Renderer *ren ) override;
 
   private:
 	void initMonitorNode();
@@ -68,7 +68,7 @@ class AudioMonitorView : public ui::View {
 	void drawVolumeMeters( const ci::audio::Buffer &buffer, const ci::Rectf &rect ) const;
 
 	ci::audio::MonitorNodeRef	mMonitorNode;
-	ui::TextRef				mLabelText;
+	vu::TextRef				mLabelText;
 
 	bool			mDrawVolumeMeters = true;
 	float			mMinValue = -1;
@@ -78,7 +78,7 @@ class AudioMonitorView : public ui::View {
 
 } // namespace mui
 
-mui::AudioMonitorViewRef addNodeMonitor( const ci::audio::NodeRef &node, const std::string &label = "", size_t windowSize = 0 );
-mui::AudioMonitorViewRef addParamMonitor( const ci::audio::NodeRef &paramOwningNode, ci::audio::Param *param, const std::string &label = "", size_t windowSize = 0 );
+mason::mui::AudioMonitorViewRef addNodeMonitor( const ci::audio::NodeRef &node, const std::string &label = "", size_t windowSize = 0 );
+mason::mui::AudioMonitorViewRef addParamMonitor( const ci::audio::NodeRef &paramOwningNode, ci::audio::Param *param, const std::string &label = "", size_t windowSize = 0 );
 
 } // namespace mason

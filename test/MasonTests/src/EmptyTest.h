@@ -1,14 +1,14 @@
 #pragma once
 
-#include "ui/Suite.h"
+#include "vu/Suite.h"
 
-class EmptyTest : public ui::SuiteView {
+class EmptyTest : public vu::SuiteView {
   public:
 	EmptyTest();
 
 	void layout() override;
 	void update() override;
-	void draw( ui::Renderer *ren )	override;
+	void draw( vu::Renderer *ren )	override;
 
   private:
 

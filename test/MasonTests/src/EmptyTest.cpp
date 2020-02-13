@@ -19,6 +19,6 @@ void EmptyTest::update()
 {
 }
 
-void EmptyTest::draw( ui::Renderer *ren )
+void EmptyTest::draw( vu::Renderer *ren )
 {
 }

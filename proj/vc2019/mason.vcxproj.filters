@@ -17,9 +17,6 @@
     <Filter Include="Blocks\Cinder-View\src">
       <UniqueIdentifier>{f8ce0af8-9689-4d31-89d9-71409274f1f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\Cinder-View\src\ui">
-      <UniqueIdentifier>{31906279-8e9c-43e0-8224-13c6e9ba7fa8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Blocks\Cinder-View\src\mason">
       <UniqueIdentifier>{9f67744b-7daf-4306-b72c-c4c9099a4c5a}</UniqueIdentifier>
     </Filter>
@@ -37,6 +34,9 @@
     </Filter>
     <Filter Include="Source Files\mason\ui">
       <UniqueIdentifier>{f032c0a5-e36a-4d0e-acb2-d3bf82809aa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cinder-View\src\vu">
+      <UniqueIdentifier>{02631582-6fc9-4aad-9cb6-263326831ff5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,53 +58,11 @@
     <ClCompile Include="..\..\src\mason\WorldClock.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Control.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Graph.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Image.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ImageView.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Interface3d.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Label.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layer.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Renderer.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\ScrollView.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Suite.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\TextManager.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\View.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\blocks\Cinder-Profiler\src\Profiler.cpp">
       <Filter>Blocks\Cinder-Profiler\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp">
       <Filter>Source Files\mason</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Layout.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\Filter.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mason\Config.cpp">
       <Filter>Source Files\mason</Filter>
@@ -114,9 +72,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\mason\FlyCam.cpp">
       <Filter>Source Files\mason</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.cpp">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mason\LUT.cpp">
       <Filter>Source Files\mason</Filter>
@@ -163,6 +118,54 @@
     <ClCompile Include="..\..\src\mason\Info.cpp">
       <Filter>Source Files\mason</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Control.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Filter.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\GestureTracker.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Graph.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Image.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\ImageView.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Interface3d.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Label.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Layer.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Layout.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Renderer.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\ScrollView.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\Suite.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\TextField.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\TextManager.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\blocks\Cinder-View\src\vu\View.cpp">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -192,45 +195,6 @@
     <ClInclude Include="..\..\blocks\Cinder-View\src\mason\Factory.h">
       <Filter>Blocks\Cinder-View\src\mason</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Control.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Graph.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Image.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ImageView.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Interface3d.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Label.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layer.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Renderer.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ScrollView.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Suite.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\TextManager.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\ui.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\View.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-Profiler\src\Profiler.h">
       <Filter>Blocks\Cinder-Profiler\src</Filter>
     </ClInclude>
@@ -240,17 +204,8 @@
     <ClInclude Include="..\..\src\mason\ParticleSystemGpu.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Layout.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Filter.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\mason\Config.h">
       <Filter>Source Files\mason</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Export.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\blocks\Cinder-View\src\fmt\format.h">
       <Filter>Blocks\Cinder-View\src\fmt</Filter>
@@ -260,12 +215,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\FlyCam.h">
       <Filter>Source Files\mason</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\Debug.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\blocks\Cinder-View\src\ui\GestureTracker.h">
-      <Filter>Blocks\Cinder-View\src\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\ShaderControls.h">
       <Filter>Source Files\mason</Filter>
@@ -323,6 +272,63 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\prepareAppSettings.h">
       <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Control.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Debug.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Export.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Filter.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\GestureTracker.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Graph.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Image.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\ImageView.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Interface3d.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Label.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Layer.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Layout.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Renderer.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\ScrollView.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\Suite.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\TextField.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\TextManager.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\View.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\blocks\Cinder-View\src\vu\vu.h">
+      <Filter>Blocks\Cinder-View\src\vu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

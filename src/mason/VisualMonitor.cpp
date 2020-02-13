@@ -21,7 +21,7 @@
 
 #include "mason/VisualMonitor.h"
 #include "mason/Hud.h"
-#include "ui/TextManager.h"
+#include "vu/TextManager.h"
 
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Shader.h"
@@ -39,7 +39,7 @@ VisualMonitorView::VisualMonitorView( const Rectf &bounds, size_t windowFrames )
 
 	mVarRecording.resize( windowFrames, 0 );
 
-	mLabelText = ui::TextManager::loadText( "", 14 );
+	mLabelText = vu::TextManager::loadText( "", 14 );
 	CI_ASSERT( mLabelText );
 }
 
@@ -60,7 +60,7 @@ void VisualMonitorView::update()
 	mVarRecording[mWritePos++] = *mVar;
 }
 
-void VisualMonitorView::draw( ui::Renderer *ren )
+void VisualMonitorView::draw( vu::Renderer *ren )
 {
 	const auto color = ci::ColorA( 0, 0.7f, 0.6f, 0.9f );
 

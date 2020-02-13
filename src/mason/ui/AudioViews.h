@@ -21,8 +21,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "ui/View.h"
-#include "ui/Label.h"
+#include "vu/View.h"
+#include "vu/Label.h"
 #include "mason/Mason.h"
 #include "mason/LUT.h"
 #include "cinder/audio/Buffer.h"
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // TODO: decouple these views from AudioAnalyzer
 #include "mason/audio/AudioAnalyzer.h"
 
-// note: using namespace mason::mui so as not to conflict with ui::*. Oh well..
+// note: using namespace mason::mui so as not to conflict with vu::*. Oh well..
 namespace mason { namespace mui {
 
 using AudioBufferViewRef		= std::shared_ptr<class AudioBufferView>;
@@ -41,7 +41,7 @@ using AudioBarkBandsViewRef		= std::shared_ptr<class AudioFrequencyBandsView>;
 
 //! Displays the entire contents of an audio::Buffer as a waveform plot.
 // TODO: support calling load() methods async
-class MA_API AudioBufferView : public ::ui::View {
+class MA_API AudioBufferView : public ::vu::View {
   public:
 	AudioBufferView( const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -64,7 +64,7 @@ class MA_API AudioBufferView : public ::ui::View {
   private:
 	void layout() override;
 	void update() override;
-	void draw( ::ui::Renderer *ren ) override;
+	void draw( ::vu::Renderer *ren ) override;
 
   private:
 	enum CalcMode { MIN_MAX, AVERAGE };
@@ -77,13 +77,13 @@ class MA_API AudioBufferView : public ::ui::View {
 	ci::ColorA				mBorderColor = ci::ColorA( 0.5f, 0.5f, 0.5f, 1 );
 	ci::ColorA				mColorMinMax = ci::ColorA::gray( 0.5f );
 	ci::ColorA				mColorAverage = ci::ColorA::gray( 0.75f );
-	ui::LabelRef			mTitleLabel;
+	vu::LabelRef			mTitleLabel;
 
 	std::vector<ci::gl::VboMeshRef>	mWaveformVbos;
 };
 
 //! Shows one frame of the magnitude spectrum
-class MA_API AudioSpectrumView : public ::ui::View {
+class MA_API AudioSpectrumView : public ::vu::View {
 public:
 	AudioSpectrumView( const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -101,7 +101,7 @@ public:
 	void updateData( const audio::TrackRef &track );
 
 private:
-	void draw( ::ui::Renderer *ren ) override;
+	void draw( ::vu::Renderer *ren ) override;
 
 private:
 	void initGl();
@@ -124,7 +124,7 @@ private:
 };
 
 //! Shows the magnitude spectrum of an entire audio::Source
-class MA_API AudioSpectrogramView : public ::ui::View {
+class MA_API AudioSpectrogramView : public ::vu::View {
 public:
 	AudioSpectrogramView( int trackIndex, const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -133,7 +133,7 @@ public:
 	void update( const audio::TrackRef &track );
 
 protected:
-	void draw( ::ui::Renderer *ren ) override;
+	void draw( ::vu::Renderer *ren ) override;
 	bool touchesBegan( ci::app::TouchEvent &event )	override;
 	bool touchesMoved( ci::app::TouchEvent &event )	override;
 
@@ -159,7 +159,7 @@ private:
 };
 
 //! Visualizes a Track's Frequency Bands. TODO: make this a generic BarGraphView or something.
-class MA_API AudioFrequencyBandsView : public ::ui::View {
+class MA_API AudioFrequencyBandsView : public ::vu::View {
 public:
 	AudioFrequencyBandsView( const ci::Rectf &bounds = ci::Rectf::zero() );
 
@@ -176,7 +176,7 @@ public:
 	void updateData( const audio::TrackRef &track );
 
 private:
-	void draw( ::ui::Renderer *ren ) override;
+	void draw( ::vu::Renderer *ren ) override;
 
 private:
 	void initGl();
