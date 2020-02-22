@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cinder/Cinder.h"
 #include "cinder/Filesystem.h"
 #include "cinder/Signals.h"
 

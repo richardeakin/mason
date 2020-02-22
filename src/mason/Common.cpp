@@ -27,7 +27,6 @@
 #include "cinder/Utilities.h"
 
 #include "mason/Assets.h"
-#include "mason/Hud.h"
 #include "mason/Profiling.h"
 
 using namespace ci;
