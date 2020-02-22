@@ -23,6 +23,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/Common.h"
 #include "mason/Notifications.h"
 #include "mason/glutils.h"
+#include "mason/Profiling.h"
+
 #include "cinder/audio/Context.h"
 
 #if ! defined( IMGUI_DEFINE_MATH_OPERATORS )
@@ -660,6 +662,99 @@ void Logs( const char* label, bool* open )
 	}
 
 	ImGui::End();
+}
+
+// ----------------------------------------------------------------------------------------------------
+// Profiling
+// ----------------------------------------------------------------------------------------------------
+
+void Profiling( bool *open )
+{
+	if( ! Begin( "Profiling", open ) ) {
+		End();
+		return;
+	}
+
+	auto displayTimeFn = []( const pair<string,double> &t ) {
+		Text( "%s", t.first.c_str() );
+		NextColumn();
+		Text( "%6.3f", (float)t.second );
+		NextColumn();
+	};
+
+	// kludge: working around not all frames updating the gpu profiling the same..
+	static std::unordered_map<std::string, double> gpuTimes;
+
+	static Timer  timer{ true };
+	static double time = timer.getSeconds();
+	const double  elapsed = timer.getSeconds() - time;
+	time += elapsed;
+
+	static size_t                      fpsIndex = 0;
+	static std::array<float, 180>      fps;
+	float currentFps = float( floor( 1.0 / elapsed ) );
+	fps[fpsIndex++ % fps.size()] = currentFps;
+	if( CollapsingHeader( ( "Framerate (" + to_string( (int)currentFps ) + "s)###fps counter" ).c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {
+		ImGui::PlotLines( "##fps_lines", fps.data(), int( fps.size() ), 0, 0, 0.0f, 120.0f, ImVec2( ImGui::GetContentRegionAvailWidth(), 90 ) );
+	}
+
+	static bool sortTimes = false;
+	Checkbox( "sort times", &sortTimes );
+	SameLine();
+	if( Button( "clear timers" ) ) {
+		perf::detail::globalCpuProfiler().getElapsedTimes().clear();
+		perf::detail::globalGpuProfiler().getElapsedTimes().clear();
+		gpuTimes.clear();
+	}
+
+	const float column1Offset = GetWindowWidth() - 110;
+	BeginChild( "##Profile Times", vec2( 0, 0 ) );
+
+	if( CollapsingHeader( "cpu (ms)", nullptr, ImGuiTreeNodeFlags_DefaultOpen ) ) {
+		Columns( 2, "cpu columns", true );
+		SetColumnOffset( 1, column1Offset );
+		auto cpuTimes = perf::detail::globalCpuProfiler().getElapsedTimes();
+
+		if( sortTimes ) {
+			vector<pair<string, double>> sortedTimes( cpuTimes.begin(), cpuTimes.end() );
+			stable_sort( sortedTimes.begin(), sortedTimes.end(), [] ( const auto &a, const auto &b ) { return a.second > b.second; } );
+			for( const auto &kv : sortedTimes ) {
+				displayTimeFn( kv );
+			}
+		}
+		else {
+			for( const auto &kv : cpuTimes ) {
+				displayTimeFn( kv );
+			}
+		}
+	}
+
+	Columns( 1 );
+	if( CollapsingHeader( "gpu (ms)", nullptr, ImGuiTreeNodeFlags_DefaultOpen ) ) {
+		Columns( 2, "gpu columns", true );
+		SetColumnOffset( 1, column1Offset );
+
+		auto gpuProfileTimes = perf::detail::globalGpuProfiler().getElapsedTimes();
+		for( const auto &kv : gpuProfileTimes ) {
+			gpuTimes[kv.first] = kv.second;
+		}
+		if( sortTimes ) {
+			vector<pair<string, double>> sortedTimes( gpuTimes.begin(), gpuTimes.end() );
+			stable_sort( sortedTimes.begin(), sortedTimes.end(), [] ( const auto &a, const auto &b ) { return a.second > b.second; } );
+			for( const auto &kv : sortedTimes ) {
+				displayTimeFn( kv );
+			}
+		}
+		else {
+			for( const auto &kv : gpuTimes ) {
+				displayTimeFn( kv );
+			}
+		}
+	}
+
+	EndChild();
+
+	End(); // "Profiling"
 }
 
 } // namespace imx

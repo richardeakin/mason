@@ -90,5 +90,7 @@ void EndDisabled();
 void SetNotificationColors();
 //! Shows the ci::logs output in a new Window.
 void Logs( const char* label, bool* open = nullptr );
+//! Shows profiling information using Cinder-Profiler
+void Profiling( bool *open = nullptr );
 
 } // namespace imx
