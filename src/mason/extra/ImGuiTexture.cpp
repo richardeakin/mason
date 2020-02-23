@@ -81,9 +81,13 @@ TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type )
 
 void TextureViewer::view( const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
 {
+	ColorA headerColor = GetStyleColorVec4( ImGuiCol_Header );
+	headerColor *= 0.65f;
+	PushStyleColor( ImGuiCol_Header, headerColor );
 	if( CollapsingHeader( mLabel.c_str(), flags ) ) {
 		viewImpl( mFbo, texture, flags );
 	}
+	PopStyleColor();
 
 	if( mNewWindow ) {
 		SetNextWindowSize( vec2( 800, 600 ), ImGuiCond_FirstUseEver );
