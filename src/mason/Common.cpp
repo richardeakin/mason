@@ -151,6 +151,7 @@ void initialize( const fs::path &masonRootDir )
 	if( ! masonRootDir.empty() ) {
 		fs::path glslDir = masonRootDir / "src/glsl";
 		if( fs::exists( glslDir ) && fs::is_directory( glslDir ) ) {
+			app::addAssetDirectory( glslDir );
 			ma::assets()->getShaderPreprocessor()->addSearchDirectory( glslDir );
 		}
 		else {
