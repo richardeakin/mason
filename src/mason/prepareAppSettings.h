@@ -34,9 +34,14 @@ namespace mason {
 //! - note: I wish I could have placed this method in mason/Config.h alongside the rest of the config stuff,
 //!   but well C++ inner classes prevent me from forward declaring App::Settings so we're stuck with this or
 //!   other nastier tricks for now
-extern void prepareAppSettings( ci::app::App::Settings *settings )
+extern void prepareAppSettings( ci::app::App::Settings *settings, const std::vector<ci::fs::path> &configFiles = {} )
 {
-	ma::loadConfig();
+	if( ! configFiles.empty() ) {
+		ma::loadConfig( configFiles );
+	}
+	else {
+		ma::loadConfig();
+	}
 
 	auto appConfig = ma::config()->get<ma::Info>( "app" );
 

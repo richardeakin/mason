@@ -34,8 +34,8 @@ MA_API ma::Info*	config();
 
 //! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilename will be merged into the resulting Info.
 MA_API void loadConfig( const ci::fs::path &filename = "config.json", const ci::fs::path &cascadingFilename = "local.json" );
-//! Loads a config json file, relative to the application's assets directory. Optional \a cascadingFilenames will be merged into the resulting Info.
-MA_API void loadConfig( const ci::fs::path &filename, const std::vector<ci::fs::path> &cascadingFilenames );
+//! Loads a merged set of config files from the application's assets directory.
+MA_API void loadConfig( const std::vector<ci::fs::path> &cascadingFilenames );
 
 namespace detail {
 

@@ -25,34 +25,44 @@ void setConfig( const ma::Info &config )
 
 void loadConfig( const fs::path &filename, const fs::path &cascadingFilename )
 {
-	if( ! cascadingFilename.empty() ) {
-		loadConfig( filename, vector<fs::path>{ cascadingFilename } );
-	}
-	else {
-		loadConfig( filename, vector<fs::path>() );
-	}
+	loadConfig( vector<fs::path>{ filename, cascadingFilename } );
 }
 
-void loadConfig( const fs::path &filename, const vector<fs::path> &cascadingFilenames )
+void loadConfig( const vector<fs::path> &cascadingFilenames )
 {
+	if( cascadingFilenames.empty() ) {
+		CI_LOG_E( "no config filenames specified." );
+		return;
+	}
+
+	// load main config file
+	fs::path mainFilename = cascadingFilenames.front();
+	ma::Info config;
 	try {
-		// load main config
-		auto config = ma::Info::convert<Json::Value>( app::loadAsset( filename ) );
-
-		for( const auto &fp : cascadingFilenames ) {
-			auto fullPath = app::getAssetPath( fp );
-			if( ! fullPath.empty() ) {
-				auto j = ma::Info::convert<Json::Value>( loadFile( fullPath ) );
-				config.merge( j );
-			}
-		}
-
-		//CI_LOG_I( "config (merged):\n" << config );
-		ma::detail::setConfig( config );
+		config = ma::Info::convert<Json::Value>( app::loadAsset( mainFilename ) );
 	}
 	catch( exception &exc ) {
-		CI_LOG_EXCEPTION( "failed to load config file: " << filename, exc );
+		CI_LOG_EXCEPTION( "failed to load config file: " << mainFilename, exc );
 	}
+
+	// merge any cascading config files
+	if( cascadingFilenames.size() > 1 ) {
+		for( auto &fIt = cascadingFilenames.begin() + 1; fIt != cascadingFilenames.end(); ++fIt ) {
+			auto fullPath = app::getAssetPath( *fIt );
+			try {
+				if( ! fullPath.empty() ) {
+					auto j = ma::Info::convert<Json::Value>( loadFile( fullPath ) );
+					config.merge( j );
+				}
+			}
+			catch( exception &exc ) {
+				CI_LOG_EXCEPTION( "failed to load config file: " << fullPath, exc );
+			}
+		}
+	}
+
+	//CI_LOG_I( "config (final):\n" << config );
+	ma::detail::setConfig( config );
 }
 
 ma::Info*	config()
