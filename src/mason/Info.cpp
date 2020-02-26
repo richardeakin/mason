@@ -690,6 +690,23 @@ Json::Value toJson( const Info::Value &a )
 		result.append( v[3] );
 		return result;
 	}
+	else if( a.type() == typeid( Color ) ) {
+		auto c = any_cast<Color>( a );
+		Json::Value result;
+		result.append( c.r );
+		result.append( c.g );
+		result.append( c.b );
+		return result;
+	}
+	else if( a.type() == typeid( ColorA ) ) {
+		auto c = any_cast<ColorA>( a );
+		Json::Value result;
+		result.append( c.r );
+		result.append( c.g );
+		result.append( c.b );
+		result.append( c.a );
+		return result;
+	}
 	// FIXME: Json::Value::null doesn't seem to be exported with jsoncpp
 	//else if( a.type() == typeid( nullptr ) ) {
 	//	return Json::Value::null;
