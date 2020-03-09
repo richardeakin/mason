@@ -69,11 +69,12 @@ const char *typeToString( TextureViewer::Type type )
 
 TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type )
 {
-	static map<string, TextureViewer> sViewers;
+	static map<ImGuiID, TextureViewer> sViewers;
 
-	auto it = sViewers.find( label );
+	auto id = GetID( label );
+	auto it = sViewers.find(  id );
 	if( it == sViewers.end() ) {
-		it = sViewers.insert( { label, TextureViewer( label, type ) } ).first;
+		it = sViewers.insert( { id, TextureViewer( label, type ) } ).first;
 	}
 
 	return &it->second;
