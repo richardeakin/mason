@@ -49,6 +49,7 @@ private:
 	bool		mTiledAtlasMode = true;
 	bool		mShowExtendedUI = false;
 	bool		mNewWindow = false;
+	bool		mInverted = false;
 	float       mScale = 1;
 };
 
@@ -182,6 +183,9 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture
 			DragInt( "tiles", &mNumTiles, 0.2f, 1, 1024 );
 		}
 		DragFloat( "scale", &mScale, 0.01f, 0.02f, 1000.0f );
+		if( mType == Type::TextureDepth ) {
+			Checkbox( "inverted", &mInverted );
+		}
 
 		EndPopup();
 	}
@@ -235,6 +239,7 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 
 		gl::ScopedGlslProg glslScope( sGlsl );
 		sGlsl->uniform( "uScale", mScale );
+		sGlsl->uniform( "uInverted", mInverted );
 
 		gl::drawSolidRect( destRect );
 	}
