@@ -44,6 +44,9 @@ public:
 	//! Returns the number of stored touches.
 	size_t getNumStoredPositions() const	{ return mStoredPositions.size(); }
 
+	size_t getMaxStoredTouches() const		{ return mMaxStoredTouches; }
+	void setMaxStoredTouches( size_t t )	{ mMaxStoredTouches = t; }
+
 private:
 	struct StoredPos {
 		T		pos;
