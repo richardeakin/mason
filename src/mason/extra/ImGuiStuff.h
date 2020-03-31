@@ -83,7 +83,7 @@ bool XYPad( const char *name, const ImVec2& size, float v[2], const ImVec2 &min 
 
 //! If disableInteraction is false, will only dim current drawing scope
 // TODO: probably remove once https://github.com/ocornut/imgui/issues/211 is resolved
-void BeginDisabled( bool disableInteraction = true );
+void BeginDisabled( bool disableInteraction = true, bool grayedOut = true );
 void EndDisabled();
 
 //! Flashes the ImGui borders red on ma::NOTIFY_FAILURE (log levels > error) and green on ma::NOTIFY_SUCCESS

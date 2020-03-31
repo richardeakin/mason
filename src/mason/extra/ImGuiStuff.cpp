@@ -339,10 +339,10 @@ bool XYPad( const char *label, const ImVec2& size, float v[2], const ImVec2 &min
 	return active;
 }
 
-void BeginDisabled( bool disableInteraction )
+void BeginDisabled( bool disableInteraction, bool grayedOut )
 {
-	ImGui::PushStyleVar( ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f );
 	ImGui::PushItemFlag( ImGuiItemFlags_Disabled, disableInteraction );
+	ImGui::PushStyleVar( ImGuiStyleVar_Alpha, grayedOut ? ImGui::GetStyle().Alpha * 0.5f : ImGui::GetStyle().Alpha );
 }
 
 void EndDisabled()
