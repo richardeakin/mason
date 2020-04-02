@@ -77,9 +77,9 @@ template <typename T>
 T MotionTracker<T>::calcVelocity()
 {
 	if( mStoredPositions.size() < 2 )
-		return T( 0 );
+		return T();
 
-	T touchVelocity = T( 0 );
+	T touchVelocity = T();
 	int samples = 0;
 	auto lastIt = --mStoredPositions.end();
 	for( auto it = mStoredPositions.begin(); it != lastIt; ++it ) {
