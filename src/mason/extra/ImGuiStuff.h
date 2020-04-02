@@ -88,6 +88,9 @@ void EndDisabled();
 
 //! Flashes the ImGui borders red on ma::NOTIFY_FAILURE (log levels > error) and green on ma::NOTIFY_SUCCESS
 void SetNotificationColors();
+/// Shows a tooltip when an item is hovered for longer than delay.
+void HoverTooltip(const char* tip, float delay = 1.0f);
+
 //! Shows the ci::logs output in a new Window.
 void Logs( const char* label, bool* open = nullptr );
 //! Shows profiling information using Cinder-Profiler

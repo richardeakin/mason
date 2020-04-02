@@ -388,6 +388,13 @@ void SetNotificationColors()
 	colors[ImGuiCol_Separator] = col;
 }
 
+void HoverTooltip( const char* tip, float delay )
+{
+	if( ImGui::IsItemHovered() && GImGui->HoveredIdTimer > delay ) {
+		ImGui::SetTooltip( "%s", tip );
+	}
+}
+
 // ----------------------------------------------------------------------------------------------------
 // Logs
 // ----------------------------------------------------------------------------------------------------
