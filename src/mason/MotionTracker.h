@@ -109,18 +109,18 @@ template <typename T>
 T MotionTracker<T>::getLastPos() const
 {
 	if( mStoredPositions.empty() )
-		return T( 0 );
+		return T();
 
-	return mStoredPositions.back().position;
+	return mStoredPositions.back().pos;
 }
 
 template <typename T>
 double MotionTracker<T>::getLastTime() const
 {
 	if( mStoredPositions.empty() )
-		return -1;
+		return -1.0;
 
-	return mStoredPositions.back().eventSeconds;
+	return mStoredPositions.back().time;
 }
 
 } // namespace mason
