@@ -77,9 +77,9 @@ template <typename T>
 T MotionTracker<T>::calcVelocity()
 {
 	if( mStoredPositions.size() < 2 )
-		return T();
+		return T( 0 );
 
-	T touchVelocity = T();
+	T touchVelocity = T( 0 );
 	int samples = 0;
 	auto lastIt = --mStoredPositions.end();
 	for( auto it = mStoredPositions.begin(); it != lastIt; ++it ) {
@@ -109,7 +109,7 @@ template <typename T>
 T MotionTracker<T>::getLastPos() const
 {
 	if( mStoredPositions.empty() )
-		return T();
+		return T( 0 );
 
 	return mStoredPositions.back().pos;
 }
