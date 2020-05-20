@@ -1,6 +1,9 @@
 test/MasonTests/proj/vc2015/log*
 test/ViewTests/proj/vc2015/log*
 
+local.json
+user.json
+
 # Mac OS X cruft
 *.pbxuser
 *.mode1v3

@@ -22,7 +22,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "cinder/gl/Texture.h"
-#include "CinderImGui.h"
+#include "cinder/CinderImGui.h"
 
 namespace imx {
 

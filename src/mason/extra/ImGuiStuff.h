@@ -24,31 +24,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Filesystem.h"
 #include "cinder/audio/Buffer.h"
 #include "cinder/gl/Texture.h"
-
-#if defined( CINDER_IMGUI_BAKED )
-// Custom implicit cast operators
-#ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
-#define IM_VEC2_CLASS_EXTRA                                             \
-ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                        \
-operator glm::vec2() const { return glm::vec2(x,y); }                   \
-ImVec2(const glm::ivec2& f) { x = f.x; y = f.y; }                       \
-operator glm::ivec2() const { return glm::ivec2(x,y); }
-
-#define IM_VEC4_CLASS_EXTRA                                             \
-ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
-operator glm::vec4() const { return glm::vec4(x,y,z,w); }               \
-ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
-operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
-ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
-operator ci::Color() const { return ci::Color(x,y,z); }
-#endif
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_stdlib.h"
-
-#else
-#include "CinderImGui.h"
-#endif
+#include "cinder/CinderImGui.h"
 
 #include <vector>
 
