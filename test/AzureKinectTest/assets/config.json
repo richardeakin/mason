@@ -1,0 +1,111 @@
+{
+	"app" : {
+		"standalone": false,
+		"fullScreen" : true,
+		"borderless" : true,
+		"screenIndex" : 1,
+		"fileLogging": true,
+		"logTimestamps": false
+	},
+	"capture" : 
+	{
+		"devices" : 
+		[
+			{
+				"bodyTracking" : true,
+				"color" : false,
+				"debugColor" : [ 0, 1, 0 ],
+				"depth" : true,
+				"serialNumber" : "000639394512",
+				"enabled" : true,
+				"id" : "device-desk",
+				"orientation" : [ 0, 0, 0, 1 ],
+				"pos" : [ 0, 130, 0 ],
+				"ui" : true,
+				"hostId" : "master-host"
+			},
+			{
+				"bodyTracking" : true,
+				"color" : false,
+				"debugColor" : [ 1, 1, 0 ],
+				"depth" : true,
+				"serialNumber" : "000281300112",
+				"enabled" : false,
+				"id" : "device-couch",
+				"orientation" : [ 0, 0, 0, 1 ],
+				"pos" : [ 0, 130, 0 ],
+				"ui" : true,
+				"hostId" : "master-host"
+			},
+			{
+				"bodyTracking" : true,
+				"color" : false,
+				"debugColor" : [ 0, 0, 1 ],
+				"depth" : true,
+				"serialNumber" : "000304700112",
+				"enabled" : true,
+				"id" : "device-table",
+				"orientation" : [ 0, 0, 0, 1 ],
+				"pos" : [ 0, 130, 0 ],
+				"ui" : true,
+				"hostId" : "sub-1"
+			}
+		],
+		"hosts" :
+		[
+			{
+				"id" : "master-host",
+				"master" : true,
+				"ipAddress" : "10.0.1.21",
+				"receivePort" : 10000
+			},
+			{
+				"id" : "sub-0",
+				"ipAddress" : "10.0.1.21",
+				"receivePort" : 10001
+			},
+			{
+				"id" : "sub-1",
+				"ipAddress" : "10.0.1.26",
+				"receivePort" : 10000
+			}
+		],
+		"hostId" : "master-host",
+		"enabled" : true,
+		"networkingEnabled" : true,
+		"autoStart" : true,
+		"heartbeatSeconds" : 10,
+		"ui" : true,
+		"verboseLogging" : true
+	},
+	"gestures" : 
+	{
+		"enabled" : true
+	},
+	"scene" : {
+		"camera" : 
+		{
+			"eyePos" : [ -44.003097534179688, 285.87774658203125, 783.4766845703125 ],
+			"eyeTarget" : [ 174.08877563476563, 27.764617919921875, -419.982421875 ],
+			"flyspeed" : 10,
+			"fov" : 34.968250274658203,
+			"orientation" : 
+			[
+				-0.10338930040597916,
+				-0.089034005999565125,
+				-0.0092924702912569046,
+				0.99060451984405518
+			]
+		},
+		"drawEnabled" : true,
+		"screenPos" : [ 0, 0, -50 ],
+		"screenSize" : [ 145, 83 ],
+		"worldMax" : [ 322, 500, 392.14999389648438 ],
+		"worldMin" : [ -322, 0, -392.15005493164063 ]
+	},
+	"dev" : {
+		"imgui" : true, // enables / disables imgui at startup
+		"livepp" : false,
+		"breakOnLogLevel": 5 // 5 = break on FATAL, 4 = break on ERROR, 3 = break on WARNING
+	}
+}

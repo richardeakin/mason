@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2CE93149-8C0A-4572-A5BB-254A578EB77A}</ProjectGuid>
+    <RootNamespace>AzureKinectTest</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);..\..\src;..\..\..\..\src;$(K4A_SDK_PATH)\sdk\include;$(K4ABT_SDK_PATH)\sdk\include;$(REPO_PATH)\..\..\tools\LivePP\API;$(REPO_PATH)\blocks\Cinder-AzureKinect\src;$(REPO_PATH)\src;$(REPO_PATH)\src\mason\extra;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;$(CINDER_PATH)\blocks\OSC\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;ASIO_STANDALONE;CINDER_IMGUI_NO_NAMESPACE_ALIAS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;IMGUI_USER_CONFIG="CinderImGuiConfig.h";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <CreateHotpatchableImage>
+      </CreateHotpatchableImage>
+      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExceptionHandling>Async</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(CINDER_PATH)\Cinder\include</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCPMT</IgnoreSpecificDefaultLibraries>
+      <CreateHotPatchableImage>Enabled</CreateHotPatchableImage>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>xcopy /e /i /y "$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\bin\*" "$(OutputPath)"
+ &gt; NUL xcopy /e /i /y "$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\bin\*" "$(OutputPath)"
+&gt; NUL xcopy /e /i /y "$(K4ABT_SDK_PATH)\tools\*.dll" "$(OutputPath)"
+</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);..\..\src;..\..\..\..\src;$(K4A_SDK_PATH)\sdk\include;$(K4ABT_SDK_PATH)\sdk\include;$(REPO_PATH)\..\..\tools\LivePP\API;$(REPO_PATH)\blocks\Cinder-AzureKinect\src;$(REPO_PATH)\src;$(REPO_PATH)\src\mason\extra;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;$(CINDER_PATH)\blocks\OSC\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;ASIO_STANDALONE;CINDER_IMGUI_NO_NAMESPACE_ALIAS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;IMGUI_USER_CONFIG="CinderImGuiConfig.h";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CreateHotpatchableImage>
+      </CreateHotpatchableImage>
+      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExceptionHandling>Async</ExceptionHandling>
+    </ClCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(CINDER_PATH)\Cinder\include</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <CreateHotPatchableImage>Enabled</CreateHotPatchableImage>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>xcopy /e /i /y "$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\bin\*" "$(OutputPath)"
+ &gt; NUL xcopy /e /i /y "$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\bin\*" "$(OutputPath)"
+&gt; NUL xcopy /e /i /y "$(K4ABT_SDK_PATH)\tools\*.dll" "$(OutputPath)"
+</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\cinder\blocks\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureAzureKinect.cpp" />
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureDevice.cpp" />
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureManager.cpp" />
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.cpp" />
+    <ClCompile Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.cpp" />
+    <ClCompile Include="..\..\..\..\src\mason\extra\AssertOverride.cpp" />
+    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiStuff.cpp" />
+    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiTexture.cpp" />
+    <ClCompile Include="..\..\..\..\src\mason\extra\LivePPManager.cpp" />
+    <ClCompile Include="..\..\src\AzureKinectTestApp.cpp" />
+    <ClCompile Include="..\..\src\DebugScene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\cinder\blocks\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureAzureKinect.h" />
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureDevice.h" />
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureManager.h" />
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.h" />
+    <ClInclude Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.h" />
+    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiStuff.h" />
+    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiTexture.h" />
+    <ClInclude Include="..\..\..\..\src\mason\extra\LivePPManager.h" />
+    <ClInclude Include="..\..\src\DebugScene.h" />
+    <ClInclude Include="CinderMswUserDefines.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

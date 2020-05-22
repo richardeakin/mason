@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{ec4c63bb-7cc4-46d6-82bc-41e840b52867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks">
+      <UniqueIdentifier>{d3dd1048-160e-4024-a900-a5ab6fb0b396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\mason">
+      <UniqueIdentifier>{42bf0426-1dbf-4211-b1cd-ecc2ca0a3534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\mason\extra">
+      <UniqueIdentifier>{b0257154-c57b-4f7d-a074-835631688c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\mason\blocks">
+      <UniqueIdentifier>{7352ee57-d52c-4f0e-b5fd-bc99c42aae31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\mason\blocks\Cinder-Profiler">
+      <UniqueIdentifier>{e873f66a-b4de-497d-8d20-f454dd54f8e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\OSC">
+      <UniqueIdentifier>{bbfc9001-bef9-4212-9e13-31c08f420a9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\OSC\src">
+      <UniqueIdentifier>{ca650504-ecc8-44fc-a89e-a0892e459be4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\thirdparty">
+      <UniqueIdentifier>{437f8445-043c-4291-80e1-1b3b909af172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\thirdparty\mahi-gui">
+      <UniqueIdentifier>{0d1eb429-ecb6-46dc-a882-1d6b05adc22c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\Cinder-AzureKinect">
+      <UniqueIdentifier>{56ed8fab-9c3f-4c74-97d2-821c3c970b74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\Cinder-AzureKinect\src">
+      <UniqueIdentifier>{6a3dace1-2c1d-4436-8021-5cd49e83e028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="blocks\Cinder-AzureKinect\src\ck4a">
+      <UniqueIdentifier>{60a63a6c-5651-41d1-8d24-7df6f36ca7c1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\AzureKinectTestApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureAzureKinect.cpp">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureDevice.cpp">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureManager.cpp">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.cpp">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.cpp">
+      <Filter>blocks\mason\blocks\Cinder-Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiStuff.cpp">
+      <Filter>blocks\mason\extra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\mason\extra\LivePPManager.cpp">
+      <Filter>blocks\mason\extra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\mason\extra\AssertOverride.cpp">
+      <Filter>blocks\mason\extra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiTexture.cpp">
+      <Filter>blocks\mason\extra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\cinder\blocks\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>blocks\OSC\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DebugScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CinderMswUserDefines.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureAzureKinect.h">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureDevice.h">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureManager.h">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.h">
+      <Filter>blocks\Cinder-AzureKinect\src\ck4a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.h">
+      <Filter>blocks\mason\blocks\Cinder-Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiStuff.h">
+      <Filter>blocks\mason\extra</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mason\extra\LivePPManager.h">
+      <Filter>blocks\mason\extra</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiTexture.h">
+      <Filter>blocks\mason\extra</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\cinder\blocks\OSC\src\cinder\osc\Osc.h">
+      <Filter>blocks\OSC\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DebugScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
