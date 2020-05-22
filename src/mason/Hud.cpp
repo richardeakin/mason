@@ -394,7 +394,7 @@ vu::HSliderRef Hud::slider( Var<float> *x, const std::string &label, Options opt
 		if( attribs.mMarkedForRemoval )
 			return;
 
-		float *x = boost::any_cast<float *>( attribs.mAnyValue );
+		float *x = any_cast<float *>( attribs.mAnyValue );
 		*x = slider->getValue();
 	} );
 
@@ -435,7 +435,7 @@ std::shared_ptr<vu::NumberBoxT<T>> Hud::numBox( Var<T> *x, const std::string &la
 		if( attribs.mMarkedForRemoval )
 			return;
 
-		T *x = boost::any_cast<T *>( attribs.mAnyValue );
+		T *x = any_cast<T *>( attribs.mAnyValue );
 		*x = nbox->getValue();
 	} );
 
@@ -480,7 +480,7 @@ vu::CheckBoxRef Hud::checkBox( Var<bool> *x, const std::string &label, Options o
 		if( attribs.mMarkedForRemoval )
 			return;
 
-		bool *x = boost::any_cast<bool *>( attribs.mAnyValue );
+		bool *x = any_cast<bool *>( attribs.mAnyValue );
 		*x = checkBox->isEnabled();
 	} );
 	

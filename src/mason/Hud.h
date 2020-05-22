@@ -31,8 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "cinder/gl/GlslProg.h"
 
-#include <boost/any.hpp>
-
+#include <any>
 #include <map>
 
 namespace mason {
@@ -142,7 +141,7 @@ private:
 		Options mOptions;
 		bool	mMarkedForRemoval = false;
 
-		boost::any	mAnyValue;
+		std::any	mAnyValue;
 		void*		mPointerToValue = nullptr;
 	};
 
