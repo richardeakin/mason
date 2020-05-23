@@ -259,6 +259,7 @@ void DebugScene::updateUI()
 		return;
 	}
 
+
 	if( im::TreeNodeEx( "draw", ImGuiTreeNodeFlags_DefaultOpen ) ) {
 		im::Checkbox( "scene", &mDrawEnabled );
 		im::Checkbox( "room", &mDrawRoom );

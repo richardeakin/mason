@@ -46,8 +46,8 @@ private:
 	bool	mUIEnabled = true;
 	bool	mDrawDebugCaptureDevices = true;
 	bool	mDrawRoom = true;
-	bool	mDrawDeviceBodies = false; //! Draw individual bodies from each camera
-	bool	mDrawMergedBodies = true; // TODO: rename to mDrawBodies
+	bool	mDrawDeviceBodies = true; //! Draw individual bodies from each camera
+	bool	mDrawMergedBodies = false; // TODO: rename to mDrawBodies
 
 	bool mDrawHitTestBox = false;
 	bool mDrawJointOrientations = true;

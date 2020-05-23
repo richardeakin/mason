@@ -23,32 +23,6 @@
 				"pos" : [ 0, 130, 0 ],
 				"ui" : true,
 				"hostId" : "master-host"
-			},
-			{
-				"bodyTracking" : true,
-				"color" : false,
-				"debugColor" : [ 1, 1, 0 ],
-				"depth" : true,
-				"serialNumber" : "000281300112",
-				"enabled" : false,
-				"id" : "device-couch",
-				"orientation" : [ 0, 0, 0, 1 ],
-				"pos" : [ 0, 130, 0 ],
-				"ui" : true,
-				"hostId" : "master-host"
-			},
-			{
-				"bodyTracking" : true,
-				"color" : false,
-				"debugColor" : [ 0, 0, 1 ],
-				"depth" : true,
-				"serialNumber" : "000304700112",
-				"enabled" : true,
-				"id" : "device-table",
-				"orientation" : [ 0, 0, 0, 1 ],
-				"pos" : [ 0, 130, 0 ],
-				"ui" : true,
-				"hostId" : "sub-1"
 			}
 		],
 		"hosts" :

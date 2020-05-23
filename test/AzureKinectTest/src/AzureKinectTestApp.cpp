@@ -91,12 +91,10 @@ class AzureKinectTestApp : public app::App {
 
 	void mergeBodies();
 
-	bool					mMergeBodiesEnabled = true;
+	bool					mMergeBodiesEnabled = false; // TODO: move merging to CaptureManager
 	map<string, ck4a::Body>	mMergedBodies;
 
 	set<ck4a::JointType>	mResolveJoints;
-
-	bool mStandalone = false; // if standalone, will search for mason assets relative to app exe. If not, treats assets like we are running from source tree
 
 	float mJointDistanceConsideredSame = 15;
 
@@ -129,14 +127,6 @@ void loadLoggerSettings()
 
 void prepareSettings( app::App::Settings *settings )
 {
-	//log::makeOrGetLogger<log::LoggerFileRotating>( "logs", "AzureKinectTest.%Y.%m.%d_%H.%M.%S.log" );
-
-	// TODO: Fix this, it only updates if this cpp was modified since last build
-	// - use git hash and custom build step instead?
-	// - or can instead add a prebuild step to touch this file. research how others do this
-	// - also want this for the gui date / time display too
-	CI_LOG_I( "date / time compiled: " << __TIMESTAMP__ );
-
 	ma::prepareAppSettings( settings, CONFIG_FILES ); 
 	loadLoggerSettings();
 }
@@ -154,7 +144,7 @@ AzureKinectTestApp::AzureKinectTestApp()
 	CI_LOG_I( "gpu vendor: " << gl::getVendorString() << ", version: " << gl::getVendorString() );
 
 	// init everything in mason except paths right at startup
-	ma::initialize();
+	ma::initialize( ma::getRepoRootPath() );
 
 	initImGui();
 
@@ -171,25 +161,6 @@ void AzureKinectTestApp::setup()
 
 	try {
 		auto appConfig = ma::config()->get<ma::Info>( "app" );
-
-		mStandalone = appConfig.get( "standalone", mStandalone );
-		CI_LOG_I( "standalone: " << mStandalone );
-
-		// TODO: I can't figure out any better way to make this work in both standalone and running for source modes, so I'm doing the path adding manually in standalone mode
-		// - obviously shows that ma::initialize() method is not thought out well enough yet.
-		if( mStandalone ) {
-			fs::path glslDir = fs::absolute( "assets/glsl" );
-			if( fs::exists( glslDir ) && fs::is_directory( glslDir ) ) {
-				app::addAssetDirectory( glslDir );
-				ma::assets()->getShaderPreprocessor()->addSearchDirectory( glslDir );
-			}
-			else {
-				CI_LOG_W( "cannot find assets/glsl directory, texture previews will not work." );
-			}
-		}
-		else {
-			ma::initialize( ma::getRepoRootPath() / "cpp/blocks/mason" );
-		}
 
 		mMouseHidden = appConfig.get( "mouseHidden", false );
 		updateMouseHidden();
@@ -693,9 +664,6 @@ void AzureKinectTestApp::updateImGui()
 		}
 	
 		if( im::CollapsingHeader( "dev" ) ) {
-
-			im::Text( "date / time compiled: %s", __TIMESTAMP__ );
-			im::Value( "standalone", mStandalone );
 
 			//im::DragFloat4( "dev params", &mDevParams.x, 0.2f );
 

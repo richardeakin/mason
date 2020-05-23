@@ -2,6 +2,7 @@ test/MasonTests/proj/vc2015/log*
 test/ViewTests/proj/vc2015/log*
 
 logs
+imgui.ini
 local.json
 user.json
 
