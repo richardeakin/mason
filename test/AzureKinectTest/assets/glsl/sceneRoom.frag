@@ -27,7 +27,7 @@ void main()
 	if( uBodyMaxDistance > 0 ) {
 		float x = smoothstep( 0.0, 5.0, vWorldPosition.z );
 		x *= 1.0 - smoothstep( uBodyMaxDistance, uBodyMaxDistance + 5.0, length( vWorldPosition.xz ) );
-		col.rgb = mix( col.rgb, col.rgb + vec3( 0.5, 0.3, 0 ), x );
+		col.rgb = mix( col.rgb, col.rgb + vec3( 0.2, 0.32, 0.4 ), x );
 	}
 
 	oFragColor = col;

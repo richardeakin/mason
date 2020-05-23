@@ -40,7 +40,7 @@ private:
 
 	std::vector<SceneBox>	mBoxes;
 
-	ci::gl::BatchRef	mBatchBackground, mBatchRoomWires, mBatchFloor, mBatchSphere, mBatchCube, mBatchArrow;
+	ci::gl::BatchRef	mBatchBackground, mBatchRoomWires, mBatchFloor, mBatchSphere, mBatchCube, mBatchArrow, mBatchPointCloud;
 
 	bool	mDrawEnabled = true;
 	bool	mUIEnabled = true;
@@ -53,6 +53,7 @@ private:
 	bool mDrawJointOrientations = true;
 	bool mDrawHeadLazerBeam = false;
 	bool mDrawExtendedJoints = false; // eyes, ears, toes, thumbs
+	bool mDrawPointCloud = true;
 
 	ci::vec3 mMarkerPos;
 };

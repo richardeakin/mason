@@ -218,6 +218,13 @@ void DebugScene::draw( const ck4a::CaptureManager *capture )
 		box.mHitTest = false;
 	}
 
+	if( mDrawPointCloud ) {
+		// TODO NEXT: get depth texture, bind it and draw instanced based on count
+
+		// first - draw a grid of instanced batches to get it working
+		mBatchPointCloud->drawInstanced( 20 );
+	}
+
 	if( mDrawDeviceBodies ) {
 		drawDeviceBodies( capture );
 	}
@@ -445,6 +452,7 @@ void DebugScene::loadSceneObjects()
 	mBatchSphere = {};
 	mBatchCube = {};
 	mBatchArrow = {};
+	mBatchPointCloud = {};
 
 	// background rect
 	mConnections += ma::assets()->getShader( "glsl/passthrough.vert", "glsl/sceneBackground.frag", [this]( gl::GlslProgRef glsl ) {
@@ -511,6 +519,17 @@ void DebugScene::loadSceneObjects()
 
 	} );
 
+	// point cloud (instanced geom)
+	mConnections += ma::assets()->getShader( "glsl/pointCloud.vert", "glsl/pointCloud.frag", [this]( gl::GlslProgRef glsl ) {
+		glsl->setLabel( "pointCloud" );
+		if( mBatchPointCloud ) {
+			mBatchPointCloud->replaceGlslProg( glsl );
+		}
+		else {
+			auto cube = geom::Cube();
+			mBatchPointCloud = gl::Batch::create( cube, glsl );
+		}
+	} );
 }
 
 void DebugScene::drawCaptureDevices( const ck4a::CaptureManager *capture )
