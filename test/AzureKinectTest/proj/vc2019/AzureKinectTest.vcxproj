@@ -78,7 +78,7 @@
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
@@ -123,7 +123,7 @@
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>false</OptimizeReferences>
