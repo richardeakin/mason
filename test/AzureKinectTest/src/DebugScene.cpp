@@ -219,10 +219,23 @@ void DebugScene::draw( const ck4a::CaptureManager *capture )
 	}
 
 	if( mDrawPointCloud ) {
-		// TODO NEXT: get depth texture, bind it and draw instanced based on count
 
 		// first - draw a grid of instanced batches to get it working
-		mBatchPointCloud->drawInstanced( 20 );
+		//mBatchPointCloud->drawInstanced( 20 );
+
+		// TODO NEXT: get depth texture, bind it and draw instanced based on count
+		for( const auto &device : capture->getDevices() ) {
+			if( ! device->isEnabled() )
+				continue;
+
+			auto depthTex = device->getDepthTexture();
+			if( depthTex ) {
+				gl::ScopedTextureBind texScope( depthTex );
+
+				int numPixels = depthTex->getWidth() * depthTex->getHeight();
+				mBatchPointCloud->drawInstanced( numPixels );
+			}
+		}
 	}
 
 	if( mDrawDeviceBodies ) {
