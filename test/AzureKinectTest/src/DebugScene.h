@@ -25,6 +25,7 @@ private:
 	void drawCaptureDevices( const ck4a::CaptureManager *capture );
 	void drawDeviceBodies( const ck4a::CaptureManager *capture );
 	void drawBody( const ck4a::Body &body, const ci::Color &boneColor );
+	void drawPointCloud( const ck4a::CaptureManager *capture );
 
 	ci::signals::ConnectionList		mConnections;
 	ci::AxisAlignedBox				mWorldBounds;

@@ -39,6 +39,12 @@ T milliToMeters( T x )
 	return x * 0.001f;
 }
 
+template<typename T>
+T milliToCenti( T x )
+{
+	return x * 0.1f;
+}
+
 set<ck4a::JointType>	mExtendedJoints = {
 	ck4a::JointType::EyeLeft,
 	ck4a::JointType::EyeRight,
@@ -219,20 +225,7 @@ void DebugScene::draw( const ck4a::CaptureManager *capture )
 	}
 
 	if( mDrawPointCloud ) {
-		for( const auto &device : capture->getDevices() ) {
-			if( ! device->isEnabled() )
-				continue;
-
-			auto depthTex = device->getDepthTexture();
-			auto tableTex = device->getTableDepth2d3dTexture();
-			if( depthTex && tableTex ) {
-				gl::ScopedTextureBind texScope0( depthTex, 0 );
-				gl::ScopedTextureBind texScope1( tableTex, 1 );
-
-				int numPixels = depthTex->getWidth() * depthTex->getHeight();
-				mBatchPointCloud->drawInstanced( numPixels );
-			}
-		}
+		drawPointCloud( capture );
 	}
 
 	if( mDrawDeviceBodies ) {
@@ -667,6 +660,62 @@ void DebugScene::drawBody( const ck4a::Body &body, const Color &boneColor )
 		}
 	}
 
+}
+
+void DebugScene::drawPointCloud( const ck4a::CaptureManager *capture )
+{
+	for( const auto &device : capture->getDevices() ) {
+		if( ! device->isEnabled() )
+			continue;
+
+#if 0
+		// instanced
+		auto depthTex = device->getDepthTexture();
+		auto tableTex = device->getTableDepth2d3dTexture();
+		if( depthTex && tableTex ) {
+			gl::ScopedTextureBind texScope0( depthTex, 0 );
+			gl::ScopedTextureBind texScope1( tableTex, 1 );
+
+			int numPixels = depthTex->getWidth() * depthTex->getHeight();
+			mBatchPointCloud->drawInstanced( numPixels );
+		}
+#else
+		// non-instanced
+		auto depthChannel = device->getDepthChannelCloned();
+		const auto &table = device->getTableDepth2d3dSurface();
+		if( mBatchCube && depthChannel.getSize() == table.getSize() ) {
+			gl::ScopedColor colorScope( 1, 1, 0 );
+
+			auto iter = depthChannel.getIter();
+			while( iter.line() ) {
+				if( iter.y() % 2 == 0 )
+					continue;
+				while( iter.pixel() ) {
+					if( iter.x() % 2 == 0 )
+						continue;
+
+					float depth = iter.v();
+					if( depth == 0 )
+						continue;
+
+					depth = milliToCenti( depth );
+
+					gl::ScopedModelMatrix modelScope;
+					ColorAf mapped = table.getPixel( iter.getPos() );
+					mapped.r *= -1; // these flips match CaptureAzureKinect::fillBodyFromSkeleton()
+					mapped.g *= -1;
+					vec3 pos = vec3( mapped.r * depth, mapped.g * depth, depth );
+					pos += device->getPos();
+
+					gl::translate( pos );
+					gl::scale( vec3( 0.5f ) );
+
+					mBatchCube->draw();
+				}
+			}
+		}
+#endif
+	}
 }
 
 void DebugScene::drawDeviceBodies( const ck4a::CaptureManager *capture )
