@@ -3,8 +3,8 @@
 uniform mat4 ciModelViewProjection;
 uniform mat3	ciNormalMatrix;
 
-layout(location = 0) uniform sampler2D uTexDepthBuffer;
-layout(location = 1) uniform sampler2D uTexDepthTable2dTo3d;
+layout(binding = 0) uniform sampler2D uTexDepthBuffer;
+layout(binding = 1) uniform sampler2D uTexDepthTable2dTo3d;
 
 in vec4 ciPosition;
 in vec4 ciColor;
@@ -22,7 +22,7 @@ void main()
 
 	// use gl_InstanceID to position square
 	vec4 vertPos = ciPosition;
-	vertPos.xyz *= 0.5;
+	vertPos.xyz *= 0.5; // scale entire cube
 
 	ivec2 texSize = textureSize( uTexDepthBuffer, 0 );
 
@@ -33,7 +33,6 @@ void main()
 	coord.x = gl_InstanceID % texSize.x;
 	coord.y = gl_InstanceID / texSize.y;
 
-	float scale = 1;
 	// vertPos.x += coord.x * scale;
 	// vertPos.y += coord.y * scale;
 
@@ -47,13 +46,23 @@ void main()
 	else {
 		vec2 mapped = texelFetch( uTexDepthTable2dTo3d, coord, 0 ).rg;
 
+		// TODO: these values are supposed to be mm, figure out why they are so small
 		// TODO: multiply by depth value? fastpointcloud sample does this
-		vertPos.x += mapped.x * 1000 * depth;
-		vertPos.y += mapped.y * 1000 * depth;
-		// vertPos.x += mapped.x * depth;
-		// vertPos.y += mapped.y * depth;
-		vertPos.z += depth * 1000; // TODO: convert mm to cm only
+		float scale = 100;
+		// vertPos.x += mapped.x * scale * depth;
+		// vertPos.y += mapped.y * scale * depth;
+
+		vertPos.x += mapped.x * scale;
+		vertPos.y += mapped.y * scale;
+
+		vertPos.z += depth * 1000;
+
+		// if( mapped.y > 1 ) {
+		// 	vColor = vec4( 1, 0, 0, 1 );
+
+		// }
 	}
+
 
 	vNormal		= ciNormalMatrix * ciNormal;
 	gl_Position = ciModelViewProjection * vertPos;
