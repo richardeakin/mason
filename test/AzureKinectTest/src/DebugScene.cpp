@@ -668,7 +668,7 @@ void DebugScene::drawPointCloud( const ck4a::CaptureManager *capture )
 		if( ! device->isEnabled() )
 			continue;
 
-#if 0
+#if 1
 		// instanced
 		auto depthTex = device->getDepthTexture();
 		auto tableTex = device->getTableDepth2d3dTexture();
@@ -676,15 +676,14 @@ void DebugScene::drawPointCloud( const ck4a::CaptureManager *capture )
 			gl::ScopedTextureBind texScope0( depthTex, 0 );
 			gl::ScopedTextureBind texScope1( tableTex, 1 );
 
-			int numPixels = depthTex->getWidth() * depthTex->getHeight();
-			mBatchPointCloud->drawInstanced( numPixels );
+			mBatchPointCloud->getGlslProg()->uniform( "uDevicePos", device->getPos() );
+			mBatchPointCloud->drawInstanced( depthTex->getWidth() * depthTex->getHeight() );
 		}
 #else
 		// non-instanced
 		auto depthChannel = device->getDepthChannelCloned();
 		const auto &table = device->getTableDepth2d3dSurface();
 		if( mBatchCube && depthChannel.getSize() == table.getSize() ) {
-			gl::ScopedColor colorScope( 1, 1, 0 );
 
 			auto iter = depthChannel.getIter();
 			while( iter.line() ) {
