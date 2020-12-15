@@ -188,10 +188,10 @@ bool Hud::getAttribValue( const std::string &label, T *result ) const
 		if( vp.first->getLabel() == label ) {
 			const auto &attrib = vp.second;
 			try {
-				*result = *boost::any_cast<T*>( attrib.mAnyValue );
+				*result = *std::any_cast<T*>( attrib.mAnyValue );
 				return true;
 			}
-			catch( boost::bad_any_cast & ) {
+			catch( std::bad_any_cast & ) {
 				// keep trying..
 			}
 		}
