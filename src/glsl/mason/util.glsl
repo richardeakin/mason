@@ -35,6 +35,11 @@ float random( float s, vec2 minMaxRange )
 	return minMaxRange[0] + random( s ) * ( minMaxRange[1] - minMaxRange[0] );
 }
 
+vec3 random( vec3 s )
+{
+    return vec3( random( s.x + s.y ), random( s.x + s.z ), random( s.y + s.z ) );
+}
+
 bool epsilonEquals( float a, float b, float epsilon )
 {
     return abs( a - b ) < epsilon;

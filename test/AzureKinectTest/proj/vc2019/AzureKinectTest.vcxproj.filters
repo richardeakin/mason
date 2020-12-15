@@ -40,6 +40,9 @@
     <Filter Include="blocks\Cinder-AzureKinect\src\ck4a">
       <UniqueIdentifier>{60a63a6c-5651-41d1-8d24-7df6f36ca7c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="blocks\Cinder-AzureKinect\src\imguix">
+      <UniqueIdentifier>{c7f4927d-3abd-4953-94ef-20022cd8544b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\AzureKinectTestApp.cpp">
@@ -78,6 +81,9 @@
     <ClCompile Include="..\..\src\DebugScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\imguix\ImGuiFilePicker.cpp">
+      <Filter>blocks\Cinder-AzureKinect\src\imguix</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CinderMswUserDefines.h">
@@ -112,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\DebugScene.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\imguix\ImGuiFilePicker.h">
+      <Filter>blocks\Cinder-AzureKinect\src\imguix</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

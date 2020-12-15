@@ -76,7 +76,7 @@
       <AdditionalIncludeDirectories>$(CINDER_PATH)\Cinder\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4arecord.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -121,7 +121,7 @@
       <AdditionalIncludeDirectories>$(CINDER_PATH)\Cinder\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;$(REPO_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\mason.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4a.lib;$(K4A_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4arecord.lib;$(K4ABT_SDK_PATH)\sdk\windows-desktop\amd64\release\lib\k4abt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CINDER_PATH)\lib\msw\$(PlatformTarget);$(CINDER_PATH)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -150,6 +150,7 @@
     <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureDevice.cpp" />
     <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureManager.cpp" />
     <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.cpp" />
+    <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\imguix\ImGuiFilePicker.cpp" />
     <ClCompile Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.cpp" />
     <ClCompile Include="..\..\..\..\src\mason\extra\AssertOverride.cpp" />
     <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiStuff.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureDevice.h" />
     <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureManager.h" />
     <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.h" />
+    <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\imguix\ImGuiFilePicker.h" />
     <ClInclude Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.h" />
     <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiStuff.h" />
     <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiTexture.h" />
