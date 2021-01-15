@@ -152,7 +152,9 @@ void Track::update()
 {
 	float volume = ci::audio::linearToDecibel( mMonitorSpectralNode->getVolume() );
 
-	ma::hud()->showInfo( 2, { "volume", to_string( volume ) } );
+	// TODO: switch to ImGui throughout
+	// - will be a bit of work to get the analyzer views in there, but perhaps that can stay separate to start
+	//ma::hud()->showInfo( 2, { "volume", to_string( volume ) } );
 
 	// TODO: can also try just using a very small smoothing factor for larger values
 	// - or just provide two separate control values
