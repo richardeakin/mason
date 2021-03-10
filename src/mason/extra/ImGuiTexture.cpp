@@ -31,15 +31,15 @@ public:
 	{
 	}
 
-	void view( const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags );
+	void view( const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl );
 
 private:
-	void viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags );
+	void viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl );
 
-	void renderColor( const gl::Texture2dRef &texture, const Rectf &destRect );
-	void renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect );
-	void renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect );
-	void render3d( const gl::Texture3dRef &texture, const Rectf &destRect );
+	void renderColor( const gl::Texture2dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl );
+	void renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl );
+	void renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl );
+	void render3d( const gl::Texture3dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl );
 
 	string		mLabel;
 	Type		mType;
@@ -81,26 +81,26 @@ TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type )
 	return &it->second;
 }
 
-void TextureViewer::view( const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
+void TextureViewer::view( const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl )
 {
 	ColorA headerColor = GetStyleColorVec4( ImGuiCol_Header );
 	headerColor *= 0.65f;
 	PushStyleColor( ImGuiCol_Header, headerColor );
 	if( CollapsingHeader( mLabel.c_str(), flags ) ) {
-		viewImpl( mFbo, texture, flags );
+		viewImpl( mFbo, texture, flags, glsl );
 	}
 	PopStyleColor();
 
 	if( mNewWindow ) {
 		SetNextWindowSize( vec2( 800, 600 ), ImGuiCond_FirstUseEver );
 		if( Begin( mLabel.c_str(), &mNewWindow ) ) {
-			viewImpl( mFboNewWindow, texture, flags );
+			viewImpl( mFboNewWindow, texture, flags, glsl );
 		}
 		End();
 	}
 }
 
-void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
+void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl )
 {
 	if( ! texture ) {
 		Text( "null texture" );
@@ -151,19 +151,19 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture
 		auto destRect = Rectf( vec2( 0 ), fbo->getSize() );
 		if( mType == Type::TextureColor ) {
 			auto texture2d = dynamic_pointer_cast<gl::Texture2d>( texture );
-			renderColor( texture2d, destRect );
+			renderColor( texture2d, destRect, glsl );
 		}
 		else if( mType == Type::TextureVelocity ) {
 			auto texture2d = dynamic_pointer_cast<gl::Texture2d>( texture );
-			renderVelocity( texture2d, destRect );
+			renderVelocity( texture2d, destRect, glsl );
 		}
 		else if( mType == Type::TextureDepth ) {
 			auto texture2d = dynamic_pointer_cast<gl::Texture2d>( texture );
-			renderDepth( texture2d, destRect );
+			renderDepth( texture2d, destRect, glsl );
 		}
 		else if( mType == Type::Texture3d ) {
 			auto texture3d = dynamic_pointer_cast<gl::Texture3d>( texture );
-			render3d( texture3d, destRect );
+			render3d( texture3d, destRect, glsl );
 		}
 	}
 
@@ -191,88 +191,100 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture
 	}
 }
 
-void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &destRect )
+void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
 		return;
 	}
 
-	static gl::GlslProgRef sGlsl;
-	if( ! sGlsl ) {
-		const fs::path vertPath = "mason/textureViewer/texture.vert";
-		const fs::path fragPath = "mason/textureViewer/textureColor.frag";
-		ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
-			sGlsl = glsl;
-		} );
+	// use static glsl if none provided
+	if( ! glsl ) {
+		static gl::GlslProgRef sGlsl;
+		if( ! sGlsl ) {
+			const fs::path vertPath = "mason/textureViewer/texture.vert";
+			const fs::path fragPath = "mason/textureViewer/textureColor.frag";
+			ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
+				sGlsl = glsl;
+			} );
+		}
+		glsl = sGlsl;
 	}
 
 	// render to fbo based on current params
-	if( sGlsl ) {
+	if( glsl ) {
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
-		gl::ScopedGlslProg glslScope( sGlsl );
-		sGlsl->uniform( "uScale", mScale );
+		gl::ScopedGlslProg glslScope( glsl );
+		glsl->uniform( "uScale", mScale );
 
 		gl::drawSolidRect( destRect );
 	}
 }
 
-void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect )
+void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
 		return;
 	}
 
-	static gl::GlslProgRef sGlsl;
-	if( ! sGlsl ) {
-		const fs::path vertPath = "mason/textureViewer/texture.vert";
-		const fs::path fragPath = "mason/textureViewer/textureDepth.frag";
-		ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
-			sGlsl = glsl;
-		} );
+	// use static glsl if none provided
+	if( ! glsl ) {
+		static gl::GlslProgRef sGlsl;
+		if( ! sGlsl ) {
+			const fs::path vertPath = "mason/textureViewer/texture.vert";
+			const fs::path fragPath = "mason/textureViewer/textureDepth.frag";
+			ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
+				sGlsl = glsl;
+			} );
+		}
+		glsl = sGlsl;
 	}
 
-	if( sGlsl) {
+	if( glsl) {
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
-		gl::ScopedGlslProg glslScope( sGlsl );
-		sGlsl->uniform( "uScale", mScale );
-		sGlsl->uniform( "uInverted", mInverted );
+		gl::ScopedGlslProg glslScope( glsl );
+		glsl->uniform( "uScale", mScale );
+		glsl->uniform( "uInverted", mInverted );
 
 		gl::drawSolidRect( destRect );
 	}
 }
 
 
-void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect )
+void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
 		return;
 	}
 
-	static gl::GlslProgRef sGlsl;
-	if( ! sGlsl ) {
-		const fs::path vertPath = "mason/textureViewer/texture.vert";
-		const fs::path fragPath = "mason/textureViewer/textureVelocity.frag";
-		ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
-			sGlsl = glsl;
-		} );
+	// use static glsl if none provided
+	if( ! glsl ) {
+		static gl::GlslProgRef sGlsl;
+		if( ! sGlsl ) {
+			const fs::path vertPath = "mason/textureViewer/texture.vert";
+			const fs::path fragPath = "mason/textureViewer/textureVelocity.frag";
+			ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
+				sGlsl = glsl;
+			} );
+		}
+		glsl = sGlsl;
 	}
 
-	if( sGlsl ) {
+	if( glsl ) {
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
-		gl::ScopedGlslProg glslScope( sGlsl );
-		sGlsl->uniform( "uScale", mScale );
+		gl::ScopedGlslProg glslScope( glsl );
+		glsl->uniform( "uScale", mScale );
 
 		gl::drawSolidRect( destRect );
 	}
 }
 
-void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &destRect )
+void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &destRect, ci::gl::GlslProgRef glsl )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
@@ -283,25 +295,29 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 		mNumTiles = (int)sqrt( texture->getDepth() ) + 1;
 	}
 
-	static gl::GlslProgRef sGlsl;
-	if( ! sGlsl ) {
-		const fs::path vertPath = "mason/textureViewer/texture.vert";
-		const fs::path fragPath = "mason/textureViewer/texture3d.frag";
-		ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
-			sGlsl = glsl;
-		} );
+	// use static glsl if none provided
+	if( ! glsl ) {
+		static gl::GlslProgRef sGlsl;
+		if( ! sGlsl ) {
+			const fs::path vertPath = "mason/textureViewer/texture.vert";
+			const fs::path fragPath = "mason/textureViewer/texture3d.frag";
+			ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
+				sGlsl = glsl;
+			} );
+		}
+		glsl = sGlsl;
 	}
 
 	// render to fbo based on current params
 	{
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
-		if( sGlsl ) {
-			gl::ScopedGlslProg glslScope( sGlsl );
-			sGlsl->uniform( "uNumTiles", mNumTiles );
-			sGlsl->uniform( "uFocusedLayer", mFocusedLayer );
-			sGlsl->uniform( "uTiledAtlasMode", mTiledAtlasMode );
-			sGlsl->uniform( "uRgbScale", mScale );
+		if( glsl ) {
+			gl::ScopedGlslProg glslScope( glsl );
+			glsl->uniform( "uNumTiles", mNumTiles );
+			glsl->uniform( "uFocusedLayer", mFocusedLayer );
+			glsl->uniform( "uTiledAtlasMode", mTiledAtlasMode );
+			glsl->uniform( "uRgbScale", mScale );
 
 			gl::drawSolidRect( destRect );
 		}
@@ -323,24 +339,24 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 
 } // anon
 
-void Texture2d( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
+void Texture2d( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureColor )->view( texture, flags );
+	getTextureViewer( label, TextureViewer::Type::TextureColor )->view( texture, flags, glsl );
 }
 
-void TextureDepth( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
+void TextureDepth( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureDepth )->view( texture, flags );
+	getTextureViewer( label, TextureViewer::Type::TextureDepth )->view( texture, flags, glsl );
 }
 
-void TextureVelocity( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
+void TextureVelocity( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureVelocity )->view( texture, flags );
+	getTextureViewer( label, TextureViewer::Type::TextureVelocity )->view( texture, flags, glsl );
 }
 
-void Texture3d( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags )
+void Texture3d( const char *label, const gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags, const ci::gl::GlslProgRef &glsl )
 {
-	getTextureViewer( label, TextureViewer::Type::Texture3d )->view( texture, flags );
+	getTextureViewer( label, TextureViewer::Type::Texture3d )->view( texture, flags, glsl );
 }
 
 } // namespace imx

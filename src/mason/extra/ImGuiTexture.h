@@ -22,13 +22,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/GlslProg.h"
 #include "cinder/CinderImGui.h"
 
 namespace imx {
 
-void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0 );
-void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0 );
-void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0 );
-void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0 );
+void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
+void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
+void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
+void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
 
 } // namespace imx
