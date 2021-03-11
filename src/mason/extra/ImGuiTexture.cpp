@@ -291,9 +291,11 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 		return;
 	}
 
-	if( mNumTiles < 0 ) {
-		mNumTiles = (int)sqrt( texture->getDepth() ) + 1;
-	}
+	//if( mNumTiles < 0 ) {
+	//	mNumTiles = (int)sqrt( texture->getDepth() ) + 1;
+	//}
+
+	mNumTiles = (int)sqrt( texture->getDepth() );
 
 	// use static glsl if none provided
 	if( ! glsl ) {
@@ -324,15 +326,20 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 	}
 
 	if( mShowExtendedUI ) {
+		// TODO: make this a widget
+		// - either button, or dropdown with two options
 		string mode = mTiledAtlasMode ? "tiled" : "slice";
 		Text( "mode: %s", mode.c_str() );
 		if( mTiledAtlasMode ) {
 			SameLine();
 			Text( ", tiles: %d", mNumTiles );
 		}
-
-		if( ! mTiledAtlasMode ) {
-			DragInt( "slice", &mFocusedLayer, 0.3f, 0, texture->getDepth() );
+		else {
+			// FIXME: horizontal spacing is messed up here
+			// - maybe from some parent widget. Can try moving it in main app to debug
+			SliderInt( "##slice", &mFocusedLayer, 0, texture->getDepth() );
+			SameLine();
+			InputInt( "slice", &mFocusedLayer, 1, 0, texture->getDepth() );
 		}
 	}
 }
