@@ -27,9 +27,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace imx {
 
-void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
-void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
-void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
-void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, ImGuiTreeNodeFlags flags = 0, const ci::gl::GlslProgRef &glsl = {} );
+struct TextureViewerOptions {
+
+	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
+	bool				mOpenNewWindow = false;
+	ci::gl::GlslProgRef mGlsl;
+
+
+	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags ) { mOpenNewWindow = flags; return *this; }
+	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags ) { mTreeNodeFlags = flags; return *this; }
+	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl ) { mGlsl = glsl; return *this; }
+
+};
+
+void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
+void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
+void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
+void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
 
 } // namespace imx
