@@ -18,7 +18,7 @@ void main()
 	if( uTiledAtlasMode ) {
 		// show layers tiled
 		float tiles = float( uNumTiles );
-		vec2 uv = vec2( vTexCoord.x, 1 - vTexCoord.y );
+		vec2 uv = vec2( vTexCoord.x, vTexCoord.y );
 		vec2 coord = fract( uv * tiles );
 		vec2 cellId = floor( uv * tiles );
 
@@ -26,7 +26,8 @@ void main()
 			float zcoord = ( cellId.x + cellId.y * tiles ) / ( tiles * tiles - 1 );
 
 			// TODO: use enum to pick viewpoint
-			vec3 lookup = vec3( coord.x, 1.0f - coord.y, zcoord ); // front on
+			// vec3 lookup = vec3( coord.x, 1.0f - coord.y, zcoord ); // front on
+			vec3 lookup = vec3( coord.x, coord.y, zcoord ); // front on
 			// lookup = lookup.zyx; // from right
 			oFragColor = texture( uTex0, lookup );
 		}
