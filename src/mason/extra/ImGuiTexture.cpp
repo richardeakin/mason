@@ -3,6 +3,7 @@
 #include "mason/glutils.h"
 
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 
 using namespace std;
 using namespace ci;
@@ -52,6 +53,7 @@ private:
 	bool		mInverted = false;
 	float       mScale = 1;
 
+	ivec3		mDebugPixelCoord;
 	vec4		mDebugPixel;
 };
 
@@ -176,6 +178,17 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 			auto texture3d = dynamic_pointer_cast<gl::Texture3d>( tex );
 			render3d( texture3d, destRect, options );
 		}
+	}
+
+	if( options.mExtendedUI ) {
+		Checkbox( "debug pixel", &options.mDebugPixelEnabled );
+
+		SameLine();
+
+		// TODO: fix this for non-square images
+		DragInt3( "pixel coord", &mDebugPixelCoord, 0.1f, 0, tex->getWidth() - 1 );
+		DragFloat4( "pixel", &mDebugPixel );
+
 	}
 
 	// show texture that we've rendered to
@@ -338,6 +351,46 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 
 			gl::drawSolidRect( destRect );
 		}
+	}
+
+	// TODO: not yet sure if this should live here or in viewImpl(), but I need it first for debugging texture3ds
+	if( options.mDebugPixelEnabled ) {
+		gl::ScopedTextureBind scopedTex0( texture, 0 );
+		//gl::ScopedTextureBind texScope( texture->getTarget(), texture->getId() );
+
+		//glPixelStorei( GL_PACK_ALIGNMENT, 1 ); // TODO: needed?
+		//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
+
+		ivec3 pixelCoord = mDebugPixelCoord; // TODO: probably want to clamp this to actual texture coords just to be safe
+		
+		vec4 pixel;
+		const ivec3 pixelSize = { 1, 1, 1 };
+		const GLint level = 0;
+		const GLenum format = GL_RGBA;
+		const GLenum dataType = GL_FLOAT;
+
+#if 0
+		glGetTextureSubImage( texture->getTarget(), level,
+			pixelCoord.x, pixelCoord.y, pixelCoord.z, pixelSize.x, pixelSize.y, pixelSize.z,
+			format, dataType, sizeof( pixel ), &pixel.x );
+
+#elif 1
+		const size_t numPixels = texture->getWidth() * texture->getHeight() * texture->getDepth();
+		vector<ColorA>	buffer( numPixels );
+
+		glGetTexImage( texture->getTarget(), level, format, dataType, buffer.data() );
+
+		// TODO: verify this is correct by writing specific values in the compute shader
+		size_t index = pixelCoord.z * texture->getWidth() * texture->getHeight() + pixelCoord.y * texture->getHeight() + pixelCoord.x;
+		if( index >= buffer.size() ) {
+			CI_LOG_E( "index out of range: " << index );
+		}
+		else {
+			pixel = buffer[index];
+		}
+#endif
+		mDebugPixel = pixel;
 	}
 
 	if( options.mExtendedUI ) {
