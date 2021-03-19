@@ -31,18 +31,22 @@ struct TextureViewerOptions {
 
 	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
 	bool				mOpenNewWindow = false;
+	bool				mExtendedUI = false;
+	bool				mDebugPixelEnabled = true;
 	ci::gl::GlslProgRef mGlsl;
 
 
 	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags ) { mOpenNewWindow = flags; return *this; }
 	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags ) { mTreeNodeFlags = flags; return *this; }
 	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl ) { mGlsl = glsl; return *this; }
-
+	TextureViewerOptions&	extendedUI( bool enabled ) { mExtendedUI = enabled; return *this; }
+	TextureViewerOptions&	openNewWindow( bool enabled ) { mOpenNewWindow = enabled; return *this; }
+	TextureViewerOptions&	debugPixel( bool enabled ) { mDebugPixelEnabled = enabled; return *this; }
 };
 
-void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
-void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
-void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
-void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = {} );
+void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
+void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
+void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
+void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
 
 } // namespace imx
