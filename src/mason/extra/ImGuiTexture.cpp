@@ -51,9 +51,9 @@ private:
 	bool		mInverted = false;
 	float       mScale = 1;
 
-	ivec3		mDebugPixelCoord;
 	vec4		mDebugPixel;
-	bool		mDebugPixelUseMouse = true;
+	ivec3		mDebugPixelCoord;
+	bool        mDebugPixelNeedsUpdate = true;
 };
 
 
@@ -179,14 +179,24 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 	}
 
 	if( options.mExtendedUI ) {
-		Checkbox( "debug pixel", &options.mDebugPixelEnabled );
-		SameLine();
-		Checkbox( "use mouse", &mDebugPixelUseMouse );
+
+		//Checkbox( "debug pixel", &options.mDebugPixelEnabled );
+		//SameLine();
+		//Checkbox( "use mouse", &mDebugPixelUseMouse );
+		static vector<string> debugPixelModes = { "Disabled", "MouseClick", "MouseHover" };
+		int                   t = (int)options.mDebugPixelMode;
+		SetNextItemWidth( 200 );
+		if( Combo( "debug pixel", &t, debugPixelModes ) ) {
+			options.mDebugPixelMode = (TextureViewerOptions::DebugPixelMode)t;
+		}
 
 		SameLine();
 
 		SetNextItemWidth( 300 );
-		DragInt3( "pixel coord", &mDebugPixelCoord, 0.5f, 0, tex->getWidth() - 1 ); // TODO: fix this for non-square images
+		// TODO: fix this for non-square images
+		if( DragInt3( "pixel coord", &mDebugPixelCoord, 0.5f, 0, tex->getWidth() - 1 ) ) {
+			mDebugPixelNeedsUpdate = true;
+		}
 		DragFloat4( "pixel", &mDebugPixel );
 
 	}
@@ -195,16 +205,27 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 	vec2 imagePos = ImGui::GetCursorScreenPos();
 	Image( fbo->getColorTexture(), vec2( fbo->getSize() ) - vec2( 0.0f ) );
 
-	static vec2 mouseNorm;
-	static vec3 pixelCoord; // TEMP
-	if( mDebugPixelUseMouse && IsItemHovered() ) {
+	bool pixelCoordNeedsUpdate = false;
+	if( options.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseClick && IsItemClicked() ) {
+		mDebugPixelNeedsUpdate = true;
+		pixelCoordNeedsUpdate = true;
+	}
+	else if( options.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseHover && IsItemHovered() ) {
+		mDebugPixelNeedsUpdate = true;
+		pixelCoordNeedsUpdate = true;
+	}
+
+	if( pixelCoordNeedsUpdate ) {
 		const float tiles = (float)mNumTiles;
-		mouseNorm = ( vec2( GetMousePos() ) - vec2( GetItemRectMin() ) ) / vec2( GetItemRectSize() );
+		vec2 mouseNorm = ( vec2( GetMousePos() ) - vec2( GetItemRectMin() ) ) / vec2( GetItemRectSize() );
+
+		vec3 pixelCoord;
 		pixelCoord.x = fmodf( mouseNorm.x * (float)tex->getWidth() * tiles, (float)tex->getWidth() );
 		pixelCoord.y = fmodf( mouseNorm.y * (float)tex->getHeight() * tiles, (float)tex->getHeight() );
 
 		vec2 cellId = glm::floor( mouseNorm * tiles );
 		pixelCoord.z = cellId.y * tiles + cellId.x;
+
 		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) );
 	}
 
@@ -251,10 +272,6 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 		if( options.mGlsl ) {
 			Text( "GlslProg: %s", ( ! options.mGlsl->getLabel().empty() ? options.mGlsl->getLabel().c_str() : "(unlabeled)" ) );
 		}
-
-		// TEMP:
-		//DragFloat2( "mouseNorm", &mouseNorm );
-		//DragFloat3( "pixelCoord", &pixelCoord );
 	}
 }
 
@@ -397,7 +414,8 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 	}
 
 	// TODO: not yet sure if this should live here or in viewImpl(), but I need it first for debugging texture3ds
-	if( options.mDebugPixelEnabled ) {
+	// TODO: turn this into a mode enum (disabled, on mouseover, on mousedown)
+	if( mDebugPixelNeedsUpdate == true ) {
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 		//gl::ScopedTextureBind texScope( texture->getTarget(), texture->getId() );
 
@@ -413,6 +431,8 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 		const GLenum dataType = GL_FLOAT;
 
 #if 0
+		// TODO: get this path working, it is so much faster
+		// - try using a larger pixelSize
 		glGetTextureSubImage( texture->getTarget(), level,
 			pixelCoord.x, pixelCoord.y, pixelCoord.z, pixelSize.x, pixelSize.y, pixelSize.z,
 			format, dataType, sizeof( pixel ), &pixel.x );
@@ -433,6 +453,7 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 		}
 #endif
 		mDebugPixel = pixel;
+		mDebugPixelNeedsUpdate = false;
 	}
 
 	if( options.mExtendedUI ) {

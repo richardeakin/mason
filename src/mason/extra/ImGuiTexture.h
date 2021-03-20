@@ -32,17 +32,23 @@ struct TextureViewerOptions {
 	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
 	bool				mOpenNewWindow = false; // TODO: also add option for whether it is in a collapseable header or not (might want it to be in a tree or somewhere else
 	bool				mExtendedUI = false;
-	bool				mDebugPixelEnabled = true;
 	float				mVolumeAtlasGridLineWidth = 2; //! setting to 0 disables
 	ci::gl::GlslProgRef mGlsl;
 
+	enum class DebugPixelMode {
+		Disabled,
+		MouseClick,
+		MouseHover
+	};
+
+	DebugPixelMode	mDebugPixelMode = DebugPixelMode::MouseClick;
 
 	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags ) { mOpenNewWindow = flags; return *this; }
 	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags ) { mTreeNodeFlags = flags; return *this; }
 	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl ) { mGlsl = glsl; return *this; }
 	TextureViewerOptions&	extendedUI( bool enabled ) { mExtendedUI = enabled; return *this; }
 	TextureViewerOptions&	openNewWindow( bool enabled ) { mOpenNewWindow = enabled; return *this; }
-	TextureViewerOptions&	debugPixel( bool enabled ) { mDebugPixelEnabled = enabled; return *this; }
+	TextureViewerOptions&	debugPixel( DebugPixelMode &mode ) { mDebugPixelMode = mode; return *this; }
 };
 
 void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
