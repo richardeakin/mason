@@ -33,6 +33,7 @@ struct TextureViewerOptions {
 	bool				mOpenNewWindow = false; // TODO: also add option for whether it is in a collapseable header or not (might want it to be in a tree or somewhere else
 	bool				mExtendedUI = false;
 	bool				mDebugPixelEnabled = true;
+	float				mVolumeAtlasGridLineWidth = 2; //! setting to 0 disables
 	ci::gl::GlslProgRef mGlsl;
 
 

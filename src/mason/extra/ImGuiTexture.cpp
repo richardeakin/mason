@@ -192,6 +192,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 	}
 
 	// show texture that we've rendered to
+	vec2 imagePos = ImGui::GetCursorScreenPos();
 	Image( fbo->getColorTexture(), vec2( fbo->getSize() ) - vec2( 0.0f ) );
 
 	static vec2 mouseNorm;
@@ -208,6 +209,23 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 	}
 
 
+	if( mType == Type::Texture3d && options.mVolumeAtlasGridLineWidth > 0.01f ) {
+		// draw some grid lines over the image, using ImDrawList
+		// - use current window background color for lines
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		auto col = GetStyleColorVec4( ImGuiCol_WindowBg );
+		vec2 imageSize = GetItemRectSize();
+		vec2 tileSize = imageSize / vec2( (float)mNumTiles );
+
+		// note on drawing an extra line at x = 0 column and y = 0 row: it shouldn't be necessary,
+		// but it is masking what appears to be an anti-aliasiang artifact in imgui drawlist
+		for( int i = 0; i < mNumTiles; i++ ) {
+			float thickness = i == 0 ? 1.0f : options.mVolumeAtlasGridLineWidth;
+			drawList->AddLine( imagePos + vec2( tileSize.x * (float)i, 0 ), imagePos + vec2( tileSize.x * (float)i, imageSize.y ), ImColor( col ), thickness );
+			drawList->AddLine( imagePos + vec2( 0, tileSize.y * (float)i ), imagePos + vec2( imageSize.x, tileSize.y * (float)i ), ImColor( col ), thickness );
+		}
+	}
+
 	OpenPopupOnItemClick( ( "##popup" + mLabel ).c_str() );
 	if( BeginPopup( ( "##popup" + mLabel ).c_str() ) ) {
 		Checkbox( "extended ui", &options.mExtendedUI );
@@ -217,8 +235,9 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 			}
 		}
 		if( mType == Type::Texture3d ) {
-			Checkbox( "tiled / atlas mode", &mTiledAtlasMode );
+			Checkbox( "atlas mode", &mTiledAtlasMode );
 			//DragInt( "tiles", &mNumTiles, 0.2f, 1, 1024 );
+			DragFloat( "grid line size", &options.mVolumeAtlasGridLineWidth, 0.02f, 0, 4096 );
 		}
 		DragFloat( "scale", &mScale, 0.01f, 0.02f, 1000.0f );
 		if( mType == Type::TextureDepth ) {
