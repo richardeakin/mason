@@ -438,14 +438,14 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 		const GLenum format = GL_RGBA;
 		const GLenum dataType = GL_FLOAT;
 
-#if 0
-		// TODO: get this path working, it is so much faster
-		// - try using a larger pixelSize
-		glGetTextureSubImage( texture->getTarget(), level,
+#if 1
+		// fetch one pixel from texture
+		glGetTextureSubImage( texture->getId(), level,
 			pixelCoord.x, pixelCoord.y, pixelCoord.z, pixelSize.x, pixelSize.y, pixelSize.z,
 			format, dataType, sizeof( pixel ), &pixel.x );
 
-#elif 1
+#else
+		// fetch all pixels from texture
 		const size_t numPixels = texture->getWidth() * texture->getHeight() * texture->getDepth();
 		vector<ColorA>	buffer( numPixels );
 
