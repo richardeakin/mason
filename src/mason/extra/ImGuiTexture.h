@@ -32,8 +32,9 @@ struct TextureViewerOptions {
 	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
 	bool				mOpenNewWindow = false; // TODO: also add option for whether it is in a collapseable header or not (might want it to be in a tree or somewhere else
 	bool				mExtendedUI = false;
-	float				mVolumeAtlasGridLineWidth = 2; //! setting to 0 disables
+	float				mVolumeAtlasLineThickness = 2; //! setting to 0 disables
 	ci::gl::GlslProgRef mGlsl;
+	bool				mClearCachedOptions = false; //! Only used when getting the internal cached TextureViewer - allows updating options from outside C++ (will blow away internal options)
 
 	enum class DebugPixelMode {
 		Disabled,
@@ -49,11 +50,12 @@ struct TextureViewerOptions {
 	TextureViewerOptions&	extendedUI( bool enabled ) { mExtendedUI = enabled; return *this; }
 	TextureViewerOptions&	openNewWindow( bool enabled ) { mOpenNewWindow = enabled; return *this; }
 	TextureViewerOptions&	debugPixel( DebugPixelMode &mode ) { mDebugPixelMode = mode; return *this; }
+	TextureViewerOptions&	clearCachedOptions( bool b = true )	{ mClearCachedOptions = b; return *this; }
 };
 
-void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
-void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
-void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
-void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, TextureViewerOptions &options = TextureViewerOptions() );
+void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
+void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
+void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
+void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
 
 } // namespace imx

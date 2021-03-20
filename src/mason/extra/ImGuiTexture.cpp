@@ -32,28 +32,32 @@ public:
 	{
 	}
 
-	void view( const gl::TextureBaseRef &texture, TextureViewerOptions &options );
+	void view( const gl::TextureBaseRef &texture );
+
+	void setOptions( const TextureViewerOptions &options )	{ mOptions = options; }
 
 private:
-	void viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture, TextureViewerOptions &options );
+	void viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture );
 
-	void renderColor( const gl::Texture2dRef &texture, const Rectf &destRect, TextureViewerOptions &options );
-	void renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect, TextureViewerOptions &options );
-	void renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect, TextureViewerOptions &options );
-	void render3d( const gl::Texture3dRef &texture, const Rectf &destRect, TextureViewerOptions &options );
+	void renderColor( const gl::Texture2dRef &texture, const Rectf &destRect );
+	void renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect );
+	void renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect );
+	void render3d( const gl::Texture3dRef &texture, const Rectf &destRect );
 
 	string		mLabel;
 	Type		mType;
 	gl::FboRef	mFbo, mFboNewWindow; // need a separate fbo for the 'new window' option to avoid imgui crash on stale texture id
 	int			mNumTiles = -1; // TODO: this is actually tiles per row, should probably be renamed
 	int			mFocusedLayer = 0;
-	bool		mTiledAtlasMode = true;
+	bool		mTiledAtlasMode = true; // TODO: move this to options
 	bool		mInverted = false;
 	float       mScale = 1;
 
 	vec4		mDebugPixel;
 	ivec3		mDebugPixelCoord;
 	bool        mDebugPixelNeedsUpdate = true;
+
+	TextureViewerOptions mOptions;
 };
 
 
@@ -72,7 +76,7 @@ const char *typeToString( TextureViewer::Type type )
 }
 
 
-TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type )
+TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options )
 {
 	static map<ImGuiID, TextureViewer> sViewers;
 
@@ -80,31 +84,35 @@ TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type )
 	auto it = sViewers.find(  id );
 	if( it == sViewers.end() ) {
 		it = sViewers.insert( { id, TextureViewer( label, type ) } ).first;
+		it->second.setOptions( options );
+	}
+	else if( options.mClearCachedOptions ) {
+		it->second.setOptions( options );
 	}
 
 	return &it->second;
 }
 
-void TextureViewer::view( const gl::TextureBaseRef &texture, TextureViewerOptions &options )
+void TextureViewer::view( const gl::TextureBaseRef &texture )
 {
 	ColorA headerColor = GetStyleColorVec4( ImGuiCol_Header );
 	headerColor *= 0.65f;
 	PushStyleColor( ImGuiCol_Header, headerColor );
-	if( CollapsingHeader( mLabel.c_str(), options.mTreeNodeFlags ) ) {
-		viewImpl( mFbo, texture, options );
+	if( CollapsingHeader( mLabel.c_str(), mOptions.mTreeNodeFlags ) ) {
+		viewImpl( mFbo, texture );
 	}
 	PopStyleColor();
 
-	if( options.mOpenNewWindow ) {
+	if( mOptions.mOpenNewWindow ) {
 		SetNextWindowSize( vec2( 800, 600 ), ImGuiCond_FirstUseEver );
-		if( Begin( mLabel.c_str(), &options.mOpenNewWindow ) ) {
-			viewImpl( mFboNewWindow, texture, options );
+		if( Begin( mLabel.c_str(), &mOptions.mOpenNewWindow ) ) {
+			viewImpl( mFboNewWindow, texture );
 		}
 		End();
 	}
 }
 
-void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, TextureViewerOptions &options )
+void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 {
 	if( ! tex ) {
 		Text( "null texture" );
@@ -162,32 +170,32 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 		auto destRect = Rectf( vec2( 0 ), fbo->getSize() );
 		if( mType == Type::TextureColor ) {
 			auto texture2d = dynamic_pointer_cast<gl::Texture2d>( tex );
-			renderColor( texture2d, destRect, options );
+			renderColor( texture2d, destRect );
 		}
 		else if( mType == Type::TextureVelocity ) {
 			auto texture2d = dynamic_pointer_cast<gl::Texture2d>( tex );
-			renderVelocity( texture2d, destRect, options );
+			renderVelocity( texture2d, destRect );
 		}
 		else if( mType == Type::TextureDepth ) {
 			auto texture2d = dynamic_pointer_cast<gl::Texture2d>( tex );
-			renderDepth( texture2d, destRect, options );
+			renderDepth( texture2d, destRect );
 		}
 		else if( mType == Type::Texture3d ) {
 			auto texture3d = dynamic_pointer_cast<gl::Texture3d>( tex );
-			render3d( texture3d, destRect, options );
+			render3d( texture3d, destRect );
 		}
 	}
 
-	if( options.mExtendedUI ) {
+	if( mOptions.mExtendedUI ) {
 
 		//Checkbox( "debug pixel", &options.mDebugPixelEnabled );
 		//SameLine();
 		//Checkbox( "use mouse", &mDebugPixelUseMouse );
 		static vector<string> debugPixelModes = { "Disabled", "MouseClick", "MouseHover" };
-		int                   t = (int)options.mDebugPixelMode;
+		int                   t = (int)mOptions.mDebugPixelMode;
 		SetNextItemWidth( 200 );
 		if( Combo( "debug pixel", &t, debugPixelModes ) ) {
-			options.mDebugPixelMode = (TextureViewerOptions::DebugPixelMode)t;
+			mOptions.mDebugPixelMode = (TextureViewerOptions::DebugPixelMode)t;
 		}
 
 		SameLine();
@@ -206,11 +214,11 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 	Image( fbo->getColorTexture(), vec2( fbo->getSize() ) - vec2( 0.0f ) );
 
 	bool pixelCoordNeedsUpdate = false;
-	if( options.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseClick && IsItemClicked() ) {
+	if( mOptions.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseClick && IsItemClicked() ) {
 		mDebugPixelNeedsUpdate = true;
 		pixelCoordNeedsUpdate = true;
 	}
-	else if( options.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseHover && IsItemHovered() ) {
+	else if( mOptions.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseHover && IsItemHovered() ) {
 		mDebugPixelNeedsUpdate = true;
 		pixelCoordNeedsUpdate = true;
 	}
@@ -230,7 +238,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 	}
 
 
-	if( mType == Type::Texture3d && options.mVolumeAtlasGridLineWidth > 0.01f ) {
+	if( mType == Type::Texture3d && mTiledAtlasMode && mOptions.mVolumeAtlasLineThickness > 0.01f ) {
 		// draw some grid lines over the image, using ImDrawList
 		// - use current window background color for lines
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -241,7 +249,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 		// note on drawing an extra line at x = 0 column and y = 0 row: it shouldn't be necessary,
 		// but it is masking what appears to be an anti-aliasiang artifact in imgui drawlist
 		for( int i = 0; i < mNumTiles; i++ ) {
-			float thickness = i == 0 ? 1.0f : options.mVolumeAtlasGridLineWidth;
+			float thickness = i == 0 ? 1.0f : mOptions.mVolumeAtlasLineThickness;
 			drawList->AddLine( imagePos + vec2( tileSize.x * (float)i, 0 ), imagePos + vec2( tileSize.x * (float)i, imageSize.y ), ImColor( col ), thickness );
 			drawList->AddLine( imagePos + vec2( 0, tileSize.y * (float)i ), imagePos + vec2( imageSize.x, tileSize.y * (float)i ), ImColor( col ), thickness );
 		}
@@ -249,16 +257,16 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 
 	OpenPopupOnItemClick( ( "##popup" + mLabel ).c_str() );
 	if( BeginPopup( ( "##popup" + mLabel ).c_str() ) ) {
-		Checkbox( "extended ui", &options.mExtendedUI );
-		if( Checkbox( "new window", &options.mOpenNewWindow ) ) {
-			if( ! options.mOpenNewWindow ) {
+		Checkbox( "extended ui", &mOptions.mExtendedUI );
+		if( Checkbox( "new window", &mOptions.mOpenNewWindow ) ) {
+			if( ! mOptions.mOpenNewWindow ) {
 				mFboNewWindow = nullptr;
 			}
 		}
 		if( mType == Type::Texture3d ) {
 			Checkbox( "atlas mode", &mTiledAtlasMode );
 			//DragInt( "tiles", &mNumTiles, 0.2f, 1, 1024 );
-			DragFloat( "grid line size", &options.mVolumeAtlasGridLineWidth, 0.02f, 0, 4096 );
+			DragFloat( "atlas line thikness", &mOptions.mVolumeAtlasLineThickness, 0.02f, 0, 4096 );
 		}
 		DragFloat( "scale", &mScale, 0.01f, 0.02f, 1000.0f );
 		if( mType == Type::TextureDepth ) {
@@ -268,14 +276,14 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 		EndPopup();
 	}
 
-	if( options.mExtendedUI ) {
-		if( options.mGlsl ) {
-			Text( "GlslProg: %s", ( ! options.mGlsl->getLabel().empty() ? options.mGlsl->getLabel().c_str() : "(unlabeled)" ) );
+	if( mOptions.mExtendedUI ) {
+		if( mOptions.mGlsl ) {
+			Text( "GlslProg: %s", ( ! mOptions.mGlsl->getLabel().empty() ? mOptions.mGlsl->getLabel().c_str() : "(unlabeled)" ) );
 		}
 	}
 }
 
-void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &destRect, TextureViewerOptions &options )
+void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &destRect )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
@@ -283,7 +291,7 @@ void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &d
 	}
 
 	// use static glsl if none provided
-	auto glsl = options.mGlsl;
+	auto glsl = mOptions.mGlsl;
 	if( ! glsl ) {
 		static gl::GlslProgRef sGlsl;
 		if( ! sGlsl ) {
@@ -307,7 +315,7 @@ void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &d
 	}
 }
 
-void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect, TextureViewerOptions &options )
+void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
@@ -315,7 +323,7 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 	}
 
 	// use static glsl if none provided
-	auto glsl = options.mGlsl;
+	auto glsl = mOptions.mGlsl;
 	if( ! glsl ) {
 		static gl::GlslProgRef sGlsl;
 		if( ! sGlsl ) {
@@ -340,7 +348,7 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 }
 
 
-void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect, TextureViewerOptions &options )
+void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
@@ -348,7 +356,7 @@ void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf
 	}
 
 	// use static glsl if none provided
-	auto glsl = options.mGlsl;
+	auto glsl = mOptions.mGlsl;
 	if( ! glsl ) {
 		static gl::GlslProgRef sGlsl;
 		if( ! sGlsl ) {
@@ -371,7 +379,7 @@ void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf
 	}
 }
 
-void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &destRect, TextureViewerOptions &options )
+void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &destRect )
 {
 	if( ! texture ) {
 		ImGui::Text( "%s null", mLabel.c_str() );
@@ -385,7 +393,7 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 	mNumTiles = (int)sqrt( texture->getDepth() );
 
 	// use static glsl if none provided
-	auto glsl = options.mGlsl;
+	auto glsl = mOptions.mGlsl;
 	if( ! glsl ) {
 		static gl::GlslProgRef sGlsl;
 		if( ! sGlsl ) {
@@ -456,7 +464,7 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 		mDebugPixelNeedsUpdate = false;
 	}
 
-	if( options.mExtendedUI ) {
+	if( mOptions.mExtendedUI ) {
 		// TODO: make this a dropdown to select mode (may have more than two)
 		Checkbox( "atlas mode", &mTiledAtlasMode );
 		if( mTiledAtlasMode ) {
@@ -475,24 +483,24 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 
 } // anon
 
-void Texture2d( const char *label, const gl::TextureBaseRef &texture, TextureViewerOptions &options )
+void Texture2d( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureColor )->view( texture, options );
+	getTextureViewer( label, TextureViewer::Type::TextureColor, options )->view( texture );
 }
 
-void TextureDepth( const char *label, const gl::TextureBaseRef &texture, TextureViewerOptions &options )
+void TextureDepth( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureDepth )->view( texture, options );
+	getTextureViewer( label, TextureViewer::Type::TextureDepth, options )->view( texture );
 }
 
-void TextureVelocity( const char *label, const gl::TextureBaseRef &texture, TextureViewerOptions &options )
+void TextureVelocity( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureVelocity )->view( texture, options );
+	getTextureViewer( label, TextureViewer::Type::TextureVelocity, options )->view( texture );
 }
 
-void Texture3d( const char *label, const gl::TextureBaseRef &texture, TextureViewerOptions &options )
+void Texture3d( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::Texture3d )->view( texture, options  );
+	getTextureViewer( label, TextureViewer::Type::Texture3d, options )->view( texture  );
 }
 
 } // namespace imx

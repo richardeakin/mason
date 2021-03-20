@@ -41,6 +41,5 @@ void main()
 		oFragColor = texture( uTex0, vec3( vTexCoord, sliceNormalized ) );
 	}
 
-	oFragColor.rgb *= uScale;
-	oFragColor.a = 1.0;
+	oFragColor *= uScale;
 }
