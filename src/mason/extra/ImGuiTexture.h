@@ -30,7 +30,7 @@ namespace imx {
 struct TextureViewerOptions {
 
 	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
-	bool				mOpenNewWindow = false;
+	bool				mOpenNewWindow = false; // TODO: also add option for whether it is in a collapseable header or not (might want it to be in a tree or somewhere else
 	bool				mExtendedUI = false;
 	bool				mDebugPixelEnabled = true;
 	ci::gl::GlslProgRef mGlsl;

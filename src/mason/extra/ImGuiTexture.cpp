@@ -45,17 +45,17 @@ private:
 	string		mLabel;
 	Type		mType;
 	gl::FboRef	mFbo, mFboNewWindow; // need a separate fbo for the 'new window' option to avoid imgui crash on stale texture id
-	int			mNumTiles = -1;
+	int			mNumTiles = -1; // TODO: this is actually tiles per row, should probably be renamed
 	int			mFocusedLayer = 0;
 	bool		mTiledAtlasMode = true;
-	//bool		mShowExtendedUI = false;
-	//bool		mNewWindow = false;
 	bool		mInverted = false;
 	float       mScale = 1;
 
 	ivec3		mDebugPixelCoord;
 	vec4		mDebugPixel;
+	bool		mDebugPixelUseMouse = true;
 };
+
 
 const char *typeToString( TextureViewer::Type type )
 {
@@ -95,8 +95,6 @@ void TextureViewer::view( const gl::TextureBaseRef &texture, TextureViewerOption
 	}
 	PopStyleColor();
 
-	// TODO: remove mNewWindow, just use the passed in options
-	// - should probably make all options non-const then, so I can add gui constrols for them in context menu
 	if( options.mOpenNewWindow ) {
 		SetNextWindowSize( vec2( 800, 600 ), ImGuiCond_FirstUseEver );
 		if( Begin( mLabel.c_str(), &options.mOpenNewWindow ) ) {
@@ -182,17 +180,33 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 
 	if( options.mExtendedUI ) {
 		Checkbox( "debug pixel", &options.mDebugPixelEnabled );
+		SameLine();
+		Checkbox( "use mouse", &mDebugPixelUseMouse );
 
 		SameLine();
 
-		// TODO: fix this for non-square images
-		DragInt3( "pixel coord", &mDebugPixelCoord, 0.1f, 0, tex->getWidth() - 1 );
+		SetNextItemWidth( 300 );
+		DragInt3( "pixel coord", &mDebugPixelCoord, 0.5f, 0, tex->getWidth() - 1 ); // TODO: fix this for non-square images
 		DragFloat4( "pixel", &mDebugPixel );
 
 	}
 
 	// show texture that we've rendered to
 	Image( fbo->getColorTexture(), vec2( fbo->getSize() ) - vec2( 0.0f ) );
+
+	static vec2 mouseNorm;
+	static vec3 pixelCoord; // TEMP
+	if( mDebugPixelUseMouse && IsItemHovered() ) {
+		const float tiles = (float)mNumTiles;
+		mouseNorm = ( vec2( GetMousePos() ) - vec2( GetItemRectMin() ) ) / vec2( GetItemRectSize() );
+		pixelCoord.x = fmodf( mouseNorm.x * (float)tex->getWidth() * tiles, (float)tex->getWidth() );
+		pixelCoord.y = fmodf( mouseNorm.y * (float)tex->getHeight() * tiles, (float)tex->getHeight() );
+
+		vec2 cellId = glm::floor( mouseNorm * tiles );
+		pixelCoord.z = cellId.y * tiles + cellId.x;
+		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) );
+	}
+
 
 	OpenPopupOnItemClick( ( "##popup" + mLabel ).c_str() );
 	if( BeginPopup( ( "##popup" + mLabel ).c_str() ) ) {
@@ -212,6 +226,16 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex, Te
 		}
 
 		EndPopup();
+	}
+
+	if( options.mExtendedUI ) {
+		if( options.mGlsl ) {
+			Text( "GlslProg: %s", ( ! options.mGlsl->getLabel().empty() ? options.mGlsl->getLabel().c_str() : "(unlabeled)" ) );
+		}
+
+		// TEMP:
+		//DragFloat2( "mouseNorm", &mouseNorm );
+		//DragFloat3( "pixelCoord", &pixelCoord );
 	}
 }
 
@@ -360,7 +384,6 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 
 		//glPixelStorei( GL_PACK_ALIGNMENT, 1 ); // TODO: needed?
 		//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-
 
 		ivec3 pixelCoord = mDebugPixelCoord; // TODO: probably want to clamp this to actual texture coords just to be safe
 		
