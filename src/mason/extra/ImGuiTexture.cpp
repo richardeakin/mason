@@ -15,8 +15,6 @@ namespace imx {
 // TextureViewer
 // ----------------------------------------------------------------------------------------------------
 
-namespace {
-
 class TextureViewer {
 public:
 	enum class Type {
@@ -35,6 +33,9 @@ public:
 	void view( const gl::TextureBaseRef &texture );
 
 	void setOptions( const TextureViewerOptions &options )	{ mOptions = options; }
+
+
+	static TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options );
 
 private:
 	void viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture );
@@ -75,8 +76,8 @@ const char *typeToString( TextureViewer::Type type )
 	return "(unknown)";
 }
 
-
-TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options )
+// static
+TextureViewer* TextureViewer::getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options )
 {
 	static map<ImGuiID, TextureViewer> sViewers;
 
@@ -88,6 +89,11 @@ TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type, co
 	}
 	else if( options.mClearCachedOptions ) {
 		it->second.setOptions( options );
+	}
+
+	// always update the glsl if it exists
+	if( options.mGlsl ) {
+		it->second.mOptions.mGlsl = options.mGlsl;
 	}
 
 	return &it->second;
@@ -481,26 +487,24 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 	}
 }
 
-} // anon
-
 void Texture2d( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureColor, options )->view( texture );
+	TextureViewer::getTextureViewer( label, TextureViewer::Type::TextureColor, options )->view( texture );
 }
 
 void TextureDepth( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureDepth, options )->view( texture );
+	TextureViewer::getTextureViewer( label, TextureViewer::Type::TextureDepth, options )->view( texture );
 }
 
 void TextureVelocity( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::TextureVelocity, options )->view( texture );
+	TextureViewer::getTextureViewer( label, TextureViewer::Type::TextureVelocity, options )->view( texture );
 }
 
 void Texture3d( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
-	getTextureViewer( label, TextureViewer::Type::Texture3d, options )->view( texture  );
+	TextureViewer::getTextureViewer( label, TextureViewer::Type::Texture3d, options )->view( texture  );
 }
 
 } // namespace imx
