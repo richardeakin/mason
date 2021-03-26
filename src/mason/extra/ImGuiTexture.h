@@ -42,7 +42,7 @@ struct TextureViewerOptions {
 		MouseHover
 	};
 
-	DebugPixelMode	mDebugPixelMode = DebugPixelMode::MouseHover;
+	DebugPixelMode	mDebugPixelMode = DebugPixelMode::Disabled;
 
 	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags ) { mOpenNewWindow = flags; return *this; }
 	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags ) { mTreeNodeFlags = flags; return *this; }

@@ -56,7 +56,7 @@ private:
 
 	vec4		mDebugPixel;
 	ivec3		mDebugPixelCoord;
-	bool        mDebugPixelNeedsUpdate = true;
+	bool        mDebugPixelNeedsUpdate = false;
 
 	TextureViewerOptions mOptions;
 };
