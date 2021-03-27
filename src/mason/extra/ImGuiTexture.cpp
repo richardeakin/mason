@@ -127,8 +127,8 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 
 	// init or resize fbo if needed
 	float availWidth = GetContentRegionAvailWidth();
-	if( ! fbo || fbo->getColorTexture()->getInternalFormat() != tex->getInternalFormat() || abs( mFbo->getWidth() - availWidth ) > 4 ) {
-		auto texFormat = gl::Texture2d::Format()//.internalFormat( texture->getInternalFormat() )
+	if( ! fbo || abs( mFbo->getWidth() - availWidth ) > 4 ) {
+		auto texFormat = gl::Texture2d::Format()
 			.minFilter( GL_NEAREST ).magFilter( GL_NEAREST )
 			.mipmap( false )
 			.label( "TextureViewer (" + mLabel + ")" )
