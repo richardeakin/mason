@@ -111,7 +111,7 @@ void TextureViewer::view( const gl::TextureBaseRef &texture )
 
 	if( mOptions.mOpenNewWindow ) {
 		SetNextWindowSize( vec2( 800, 600 ), ImGuiCond_FirstUseEver );
-		if( Begin( mLabel.c_str(), &mOptions.mOpenNewWindow ) ) {
+		if( Begin( mLabel.c_str(), &mOptions.mOpenNewWindow, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
 			viewImpl( mFboNewWindow, texture );
 		}
 		End();
@@ -232,14 +232,20 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 	if( pixelCoordNeedsUpdate ) {
 		const float tiles = (float)mNumTiles;
 		vec2 mouseNorm = ( vec2( GetMousePos() ) - vec2( GetItemRectMin() ) ) / vec2( GetItemRectSize() );
-
 		vec3 pixelCoord;
-		pixelCoord.x = fmodf( mouseNorm.x * (float)tex->getWidth() * tiles, (float)tex->getWidth() );
-		pixelCoord.y = fmodf( mouseNorm.y * (float)tex->getHeight() * tiles, (float)tex->getHeight() );
+		if( mTiledAtlasMode ) {
+			pixelCoord.x = fmodf( mouseNorm.x * (float)tex->getWidth() * tiles, (float)tex->getWidth() );
+			pixelCoord.y = fmodf( mouseNorm.y * (float)tex->getHeight() * tiles, (float)tex->getHeight() );
 
-		vec2 cellId = glm::floor( mouseNorm * tiles );
-		pixelCoord.z = cellId.y * tiles + cellId.x;
+			vec2 cellId = glm::floor( mouseNorm * tiles );
+			pixelCoord.z = cellId.y * tiles + cellId.x;
 
+		}
+		else {
+			pixelCoord.x = lround( mouseNorm.x * (float)tex->getWidth() );
+			pixelCoord.y = lround( mouseNorm.y * (float)tex->getHeight() );
+			pixelCoord.z = mFocusedLayer;
+		}
 		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) );
 	}
 
@@ -428,7 +434,6 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 	}
 
 	// TODO: not yet sure if this should live here or in viewImpl(), but I need it first for debugging texture3ds
-	// TODO: turn this into a mode enum (disabled, on mouseover, on mousedown)
 	if( mDebugPixelNeedsUpdate == true ) {
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 		//gl::ScopedTextureBind texScope( texture->getTarget(), texture->getId() );
@@ -478,11 +483,7 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 			Text( ", tiles: %d", mNumTiles );
 		}
 		else {
-			// FIXME: horizontal spacing is messed up here
-			// - maybe from some parent widget. Can try moving it in main app to debug
-			SliderInt( "##slice", &mFocusedLayer, 0, texture->getDepth() );
-			SameLine();
-			InputInt( "slice", &mFocusedLayer, 1, 0, texture->getDepth() );
+			SliderInt( "slice", &mFocusedLayer, 0, texture->getDepth() );
 		}
 	}
 }
