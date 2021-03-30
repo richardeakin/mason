@@ -53,6 +53,8 @@
     <ClCompile Include="..\..\blocks\Cinder-View\src\vu\TextField.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\vu\TextManager.cpp" />
     <ClCompile Include="..\..\blocks\Cinder-View\src\vu\View.cpp" />
+    <ClCompile Include="..\..\src\mason\aa\FXAA.cpp" />
+    <ClCompile Include="..\..\src\mason\aa\SMAA.cpp" />
     <ClCompile Include="..\..\src\mason\Assets.cpp" />
     <ClCompile Include="..\..\src\mason\audio\AudioAnalyzer.cpp" />
     <ClCompile Include="..\..\src\mason\audio\CompressorNode.cpp" />
@@ -71,6 +73,13 @@
     <ClCompile Include="..\..\src\mason\Notifications.cpp" />
     <ClCompile Include="..\..\src\mason\ParticleSystemGpu.cpp" />
     <ClCompile Include="..\..\src\mason\RenderToTexture.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\Camera.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\Component.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\DepthOfField.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\Lights.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\MotionBlur.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\PostEffects.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\PostProcess.cpp" />
     <ClCompile Include="..\..\src\mason\Shadertoy.cpp" />
     <ClCompile Include="..\..\src\mason\ui\AudioAnalyzerView.cpp" />
     <ClCompile Include="..\..\src\mason\ui\AudioMonitor.cpp" />
@@ -78,6 +87,7 @@
     <ClCompile Include="..\..\src\mason\ui\DraggableView.cpp" />
     <ClCompile Include="..\..\src\mason\VisualMonitor.cpp" />
     <ClCompile Include="..\..\src\mason\WorldClock.cpp" />
+    <ClCompile Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\imGuIZMOquat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\blocks\Cinder-Profiler\src\Profiler.h" />
@@ -102,6 +112,10 @@
     <ClInclude Include="..\..\blocks\Cinder-View\src\vu\TextManager.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\vu\View.h" />
     <ClInclude Include="..\..\blocks\Cinder-View\src\vu\vu.h" />
+    <ClInclude Include="..\..\src\mason\aa\FXAA.h" />
+    <ClInclude Include="..\..\src\mason\aa\SMAA.h" />
+    <ClInclude Include="..\..\src\mason\aa\smaa\AreaTex.h" />
+    <ClInclude Include="..\..\src\mason\aa\smaa\SearchTex.h" />
     <ClInclude Include="..\..\src\mason\Assets.h" />
     <ClInclude Include="..\..\src\mason\audio\audio.h" />
     <ClInclude Include="..\..\src\mason\audio\AudioAnalyzer.h" />
@@ -126,6 +140,13 @@
     <ClInclude Include="..\..\src\mason\prepareAppSettings.h" />
     <ClInclude Include="..\..\src\mason\Profiling.h" />
     <ClInclude Include="..\..\src\mason\RenderToTexture.h" />
+    <ClInclude Include="..\..\src\mason\scene\Camera.h" />
+    <ClInclude Include="..\..\src\mason\scene\Component.h" />
+    <ClInclude Include="..\..\src\mason\scene\DepthOfField.h" />
+    <ClInclude Include="..\..\src\mason\scene\Lights.h" />
+    <ClInclude Include="..\..\src\mason\scene\MotionBlur.h" />
+    <ClInclude Include="..\..\src\mason\scene\PostEffects.h" />
+    <ClInclude Include="..\..\src\mason\scene\PostProcess.h" />
     <ClInclude Include="..\..\src\mason\ShaderControls.h" />
     <ClInclude Include="..\..\src\mason\Shadertoy.h" />
     <ClInclude Include="..\..\src\mason\ui\AudioAnalyzerView.h" />
@@ -135,6 +156,11 @@
     <ClInclude Include="..\..\src\mason\Var.h" />
     <ClInclude Include="..\..\src\mason\VisualMonitor.h" />
     <ClInclude Include="..\..\src\mason\WorldClock.h" />
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\imGuIZMOquat.h" />
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vgConfig.h" />
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vGizmo.h" />
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vGizmoMath.h" />
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vgMath.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D9BAF2A6-193F-4B77-A2CB-42B9966CF10B}</ProjectGuid>
@@ -277,8 +303,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VGIZMO_USES_GLM;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -329,8 +355,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VGIZMO_USES_GLM;CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -398,8 +424,8 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VGIZMO_USES_GLM;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -458,8 +484,8 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VGIZMO_USES_GLM;CINDER_SHARED;MASON_SHARED_BUILD;CINDER_UI_SHARED_BUILD;PERF_SHARED_BUILD;FMT_EXPORT;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(REPO_PATH)\src;$(REPO_PATH)\src\msw;$(REPO_PATH)\blocks\Cinder-View\src;$(REPO_PATH)\blocks\Cinder-Cereal\include;$(REPO_PATH)\blocks\Cinder-Cereal\lib\cereal\include;$(REPO_PATH)\blocks\Cinder-Profiler\src;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(CINDER_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>

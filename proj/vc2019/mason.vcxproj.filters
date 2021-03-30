@@ -38,6 +38,21 @@
     <Filter Include="Blocks\Cinder-View\src\vu">
       <UniqueIdentifier>{02631582-6fc9-4aad-9cb6-263326831ff5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\mason\scene">
+      <UniqueIdentifier>{62a2aff7-839d-4fac-8ffd-e29e64dabd02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thirdparty">
+      <UniqueIdentifier>{f0ed8fb6-1a60-47f2-8c87-c8a90c290233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thirdparty\imGuIZMO.quat">
+      <UniqueIdentifier>{138561ca-9171-4dbf-ab8b-a82ac306b49b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mason\aa">
+      <UniqueIdentifier>{4afc0af3-d1bb-490a-a631-f25d5f7b7a1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mason\aa\smaa">
+      <UniqueIdentifier>{2df783e0-3b5b-4bc6-b564-481cfcd70815}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mason\Assets.cpp">
@@ -168,6 +183,36 @@
     </ClCompile>
     <ClCompile Include="..\..\src\mason\Shadertoy.cpp">
       <Filter>Source Files\mason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\Camera.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\Component.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\DepthOfField.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\Lights.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\MotionBlur.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\PostEffects.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\PostProcess.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\imGuIZMOquat.cpp">
+      <Filter>Source Files\thirdparty\imGuIZMO.quat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\aa\FXAA.cpp">
+      <Filter>Source Files\mason\aa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\aa\SMAA.cpp">
+      <Filter>Source Files\mason\aa</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +380,54 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\Shadertoy.h">
       <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\Camera.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\Component.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\DepthOfField.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\Lights.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\MotionBlur.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\PostEffects.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\PostProcess.h">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\imGuIZMOquat.h">
+      <Filter>Source Files\thirdparty\imGuIZMO.quat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vgConfig.h">
+      <Filter>Source Files\thirdparty\imGuIZMO.quat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vGizmo.h">
+      <Filter>Source Files\thirdparty\imGuIZMO.quat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vGizmoMath.h">
+      <Filter>Source Files\thirdparty\imGuIZMO.quat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vgMath.h">
+      <Filter>Source Files\thirdparty\imGuIZMO.quat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\aa\FXAA.h">
+      <Filter>Source Files\mason\aa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\aa\SMAA.h">
+      <Filter>Source Files\mason\aa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\aa\smaa\AreaTex.h">
+      <Filter>Source Files\mason\aa\smaa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\aa\smaa\SearchTex.h">
+      <Filter>Source Files\mason\aa\smaa</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

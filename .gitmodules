@@ -10,3 +10,6 @@
 [submodule "blocks/Cinder-AzureKinect"]
 	path = blocks/Cinder-AzureKinect
 	url = https://github.com/richardeakin/Cinder-AzureKinect.git
+[submodule "thirdparty/imGuiZMO.quat"]
+	path = thirdparty/imGuiZMO.quat
+	url = https://github.com/BrutPitt/imGuIZMO.quat.git
