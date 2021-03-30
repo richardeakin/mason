@@ -1,4 +1,4 @@
-#include "mason/extra/ImGuiTexture.h"
+#include "mason/imx/ImGuiTexture.h"
 #include "mason/Assets.h"
 #include "mason/glutils.h"
 

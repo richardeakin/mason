@@ -53,6 +53,9 @@
     <Filter Include="Source Files\mason\aa\smaa">
       <UniqueIdentifier>{2df783e0-3b5b-4bc6-b564-481cfcd70815}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\mason\imx">
+      <UniqueIdentifier>{df9debf9-0d90-46ef-8d0a-3b2acafe6144}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mason\Assets.cpp">
@@ -213,6 +216,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\mason\aa\SMAA.cpp">
       <Filter>Source Files\mason\aa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\imx\ImGuiStuff.cpp">
+      <Filter>Source Files\mason\imx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\imx\ImGuiStyle.cpp">
+      <Filter>Source Files\mason\imx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\imx\ImGuiTexture.cpp">
+      <Filter>Source Files\mason\imx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mason\imx\ShaderUI.cpp">
+      <Filter>Source Files\mason\imx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -428,6 +443,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\aa\smaa\SearchTex.h">
       <Filter>Source Files\mason\aa\smaa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\imx\ImGuiStuff.h">
+      <Filter>Source Files\mason\imx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\imx\ImGuiStyle.h">
+      <Filter>Source Files\mason\imx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\imx\ImGuiTexture.h">
+      <Filter>Source Files\mason\imx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\imx\ShaderUI.h">
+      <Filter>Source Files\mason\imx</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

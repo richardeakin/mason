@@ -66,6 +66,10 @@
     <ClCompile Include="..\..\src\mason\FlyCam.cpp" />
     <ClCompile Include="..\..\src\mason\Common.cpp" />
     <ClCompile Include="..\..\src\mason\Config.cpp" />
+    <ClCompile Include="..\..\src\mason\imx\ImGuiStuff.cpp" />
+    <ClCompile Include="..\..\src\mason\imx\ImGuiStyle.cpp" />
+    <ClCompile Include="..\..\src\mason\imx\ImGuiTexture.cpp" />
+    <ClCompile Include="..\..\src\mason\imx\ShaderUI.cpp" />
     <ClCompile Include="..\..\src\mason\Info.cpp" />
     <ClCompile Include="..\..\src\mason\glutils.cpp" />
     <ClCompile Include="..\..\src\mason\Hud.cpp" />
@@ -128,6 +132,10 @@
     <ClInclude Include="..\..\src\mason\FlyCam.h" />
     <ClInclude Include="..\..\src\mason\Common.h" />
     <ClInclude Include="..\..\src\mason\Config.h" />
+    <ClInclude Include="..\..\src\mason\imx\ImGuiStuff.h" />
+    <ClInclude Include="..\..\src\mason\imx\ImGuiStyle.h" />
+    <ClInclude Include="..\..\src\mason\imx\ImGuiTexture.h" />
+    <ClInclude Include="..\..\src\mason\imx\ShaderUI.h" />
     <ClInclude Include="..\..\src\mason\Info.h" />
     <ClInclude Include="..\..\src\mason\Export.h" />
     <ClInclude Include="..\..\src\mason\glutils.h" />
