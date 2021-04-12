@@ -88,6 +88,15 @@ void Shadertoy::loadTextures( const ma::Info &info )
 			if( ! mDataPath.empty() ) {
 				filePath = mDataPath / filePath;
 			}
+			if( ! fs::exists( filePath ) ) {
+				// check if exists in app's assets directory
+				filePath = app::getAssetPath( filePath );
+			}
+
+			if( ! fs::exists( filePath ) ) {
+				CI_LOG_E( "cannot find texture filePath: " << filePath );
+				continue;
+			}
 
 			auto format = gl::Texture::Format().wrap( GL_REPEAT );
 			string filter = texInfo.get<string>( "filter", "nearest" );
