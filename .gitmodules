@@ -4,9 +4,6 @@
 [submodule "blocks/Cinder-Profiler"]
 	path = blocks/Cinder-Profiler
 	url = https://github.com/num3ric/Cinder-Profiler.git
-[submodule "blocks/Cinder-Cereal"]
-	path = blocks/Cinder-Cereal
-	url = https://github.com/simongeilfus/Cinder-Cereal.git
 [submodule "blocks/Cinder-AzureKinect"]
 	path = blocks/Cinder-AzureKinect
 	url = https://github.com/richardeakin/Cinder-AzureKinect.git
