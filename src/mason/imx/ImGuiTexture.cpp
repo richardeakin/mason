@@ -246,7 +246,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			pixelCoord.y = lround( mouseNorm.y * (float)tex->getHeight() );
 			pixelCoord.z = mFocusedLayer;
 		}
-		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) );
+		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) - ivec3( 1 ) );
 	}
 
 
