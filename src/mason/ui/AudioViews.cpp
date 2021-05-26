@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Timer.h"
 #include "cinder/Triangulate.h"
 
-#define CEREAL_ENABLED 1
+#define CEREAL_ENABLED 0
 #if CEREAL_ENABLED
 #include "CinderCereal.h"
 #include <cereal/archives/binary.hpp>

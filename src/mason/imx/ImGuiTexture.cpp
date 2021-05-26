@@ -125,6 +125,8 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		return;
 	}
 
+	ScopedId idScope( mLabel.c_str() );
+
 	// init or resize fbo if needed
 	float availWidth = GetContentRegionAvailWidth();
 	if( ! fbo || abs( mFbo->getWidth() - availWidth ) > 4 ) {
