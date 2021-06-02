@@ -20,7 +20,7 @@ Camera::Camera()
 	if( window ) {
 		mSize = window->getSize();
 
-		mFlyCam = ma::FlyCam( &mCam, app::getWindow(), ma::FlyCam::EventOptions().priority( -1 ).update( false ).resize( false ) );
+		mFlyCam = ma::FlyCam( &mCam, app::getWindow(), ma::FlyCam::EventOptions().priority( -1 ).update( false ).resize( true ) );
 	}
 }
 
