@@ -84,6 +84,12 @@
     <ClCompile Include="..\..\src\mason\scene\MotionBlur.cpp" />
     <ClCompile Include="..\..\src\mason\scene\PostEffects.cpp" />
     <ClCompile Include="..\..\src\mason\scene\PostProcess.cpp" />
+    <ClCompile Include="..\..\src\mason\scene\Suite.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\SceneSuite.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">$(IntDir)\SceneSuite.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">$(IntDir)\SceneSuite.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\SceneSuite.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\src\mason\Shadertoy.cpp" />
     <ClCompile Include="..\..\src\mason\ui\AudioAnalyzerView.cpp" />
     <ClCompile Include="..\..\src\mason\ui\AudioMonitor.cpp" />
@@ -155,6 +161,7 @@
     <ClInclude Include="..\..\src\mason\scene\MotionBlur.h" />
     <ClInclude Include="..\..\src\mason\scene\PostEffects.h" />
     <ClInclude Include="..\..\src\mason\scene\PostProcess.h" />
+    <ClInclude Include="..\..\src\mason\scene\Suite.h" />
     <ClInclude Include="..\..\src\mason\ShaderControls.h" />
     <ClInclude Include="..\..\src\mason\Shadertoy.h" />
     <ClInclude Include="..\..\src\mason\ui\AudioAnalyzerView.h" />

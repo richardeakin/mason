@@ -229,6 +229,9 @@
     <ClCompile Include="..\..\src\mason\imx\ShaderUI.cpp">
       <Filter>Source Files\mason\imx</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\scene\Suite.cpp">
+      <Filter>Source Files\mason\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -455,6 +458,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mason\imx\ShaderUI.h">
       <Filter>Source Files\mason\imx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\scene\Suite.h">
+      <Filter>Source Files\mason\scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
