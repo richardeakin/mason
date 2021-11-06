@@ -106,15 +106,7 @@ class MA_API Info {
 
 		//! Conversion operator for anything supported by detail::getValue()
 		template <typename T>
-		operator T() const
-		{
-			T result;
-			if( ! detail::getValue( *this, &result ) ) {
-				throw InfoBadTypeExc( *this, typeid( T ) );
-			}
-
-			return result;
-		}
+		operator T() const;
 
 		const Info::Value& operator[]( const std::string &key ) const;
 		Info::Value& operator[]( const std::string &key );
@@ -390,18 +382,15 @@ const T& Info::getStrict( const std::string &key, const T &defaultValue ) const
 	return any_cast<const T&>( value );
 }
 
-// ----------------------------------------------------
-// TODO: move these to cpp
-
-template<>
-const Info::Value& Info::getStrict<Info::Value>( const std::string &key ) const
+template <typename T>
+Info::Value::operator T() const
 {
-	auto it = mData.find( key );
-	if( it == mData.end() ) {
-		throw InfoExc( "no key named '" + key + "'" );
+	T result;
+	if( ! detail::getValue( *this, &result ) ) {
+		throw InfoBadTypeExc( *this, typeid( T ) );
 	}
 
-	return it->second;
+	return result;
 }
 
 } // namespace mason

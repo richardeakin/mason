@@ -124,6 +124,18 @@ std::string	Info::toString() const
 	return ss.str();
 }
 
+
+template<>
+const Info::Value& Info::getStrict<Info::Value>( const std::string &key ) const
+{
+	auto it = mData.find( key );
+	if( it == mData.end() ) {
+		throw InfoExc( "no key named '" + key + "'" );
+	}
+
+	return it->second;
+}
+
 // ----------------------------------------------------------------------------------------------------
 // Detail
 // ----------------------------------------------------------------------------------------------------
