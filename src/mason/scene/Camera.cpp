@@ -1,5 +1,4 @@
 #include "mason/scene/Camera.h"
-
 #include "mason/imx/ImGuiStuff.h"
 #include "imGuIZMOquat.h"
 
