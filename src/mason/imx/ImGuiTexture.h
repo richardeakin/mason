@@ -35,7 +35,7 @@ struct TextureViewerOptions {
 	float				mVolumeAtlasLineThickness = 1; //! setting to 0 disables
 	ci::gl::GlslProgRef mGlsl;
 	bool				mClearCachedOptions = false; //! Only used when getting the internal cached TextureViewer - allows updating options from outside C++ (will blow away internal options)
-
+	bool				mInvertColor = false; //! interpreted differently by viewers
 	enum class DebugPixelMode {
 		Disabled,
 		MouseClick,
@@ -51,6 +51,7 @@ struct TextureViewerOptions {
 	TextureViewerOptions&	openNewWindow( bool enabled ) { mOpenNewWindow = enabled; return *this; }
 	TextureViewerOptions&	debugPixel( DebugPixelMode &mode ) { mDebugPixelMode = mode; return *this; }
 	TextureViewerOptions&	clearCachedOptions( bool b = true )	{ mClearCachedOptions = b; return *this; }
+	TextureViewerOptions&	invertColor( bool b = true )	{ mInvertColor = b; return *this; }
 };
 
 void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
