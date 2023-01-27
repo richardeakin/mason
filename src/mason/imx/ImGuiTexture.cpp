@@ -33,12 +33,13 @@ public:
 	void view( const gl::TextureBaseRef &texture );
 
 	void setOptions( const TextureViewerOptions &options )	{ mOptions = options; }
-
+	void setTiledAtlasMode( bool enabled ) { mTiledAtlasMode = enabled; }
 
 	static TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options );
 
 private:
 	void viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &texture );
+	void updatePixelCoord( const gl::TextureBaseRef &texture );
 
 	void renderColor( const gl::Texture2dRef &texture, const Rectf &destRect );
 	void renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect );
@@ -50,8 +51,7 @@ private:
 	gl::FboRef	mFbo, mFboNewWindow; // need a separate fbo for the 'new window' option to avoid imgui crash on stale texture id
 	int			mNumTiles = -1; // TODO: this is actually tiles per row, should probably be renamed
 	int			mFocusedLayer = 0;
-	bool		mTiledAtlasMode = true; // TODO: move this to options
-	bool		mInverted = false;
+	bool		mTiledAtlasMode = false; // TODO: move this to options. defaults to true only for Texture3d
 	float       mScale = 1;
 
 	vec4		mDebugPixel;
@@ -85,6 +85,12 @@ TextureViewer* TextureViewer::getTextureViewer( const char *label, TextureViewer
 	auto it = sViewers.find(  id );
 	if( it == sViewers.end() ) {
 		it = sViewers.insert( { id, TextureViewer( label, type ) } ).first;
+
+		if( type == Type::Texture3d ) {
+			// default to atlas although will let options override
+			it->second.setTiledAtlasMode( true );
+		}
+
 		it->second.setOptions( options );
 	}
 	else if( options.mClearCachedOptions ) {
@@ -125,8 +131,10 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		return;
 	}
 
+	ScopedId idScope( mLabel.c_str() );
+
 	// init or resize fbo if needed
-	float availWidth = GetContentRegionAvailWidth();
+	float availWidth = GetContentRegionAvail().x;
 	if( ! fbo || abs( mFbo->getWidth() - availWidth ) > 4 ) {
 		auto texFormat = gl::Texture2d::Format()
 			.minFilter( GL_NEAREST ).magFilter( GL_NEAREST )
@@ -190,6 +198,8 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			auto texture3d = dynamic_pointer_cast<gl::Texture3d>( tex );
 			render3d( texture3d, destRect );
 		}
+
+		updatePixelCoord( tex );
 	}
 
 	if( mOptions.mExtendedUI ) {
@@ -246,7 +256,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			pixelCoord.y = lround( mouseNorm.y * (float)tex->getHeight() );
 			pixelCoord.z = mFocusedLayer;
 		}
-		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) );
+		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) - ivec3( 1 ) );
 	}
 
 
@@ -282,7 +292,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		}
 		DragFloat( "scale", &mScale, 0.01f, 0.02f, 1000.0f );
 		if( mType == Type::TextureDepth ) {
-			Checkbox( "inverted", &mInverted );
+			Checkbox( "inverted", &mOptions.mInvertColor );
 		}
 
 		EndPopup();
@@ -293,6 +303,34 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			Text( "GlslProg: %s", ( ! mOptions.mGlsl->getLabel().empty() ? mOptions.mGlsl->getLabel().c_str() : "(unlabeled)" ) );
 		}
 	}
+}
+
+void TextureViewer::updatePixelCoord( const gl::TextureBaseRef &texture )
+{
+	if( ! mDebugPixelNeedsUpdate ) {
+		return;
+	}
+
+	gl::ScopedTextureBind scopedTex0( texture, 0 );
+
+	//glPixelStorei( GL_PACK_ALIGNMENT, 1 ); // TODO: needed?
+	//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
+	ivec3 pixelCoord = mDebugPixelCoord; // TODO: clamp so we can't crash
+
+	vec4 pixel;
+	const ivec3 pixelSize = { 1, 1, 1 };
+	const GLint level = 0;
+	const GLenum format = GL_RGBA;
+	const GLenum dataType = GL_FLOAT;
+
+	// fetch one pixel from texture
+	glGetTextureSubImage( texture->getId(), level,
+		pixelCoord.x, pixelCoord.y, pixelCoord.z, pixelSize.x, pixelSize.y, pixelSize.z,
+		format, dataType, sizeof( pixel ), &pixel.x );
+
+	mDebugPixel = pixel;
+	mDebugPixelNeedsUpdate = false;
 }
 
 void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &destRect )
@@ -353,7 +391,7 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 
 		gl::ScopedGlslProg glslScope( glsl );
 		glsl->uniform( "uScale", mScale );
-		glsl->uniform( "uInverted", mInverted );
+		glsl->uniform( "uInverted", mOptions.mInvertColor );
 
 		gl::drawSolidRect( destRect );
 	}
@@ -431,48 +469,6 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 
 			gl::drawSolidRect( destRect );
 		}
-	}
-
-	// TODO: not yet sure if this should live here or in viewImpl(), but I need it first for debugging texture3ds
-	if( mDebugPixelNeedsUpdate == true ) {
-		gl::ScopedTextureBind scopedTex0( texture, 0 );
-		//gl::ScopedTextureBind texScope( texture->getTarget(), texture->getId() );
-
-		//glPixelStorei( GL_PACK_ALIGNMENT, 1 ); // TODO: needed?
-		//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-
-		ivec3 pixelCoord = mDebugPixelCoord; // TODO: probably want to clamp this to actual texture coords just to be safe
-		
-		vec4 pixel;
-		const ivec3 pixelSize = { 1, 1, 1 };
-		const GLint level = 0;
-		const GLenum format = GL_RGBA;
-		const GLenum dataType = GL_FLOAT;
-
-#if 1
-		// fetch one pixel from texture
-		glGetTextureSubImage( texture->getId(), level,
-			pixelCoord.x, pixelCoord.y, pixelCoord.z, pixelSize.x, pixelSize.y, pixelSize.z,
-			format, dataType, sizeof( pixel ), &pixel.x );
-
-#else
-		// fetch all pixels from texture
-		const size_t numPixels = texture->getWidth() * texture->getHeight() * texture->getDepth();
-		vector<ColorA>	buffer( numPixels );
-
-		glGetTexImage( texture->getTarget(), level, format, dataType, buffer.data() );
-
-		// TODO: verify this is correct by writing specific values in the compute shader
-		size_t index = pixelCoord.z * texture->getWidth() * texture->getHeight() + pixelCoord.y * texture->getHeight() + pixelCoord.x;
-		if( index >= buffer.size() ) {
-			CI_LOG_E( "index out of range: " << index );
-		}
-		else {
-			pixel = buffer[index];
-		}
-#endif
-		mDebugPixel = pixel;
-		mDebugPixelNeedsUpdate = false;
 	}
 
 	if( mOptions.mExtendedUI ) {
