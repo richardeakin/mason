@@ -1,6 +1,5 @@
 #include "mason/scene/Camera.h"
-
-#include "mason/extra/ImGuiStuff.h"
+#include "mason/imx/ImGuiStuff.h"
 #include "imGuIZMOquat.h"
 
 #include "cinder/Log.h"

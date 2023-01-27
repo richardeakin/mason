@@ -1,5 +1,5 @@
 #include "mason/scene/Component.h"
-#include "mason/extra/ImGuiStuff.h"
+#include "mason/imx/ImGuiStuff.h"
 
 #include "cinder/Log.h"
 #include "cinder/CinderAssert.h"

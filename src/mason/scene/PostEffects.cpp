@@ -22,8 +22,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/scene/PostEffects.h"
 #include "mason/scene/PostProcess.h"
 #include "mason/Assets.h"
-#include "mason/extra/ImGuiStuff.h"
-#include "mason/extra/ImGuiTexture.h"
+#include "mason/imx/ImGuiStuff.h"
+#include "mason/imx/ImGuiTexture.h"
 #include "mason/Common.h"
 #include "mason/Profiling.h"
 

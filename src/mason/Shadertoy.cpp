@@ -23,7 +23,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "mason/Assets.h"
 #include "mason/Common.h"
-#include "mason/extra/ImGuiStuff.h"
+#include "mason/imx/ImGuiStuff.h"
 
 #include "cinder/gl/gl.h"
 #include "cinder/app/App.h"
