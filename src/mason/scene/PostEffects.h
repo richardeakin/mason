@@ -48,6 +48,7 @@ class BloomEffect : public PostEffect {
 	BloomEffect( PostProcess *postProcess, const ci::ivec2 &size );
 
 	void process( const ci::gl::FboRef &source ) override;
+	void updateUI();
 
 	ci::gl::Texture2dRef	getTexture() const	{ return mFboBlur2->getColorTexture(); }
 

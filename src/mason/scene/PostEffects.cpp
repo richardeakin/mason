@@ -62,7 +62,7 @@ BloomEffect::BloomEffect( PostProcess *postProcess, const ivec2 &size )
 	: PostEffect( postProcess )
 {
 	// TODO: add method that returns gl color format instead (when 8 and 16-bit support is added)
-	GLint internalFormat = postProcess->getColorFormat() == ColorFormat::RGBA32 ? GL_RGBA32F : GL_RGB32F;
+	GLint internalFormat = postProcess->getColorFormat() == ColorFormat::RGBA32 ? GL_RGBA32F : GL_RGB16F;
 
 	auto texFormat = gl::Texture::Format()
 		.internalFormat( internalFormat )
@@ -75,7 +75,7 @@ BloomEffect::BloomEffect( PostProcess *postProcess, const ivec2 &size )
 	fboFormat2.attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( size.x, size.y, texFormat.label( "BloomEffect blur 2" ) ) );
 
 	mFboBlur1 = gl::Fbo::create( size.x, size.y, fboFormat1.label( "BloomEffect blur 1" ) );
-	mFboBlur2 = gl::Fbo::create( size.x, size.y, fboFormat2.label( "BloomEffect blur 1" ) );
+	mFboBlur2 = gl::Fbo::create( size.x, size.y, fboFormat2.label( "BloomEffect blur 2" ) );
 
 	mConnGlsl = ma::assets()->getShader( "mason/passthrough.vert", "mason/post/blur.frag", [this]( gl::GlslProgRef glsl ) {
 		glsl->uniform( "uTexColor", 0 );
@@ -101,10 +101,8 @@ void BloomEffect::process( const ci::gl::FboRef &source )
 		// blur horizontally and the size of 1 pixel
 		mGlslBlur->uniform( "uSampleOffset", vec2( 1.0f / mFboBlur1->getWidth(), 0.0f ) );
 
-# if SCENE_GLOW_ENABLED
 		auto glowTex = mPostProcess->getTexture( PostProcess::COLOR_ATTACHMENT_GLOW );
 		gl::ScopedTextureBind scopedTex0( glowTex, 0 );
-#endif
 
 		gl::clear();
 		gl::drawSolidRect( mFboBlur1->getBounds() );
@@ -129,14 +127,31 @@ void BloomEffect::process( const ci::gl::FboRef &source )
 	}
 }
 
+void BloomEffect::updateUI()
+{
+	if( ! mGlslBlur )
+		return;
+
+	if( im::CollapsingHeader( "buffers" ) ) {
+		imx::TextureViewerOptions opts;
+		opts.mTreeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen;
+		if( mFboBlur1 ) {
+			imx::Texture2d( "blur1", mFboBlur2->getColorTexture(), opts );		
+		}
+		if( mFboBlur2 ) {
+			imx::Texture2d( "blur2", mFboBlur2->getColorTexture(), opts );		
+		}
+	}
+}
+
 // ----------------------------------------------------------------------------------------------------
 // FXAA
 // ----------------------------------------------------------------------------------------------------
 
 FXAA::FXAA()
 {
-	const fs::path vertPath = "mason/aa/fxaa/fxaa.vert";
-	const fs::path fragPath = "mason/aa/fxaa/fxaa.frag";
+	const fs::path vertPath = "mason/post/aa/fxaa/fxaa.vert";
+	const fs::path fragPath = "mason/post/aa/fxaa/fxaa.frag";
 	auto rect = geom::Rect( Rectf( 0, 0, 1, 1 ) );
 
 #if 1
@@ -270,8 +285,8 @@ void SMAA::loadGlsl()
 {
 	mConnections.clear();
 
-	fs::path vertPath = "mason/aa/smaa/smaa.vert";
-	fs::path fragPath = "mason/aa/smaa/smaa.frag";
+	fs::path vertPath = "mason/post/aa/smaa/smaa.vert";
+	fs::path fragPath = "mason/post/aa/smaa/smaa.frag";
 	auto geom = geom::Rect( Rectf( 0, 0, 1, 1 ) );
 
 #if 1

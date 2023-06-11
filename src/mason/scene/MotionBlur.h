@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, Richard Eakin project - All rights reserved.
+Copyright (c) 2017-23, Richard Eakin project - All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -46,6 +46,7 @@ public:
 
 	int getNumSamples() const	{ return mNumSamples; }
 	void setNumSamples( int samples );
+	void setVelocityScale( float s )	{ mVelocityScale = s; }
 
 private:
 	void updateBuffers( const ci::ivec2 &size, int maxBlurRadiusPixels );
@@ -64,6 +65,8 @@ private:
 	float	mMaxBlurDiameterFraction = 0.1f;
 	// Fraction of the frame interval during which the shutter is open. Larger values create more motion blur.
 	float	mExposureTimeFraction    = 0.75f;
+	// scale whatever velocity values are in the buffer by this
+	float	mVelocityScale = 1.0f;
 };
 
 } // namespace mason::scene

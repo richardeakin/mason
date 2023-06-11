@@ -70,6 +70,7 @@ void Camera::lookAt( const ci::vec3 &eyePoint, const ci::vec3 &target, const ci:
 
 void Camera::update( double currentTime, double deltaTime )
 {
+	mPrevViewMatrix = mCam.getViewMatrix();
 	mFlyCam.update();
 }
 

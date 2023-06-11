@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, Richard Eakin project - All rights reserved.
+Copyright (c) 2017-23, Richard Eakin project - All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -49,32 +49,31 @@ MotionBlurEffect::MotionBlurEffect( PostProcess *postProcess )
 {
 	bool depthInColorAlphaChannel = mPostProcess->getDepthSource() == DepthSource::COLOR_ALPHA_CHANNEL;
 
-	const fs::path shaderDir = "mason/post/motionBlur";
-	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "tileMinMax.frag",
+	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
 		gl::GlslProg::Format().define( "INPUT_HAS_MIN_SPEED 0" ).label( "MotionBlur_tileMinMax (H)" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslTileMinMaxHorizontal = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "tileMinMax.frag",
+	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
 		gl::GlslProg::Format().define( "INPUT_HAS_MIN_SPEED 1" ).label( "MotionBlur_tileMinMax" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslTileMinMax = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "neighborMinMax.frag",
+	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/neighborMinMax.frag",
 		gl::GlslProg::Format().label( "MotionBlur_neighborMinMax" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslNeighborMinMax = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "gather.frag",
+	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/gather.frag",
 		gl::GlslProg::Format().define( "DEPTH_IN_COLOR_ALPHA_CHANNEL", to_string( depthInColorAlphaChannel ) ).label( "MotionBlur_gather" ),
 		[this]( gl::GlslProgRef glsl ) {
-			glsl->uniform( "uSamples", mNumSamples );
+			glsl->uniform( "uSamples", mNumSamples ); // TODO: remove if not used
 			mGlslReconstruct = glsl;
 		}
 	);
@@ -91,8 +90,10 @@ namespace {
 // - g3d MotionBlurUpdate uses a different size for the cached color buffer than the input color buffer to apply()
 ivec2 trimBandThickness = ivec2( 0 ); // ivec2( 64 );
 
-bool	sCaptureImage = false;
 }
+
+#define TEX_INTERNAL_FORMAT GL_RGB16F
+//#define TEX_INTERNAL_FORMAT GL_RGB32F
 
 void MotionBlurEffect::updateBuffers( const ivec2 &size, int maxBlurRadiusPixels )
 {
@@ -101,7 +102,7 @@ void MotionBlurEffect::updateBuffers( const ivec2 &size, int maxBlurRadiusPixels
 
 	// Tile boundaries will appear if the tiles are not radius x radius
 	const ivec2 smallSize  = ivec2( ceil( w / (float)maxBlurRadiusPixels ), ceil( h / (float)maxBlurRadiusPixels ) );
-	auto texFormat = gl::Texture::Format().internalFormat( GL_RGB16F );
+	auto texFormat = gl::Texture::Format().internalFormat( TEX_INTERNAL_FORMAT );
 
 	// TODO: these settings make the tex format match g3d's, but probably don't want repeat on here.
 	texFormat.wrap( GL_REPEAT );
@@ -214,9 +215,8 @@ void MotionBlurEffect::process( const ci::gl::FboRef &source )
 
 		gl::ScopedTextureBind scopedTex2( mFboNeighborMinMax->getColorTexture(), 2 );
 
-		gl::TextureRef depthTex;
-		if( mPostProcess->getDepthSource() == DepthSource::Z_BUFFER ) {
-			depthTex = source->getDepthTexture();
+		gl::TextureRef depthTex = mPostProcess->getDepthTexture();
+		if( depthTex ) {
 			gl::context()->pushTextureBinding( depthTex->getTarget(), depthTex->getId(), 3 );
 		}
 		else {
@@ -230,20 +230,13 @@ void MotionBlurEffect::process( const ci::gl::FboRef &source )
 		mGlslReconstruct->uniform( "uVelocityMap", 1 );
 		mGlslReconstruct->uniform( "uNeighborMinMaxMap", 2 );
 		mGlslReconstruct->uniform( "uTexDepth", 3 );
-
+		mGlslReconstruct->uniform( "uVelocityScale", mVelocityScale );
 		mGlslReconstruct->uniform( "maxBlurRadius", maxBlurRadiusPixels );
 		mGlslReconstruct->uniform( "numSamplesOdd", mNumSamples );
 		mGlslReconstruct->uniform( "trimBandThickness", trimBandThickness );
 		mGlslReconstruct->uniform( "exposureTime", mExposureTimeFraction );
 
 		gl::drawSolidRect( source->getBounds() );
-
-		if( sCaptureImage ) {
-			sCaptureImage = false;
-			fs::path imgPath = "MotionBlur_capture.png";
-			writeImage( imgPath, source->getColorTexture()->createSource() );
-			CI_LOG_I( "captured buffer to image file: " << imgPath );
-		}
 
 		if( depthTex ) {
 			auto depthTex = source->getDepthTexture();
@@ -256,22 +249,23 @@ void MotionBlurEffect::updateUI()
 {
 	int samples = mNumSamples;
 	if( im::DragInt( "samples", &samples, 0.05f, 1, 999 ) ) {
-		setNumSamples( samples );
+		// ensure always odd
+		if( samples % 2 == 0 ) {
+			mNumSamples = samples > mNumSamples ? samples + 1 : samples - 1;
+		}
 	}
+
 	// note: changing max blur will cause the buffers to be resized
 	im::DragFloat( "max diameter", &mMaxBlurDiameterFraction, 0.01f, 0, 3 );
-
 	// in fraction of frame duration
-	im::DragFloat( "exposure", &mExposureTimeFraction, 0.01f, 0, 3 );
-
-	if( im::Button( "capture image" ) ) {
-		sCaptureImage = true;
-	}
+	im::DragFloat( "exposure", &mExposureTimeFraction, 0.01f, 0, 3 );	 
+	im::DragFloat( "velocity scale", &mVelocityScale, 0.01f, 0, 3 );
 
 	if( im::CollapsingHeader( "buffers" ) ) {
 		imx::TextureViewerOptions opts;
 		opts.mTreeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen;
 		if( mFboTileMinMax ) {
+			imx::Texture2d( "tileMinMaxTemp", mFboTileMinMaxTemp->getColorTexture(), opts );		
 			imx::Texture2d( "tileMinMax", mFboTileMinMax->getColorTexture(), opts );
 			imx::Texture2d( "neighborMinMax", mFboNeighborMinMax->getColorTexture(), opts );
 		}

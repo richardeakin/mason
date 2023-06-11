@@ -24,6 +24,8 @@ public:
 	const ci::CameraPersp&	getCameraPersp() const	{ return mCam; }
 	ci::CameraPersp&		getCameraPersp()		{ return mCam; }
 
+	const ci::mat4&	getPreviousViewMatrix() const	{ return mPrevViewMatrix; }
+
 	void load( const ma::Info &info );
 	void save( ma::Info &info )	const;
 	void update( double currentTime, double deltaTime );
@@ -34,6 +36,7 @@ private:
 	ma::FlyCam			mFlyCam;
 	ci::CameraPersp		mCam, mInitialCam;
 	ci::vec2			mSize;
+	ci::mat4			mPrevViewMatrix;
 };
 
 } // namespace mason::scene
