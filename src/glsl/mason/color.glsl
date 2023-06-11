@@ -1,3 +1,10 @@
+#ifndef MASON_COLOR_GLSL
+#define MASON_COLOR_GLSL
+
+float rgbToLuma( in vec3 rgb )
+{
+    return dot( rgb, vec3( 0.2126, 0.7152, 0.0722 ) );
+}
 
 // http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
 vec3 rgbTohsv( vec3 c )
@@ -17,3 +24,5 @@ vec3 hsvToRgb( vec3 c )
     vec3 p = abs( fract( c.xxx + K.xyz ) * 6.0 - K.www );
     return c.z * mix( K.xxx, clamp( p - K.xxx, 0.0, 1.0 ), c.y );
 }
+
+#endif // MASON_COLOR_GLSL

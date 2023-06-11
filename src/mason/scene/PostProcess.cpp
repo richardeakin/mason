@@ -187,10 +187,13 @@ PostProcess::Options &PostProcess::Options::config( const ma::Info &config )
 	// Depth Of Field
 	mDepthOfField = config.get( "depthOfField", mDepthOfField );
 
+#if SCENE_GODRAYS_ENABLED
 	// Godrays
 	mSunRays = config.get( "sunRays", mSunRays );
 	mSunBoost = config.get( "sunBoost", mSunBoost );
 	mSunPower = config.get( "sunPower", mSunPower );
+#endif
+
 	mSunPos = config.get( "sunPos", mSunPos );
 	mSunFromCamera = config.get( "sunFromCamera", mSunFromCamera );
 
@@ -210,11 +213,13 @@ void PostProcess::Options::save( ma::Info &info ) const
 	info["depthOfField"] = mDepthOfField;
 	info["gamma"] = mGamma;
 	info["bloom"] = mBloom;
+#if SCENE_GODRAYS_ENABLED
 	info["sunRays"] = mSunRays;
 	info["sunBoost"] = mSunBoost;
 	info["sunPower"] = mSunPower;
 	info["sunPos"] = mSunPos;
 	info["sunFromCamera"] = mSunFromCamera;
+#endif
 	info["glowBuffer"] = mGlowBuffer;
 	info["debugBuffer"] = mDebugBuffer;
 	info["bloomDownsampleFactor"] = mBloomDownsampleFactor;
@@ -749,6 +754,13 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 	if( im::Button( "configure" ) ) {
 		markBuffersNeedConfigure();
 	}
+	im::SameLine();
+	if( im::Button( "dump config" ) ) {
+		ma::Info info;
+		save( info );
+		CI_LOG_I( "config:\n" << info );
+	}
+
 
 	if( mBatchComposite ) {
 		auto glsl = mBatchComposite->getGlslProg();
@@ -950,7 +962,8 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 			imx::Texture2d( "color", mFboScene->getColorTexture(), opts );
 
 			if( mOptions.mDepthSource == DepthSource::Z_BUFFER ) {
-				imx::TextureDepth( "depth", mFboScene->getDepthTexture(), opts );
+				auto opts2 = opts;
+				imx::TextureDepth( "depth", mFboScene->getDepthTexture(), opts2.invertColor() );
 			}
 
 #if SCENE_GLOW_ENABLED

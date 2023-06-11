@@ -49,28 +49,29 @@ MotionBlurEffect::MotionBlurEffect( PostProcess *postProcess )
 {
 	bool depthInColorAlphaChannel = mPostProcess->getDepthSource() == DepthSource::COLOR_ALPHA_CHANNEL;
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
+	const fs::path shaderDir = "mason/post/motionBlur";
+	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "tileMinMax.frag",
 		gl::GlslProg::Format().define( "INPUT_HAS_MIN_SPEED 0" ).label( "MotionBlur_tileMinMax (H)" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslTileMinMaxHorizontal = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
+	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "tileMinMax.frag",
 		gl::GlslProg::Format().define( "INPUT_HAS_MIN_SPEED 1" ).label( "MotionBlur_tileMinMax" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslTileMinMax = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/neighborMinMax.frag",
+	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "neighborMinMax.frag",
 		gl::GlslProg::Format().label( "MotionBlur_neighborMinMax" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslNeighborMinMax = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/gather.frag",
+	mConnections += ma::assets()->getShader( shaderDir / "passthrough.vert", shaderDir / "gather.frag",
 		gl::GlslProg::Format().define( "DEPTH_IN_COLOR_ALPHA_CHANNEL", to_string( depthInColorAlphaChannel ) ).label( "MotionBlur_gather" ),
 		[this]( gl::GlslProgRef glsl ) {
 			glsl->uniform( "uSamples", mNumSamples );
@@ -90,6 +91,7 @@ namespace {
 // - g3d MotionBlurUpdate uses a different size for the cached color buffer than the input color buffer to apply()
 ivec2 trimBandThickness = ivec2( 0 ); // ivec2( 64 );
 
+bool	sCaptureImage = false;
 }
 
 void MotionBlurEffect::updateBuffers( const ivec2 &size, int maxBlurRadiusPixels )
@@ -236,6 +238,13 @@ void MotionBlurEffect::process( const ci::gl::FboRef &source )
 
 		gl::drawSolidRect( source->getBounds() );
 
+		if( sCaptureImage ) {
+			sCaptureImage = false;
+			fs::path imgPath = "MotionBlur_capture.png";
+			writeImage( imgPath, source->getColorTexture()->createSource() );
+			CI_LOG_I( "captured buffer to image file: " << imgPath );
+		}
+
 		if( depthTex ) {
 			auto depthTex = source->getDepthTexture();
 			gl::context()->popTextureBinding( depthTex->getTarget(), 3 );
@@ -247,17 +256,17 @@ void MotionBlurEffect::updateUI()
 {
 	int samples = mNumSamples;
 	if( im::DragInt( "samples", &samples, 0.05f, 1, 999 ) ) {
-		// ensure always odd
-		if( samples % 2 == 0 ) {
-			mNumSamples = samples > mNumSamples ? samples + 1 : samples - 1;
-		}
+		setNumSamples( samples );
 	}
-
 	// note: changing max blur will cause the buffers to be resized
 	im::DragFloat( "max diameter", &mMaxBlurDiameterFraction, 0.01f, 0, 3 );
 
 	// in fraction of frame duration
 	im::DragFloat( "exposure", &mExposureTimeFraction, 0.01f, 0, 3 );
+
+	if( im::Button( "capture image" ) ) {
+		sCaptureImage = true;
+	}
 
 	if( im::CollapsingHeader( "buffers" ) ) {
 		imx::TextureViewerOptions opts;

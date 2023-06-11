@@ -135,8 +135,8 @@ void BloomEffect::process( const ci::gl::FboRef &source )
 
 FXAA::FXAA()
 {
-	const fs::path vertPath = "mason/post/aa/fxaa/fxaa.vert";
-	const fs::path fragPath = "mason/post/aa/fxaa/fxaa.frag";
+	const fs::path vertPath = "mason/aa/fxaa/fxaa.vert";
+	const fs::path fragPath = "mason/aa/fxaa/fxaa.frag";
 	auto rect = geom::Rect( Rectf( 0, 0, 1, 1 ) );
 
 #if 1
@@ -270,8 +270,8 @@ void SMAA::loadGlsl()
 {
 	mConnections.clear();
 
-	fs::path vertPath = "mason/post/aa/smaa/smaa.vert";
-	fs::path fragPath = "mason/post/aa/smaa/smaa.frag";
+	fs::path vertPath = "mason/aa/smaa/smaa.vert";
+	fs::path fragPath = "mason/aa/smaa/smaa.frag";
 	auto geom = geom::Rect( Rectf( 0, 0, 1, 1 ) );
 
 #if 1
