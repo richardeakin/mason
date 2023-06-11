@@ -49,28 +49,28 @@ MotionBlurEffect::MotionBlurEffect( PostProcess *postProcess )
 {
 	bool depthInColorAlphaChannel = mPostProcess->getDepthSource() == DepthSource::COLOR_ALPHA_CHANNEL;
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
+	mConnections += ma::assets()->getShader( "mason/post/motionBlur/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
 		gl::GlslProg::Format().define( "INPUT_HAS_MIN_SPEED 0" ).label( "MotionBlur_tileMinMax (H)" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslTileMinMaxHorizontal = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
+	mConnections += ma::assets()->getShader( "mason/post/motionBlur/passthrough.vert", "mason/post/motionBlur/tileMinMax.frag",
 		gl::GlslProg::Format().define( "INPUT_HAS_MIN_SPEED 1" ).label( "MotionBlur_tileMinMax" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslTileMinMax = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/neighborMinMax.frag",
+	mConnections += ma::assets()->getShader( "mason/post/motionBlur/passthrough.vert", "mason/post/motionBlur/neighborMinMax.frag",
 		gl::GlslProg::Format().label( "MotionBlur_neighborMinMax" ),
 		[this]( gl::GlslProgRef glsl ) {
 			mGlslNeighborMinMax = glsl;
 		}
 	);
 
-	mConnections += ma::assets()->getShader( "mason/passthrough.vert", "mason/post/motionBlur/gather.frag",
+	mConnections += ma::assets()->getShader( "mason/post/motionBlur/passthrough.vert", "mason/post/motionBlur/gather.frag",
 		gl::GlslProg::Format().define( "DEPTH_IN_COLOR_ALPHA_CHANNEL", to_string( depthInColorAlphaChannel ) ).label( "MotionBlur_gather" ),
 		[this]( gl::GlslProgRef glsl ) {
 			glsl->uniform( "uSamples", mNumSamples ); // TODO: remove if not used
