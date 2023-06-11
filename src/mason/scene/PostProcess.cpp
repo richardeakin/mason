@@ -187,18 +187,6 @@ PostProcess::Options &PostProcess::Options::config( const ma::Info &config )
 	// Depth Of Field
 	mDepthOfField = config.get( "depthOfField", mDepthOfField );
 
-#if SCENE_GODRAYS_ENABLED
-	// Godrays
-	mSunRays = config.get( "sunRays", mSunRays );
-	mSunBoost = config.get( "sunBoost", mSunBoost );
-	mSunPower = config.get( "sunPower", mSunPower );
-#endif
-
-	mSunPos = config.get( "sunPos", mSunPos );
-	mSunFromCamera = config.get( "sunFromCamera", mSunFromCamera );
-
-	mBloomDownsampleFactor = config.get( "bloomDownsampleFactor", mBloomDownsampleFactor );
-
 	return *this;
 }
 
@@ -213,13 +201,6 @@ void PostProcess::Options::save( ma::Info &info ) const
 	info["depthOfField"] = mDepthOfField;
 	info["gamma"] = mGamma;
 	info["bloom"] = mBloom;
-#if SCENE_GODRAYS_ENABLED
-	info["sunRays"] = mSunRays;
-	info["sunBoost"] = mSunBoost;
-	info["sunPower"] = mSunPower;
-	info["sunPos"] = mSunPos;
-	info["sunFromCamera"] = mSunFromCamera;
-#endif
 	info["glowBuffer"] = mGlowBuffer;
 	info["debugBuffer"] = mDebugBuffer;
 	info["bloomDownsampleFactor"] = mBloomDownsampleFactor;
@@ -374,19 +355,6 @@ void PostProcess::configureBuffers()
 		mDepthOfField = make_unique<DepthOfFieldBokehEffect>( this );
 	}
 
-#if SCENE_GODRAYS_ENABLED
-
-	if( mOptions.mSunRays ) {
-		mSunRays = make_unique<SunRays>( this );
-		mSunRays->setSunBoost( mOptions.mSunBoost );
-		mSunRays->setSunPower( mOptions.mSunPower );
-		mSunRays->setSunPosition( mOptions.mSunPos );
-		mSunRays->enableSunFromCamera( mOptions.mSunFromCamera );
-	}
-	else {
-		mSunRays = nullptr;
-	}
-#endif
 
 	if( mOptions.mDebugBuffer ) {
 		auto format = gl::Texture::Format()
@@ -570,17 +538,6 @@ void PostProcess::postDraw( const Rectf &destRect )
 		mBloom->process( srcFbo );
 	}
 
-#if SCENE_GODRAYS_ENABLED
-
-	if( mSunRays ) {
-		MA_PROFILE( "PostProcess - SunRays" );
-
-		mSunRays->setCamera( mCam );
-		mSunRays->process( srcFbo );
-		srcFbo = mSunRays->getFbo();
-	}
-#endif
-
 	// disable blending and depth, for both composite and AA passes
 	gl::ScopedBlend blendScope( false );
 	gl::ScopedDepth depthScope( false );
@@ -712,17 +669,6 @@ void PostProcess::blitTo( const gl::FboRef &fbo ) const
 {
 	mFboScene->blitTo( fbo, mFboScene->getBounds(), fbo->getBounds() );
 }
-
-#if SCENE_GODRAYS_ENABLED
-void PostProcess::setSunRaysEnabled( bool enable )
-{
-	mOptions.mSunRays = enable;
-	if( mOptions.mSunRays ) {
-		markBuffersNeedConfigure();
-	}
-	mSunRays = nullptr;
-}
-#endif
 
 // ----------------------------------------------------------------------------------------------------
 // ImGui
@@ -921,41 +867,6 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 		}
 	}
 
-#if SCENE_GODRAYS_ENABLED
-	if( im::CollapsingHeader( "Sun Rays", flags ) ) {
-		if( im::Checkbox( "enabled##sunrays", &mOptions.mSunRays ) ) {
-			setSunRaysEnabled( mOptions.mSunRays );
-		}
-		if( mSunRays ) {
-			// TODO: give SunRays it's own load() / save() methods
-			if( im::Checkbox( "use camera", &mOptions.mSunFromCamera ) ) {
-				mSunRays->enableSunFromCamera( mOptions.mSunFromCamera );
-			}
-			if( im::DragFloat2( "sun pos", &mOptions.mSunPos.x, 0.001f, -1, 1 ) ) {
-				mSunRays->setSunPosition( mOptions.mSunPos );
-				mSunRays->enableSunFromCamera( false );
-				mOptions.mSunFromCamera = false;
-			}
-			if( im::SliderFloat( "Power", &mOptions.mSunPower, 1, 100, "%.3f", 2 ) ) {
-				mSunRays->setSunPower( mOptions.mSunPower );
-			}
-			if( im::SliderFloat( "Boost", &mOptions.mSunBoost, 1, 100, "%.3f", 2 ) ) {
-				mSunRays->setSunBoost( mOptions.mSunBoost );
-			}
-
-			// imx::TexturePreview( "final", mSunRays->getTexture(), imageBounds );
-		}
-		else {
-			if( !mOptions.mSunRays ) {
-				im::Text( "Sun rays disabled" );
-			}
-			else if( !mSunRays ) {
-				im::Text( "null mSunRays" );
-			}
-		}
-	}
-#endif
-
 	if( im::CollapsingHeader( "Scene Buffers" ) ) {
 		auto opts = imx::TextureViewerOptions().treeNodeFlags( ImGuiTreeNodeFlags_DefaultOpen );
 		if( mFboScene ) {
@@ -979,15 +890,6 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 		else {
 			im::Text( "null mFboScene" );
 		}
-
-#if SCENE_GODRAYS_ENABLED
-		// TODO: move these buffers into SunraysEffect
-		// - only going to show main attachments in this window
-		if( mSunRays ) {
-			imx::TexturePreview( "SunRays Composite", mSunRays->getTexture(), imageBounds );
-			imx::TexturePreview( "SunRays Effect", mSunRays->getTextureEffect(), imageBounds );
-		}
-#endif
 
 		if( mFboComposite ) {
 			imx::Texture2d( "composite", mFboComposite->getColorTexture() );

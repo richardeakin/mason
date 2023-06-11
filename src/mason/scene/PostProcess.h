@@ -32,16 +32,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #define SCENE_MOTION_BLUR_ENABLED 1
-#define SCENE_GODRAYS_ENABLED 0
 #define SCENE_GLOW_ENABLED 1
 
 #include "mason/scene/PostEffects.h"
 #include "mason/Info.h"
-
-// TODO: rename this to RadialBlur or whatever is appropriate
-#if SCENE_GODRAYS_ENABLED
-#include "mason/scene/GodRays.h"
-#endif
 
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Fbo.h"
@@ -61,7 +55,6 @@ enum class AntiAliasType {
 	FXAA,
 	SMAA,
 	SMAA_T2x,
-	//TAA,
 	NumTypes
 };
 
@@ -124,11 +117,6 @@ public:
 		bool mDebugBuffer = false;
 
 		float mBloomDownsampleFactor = 1;
-
-		float mSunBoost = 10.0f;
-		float mSunPower = 2.0f;
-		ci::vec2 mSunPos = ci::vec2( 0.915f, 1.0f );
-		bool	mSunFromCamera = false;
 		
 #if SCENE_MOTION_BLUR_ENABLED
 		bool	mMotionBlur = false;
@@ -195,12 +183,6 @@ public:
 	//!
 	void markAsDirty() const { mFboScene->markAsDirty(); }
 
-#if SCENE_GODRAYS_ENABLED
-	// TODO: think I want to remove these, in favor of chaining post effects
-	bool isSunRaysEnabled() const	{ return mOptions.mSunRays; }
-	void setSunRaysEnabled( bool enable );
-#endif
-
 	void updateUI( int devFlags, const ci::Rectf &destRect );
 	//! Call this from some other imgui window to add checkboxes for enabling / showing PostProcess window
 	void enabledUI();
@@ -234,11 +216,6 @@ private:
 
 	std::unique_ptr<BloomEffect>				mBloom;
 	std::unique_ptr<DepthOfFieldBokehEffect>	mDepthOfField;
-
-#if SCENE_GODRAYS_ENABLED
-	std::unique_ptr<GodRays>     mGodRays;
-	std::unique_ptr<SunRays>     mSunRays;
-#endif
 
 	std::unique_ptr<FXAA>	mFXAA;
 	std::unique_ptr<SMAA>	mSMAA;
