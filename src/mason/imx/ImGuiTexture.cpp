@@ -22,6 +22,7 @@ public:
 		TextureVelocity,
 		TextureDepth,
 		Texture3d,
+		Texture2dArray, // TODO: Add this type next to make sure that the random buffer is correct
 		NumTypes
 	};
 
@@ -33,7 +34,7 @@ public:
 	void view( const gl::TextureBaseRef &texture );
 
 	void setOptions( const TextureViewerOptions &options )	{ mOptions = options; }
-	void setTiledAtlasMode( bool enabled ) { mTiledAtlasMode = enabled; }
+	void setTiledAtlasMode( bool enabled ) { mOptions.mTiledAtlasMode = enabled; }
 
 	static TextureViewer*	getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options );
 
@@ -45,14 +46,13 @@ private:
 	void renderDepth( const gl::Texture2dRef &texture, const Rectf &destRect );
 	void renderVelocity( const gl::Texture2dRef &texture, const Rectf &destRect );
 	void render3d( const gl::Texture3dRef &texture, const Rectf &destRect );
+	void render2dArray( const gl::Texture3dRef &texture, const Rectf &destRect );
 
 	string		mLabel;
 	Type		mType;
 	gl::FboRef	mFbo, mFboNewWindow; // need a separate fbo for the 'new window' option to avoid imgui crash on stale texture id
-	int			mNumTiles = -1; // TODO: this is actually tiles per row, should probably be renamed
+	int			mNumTiles = -1; // TODO: tiles per row for Texture3D, total tiles (.z) for TextureArray
 	int			mFocusedLayer = 0;
-	bool		mTiledAtlasMode = false; // TODO: move this to options. defaults to true only for Texture3d
-	float       mScale = 1;
 
 	vec4		mDebugPixel;
 	ivec3		mDebugPixelCoord;
@@ -211,7 +211,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		int                   t = (int)mOptions.mDebugPixelMode;
 		SetNextItemWidth( 200 );
 		if( Combo( "debug pixel", &t, debugPixelModes ) ) {
-			mOptions.mDebugPixelMode = (TextureViewerOptions::DebugPixelMode)t;
+			mOptions.mDebugPixelMode = (DebugPixelMode)t;
 		}
 
 		SameLine();
@@ -230,11 +230,11 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 	Image( fbo->getColorTexture(), vec2( fbo->getSize() ) - vec2( 0.0f ) );
 
 	bool pixelCoordNeedsUpdate = false;
-	if( mOptions.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseClick && IsItemClicked() ) {
+	if( mOptions.mDebugPixelMode == DebugPixelMode::MouseClick && IsItemClicked() ) {
 		mDebugPixelNeedsUpdate = true;
 		pixelCoordNeedsUpdate = true;
 	}
-	else if( mOptions.mDebugPixelMode == TextureViewerOptions::DebugPixelMode::MouseHover && IsItemHovered() ) {
+	else if( mOptions.mDebugPixelMode == DebugPixelMode::MouseHover && IsItemHovered() ) {
 		mDebugPixelNeedsUpdate = true;
 		pixelCoordNeedsUpdate = true;
 	}
@@ -243,7 +243,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		const float tiles = (float)mNumTiles;
 		vec2 mouseNorm = ( vec2( GetMousePos() ) - vec2( GetItemRectMin() ) ) / vec2( GetItemRectSize() );
 		vec3 pixelCoord;
-		if( mTiledAtlasMode ) {
+		if( mOptions.mTiledAtlasMode ) {
 			pixelCoord.x = fmodf( mouseNorm.x * (float)tex->getWidth() * tiles, (float)tex->getWidth() );
 			pixelCoord.y = fmodf( mouseNorm.y * (float)tex->getHeight() * tiles, (float)tex->getHeight() );
 
@@ -260,7 +260,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 	}
 
 
-	if( mType == Type::Texture3d && mTiledAtlasMode && mOptions.mVolumeAtlasLineThickness > 0.01f ) {
+	if( mType == Type::Texture3d && mOptions.mTiledAtlasMode && mOptions.mVolumeAtlasLineThickness > 0.01f ) {
 		// draw some grid lines over the image, using ImDrawList
 		// - use current window background color for lines
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -286,11 +286,11 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			}
 		}
 		if( mType == Type::Texture3d ) {
-			Checkbox( "atlas mode", &mTiledAtlasMode );
+			Checkbox( "atlas mode", &mOptions.mTiledAtlasMode );
 			//DragInt( "tiles", &mNumTiles, 0.2f, 1, 1024 );
 			DragFloat( "atlas line thikness", &mOptions.mVolumeAtlasLineThickness, 0.02f, 0, 4096 );
 		}
-		DragFloat( "scale", &mScale, 0.01f, 0.02f, 1000.0f );
+		DragFloat( "scale", &mOptions.mScale, 0.01f, 0.02f, 1000.0f );
 		if( mType == Type::TextureDepth ) {
 			Checkbox( "inverted", &mOptions.mInvertColor );
 		}
@@ -321,8 +321,11 @@ void TextureViewer::updatePixelCoord( const gl::TextureBaseRef &texture )
 	vec4 pixel;
 	const ivec3 pixelSize = { 1, 1, 1 };
 	const GLint level = 0;
-	const GLenum format = GL_RGBA;
-	const GLenum dataType = GL_FLOAT;
+	GLenum format = GL_RGBA;
+	GLenum dataType = GL_FLOAT;
+	if( mType == TextureViewer::Type::TextureDepth ) {
+		format = GL_DEPTH_COMPONENT;
+	}
 
 	// fetch one pixel from texture
 	glGetTextureSubImage( texture->getId(), level,
@@ -359,7 +362,7 @@ void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &d
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
 		gl::ScopedGlslProg glslScope( glsl );
-		glsl->uniform( "uScale", mScale );
+		glsl->uniform( "uScale", mOptions.mScale );
 
 		gl::drawSolidRect( destRect );
 	}
@@ -390,7 +393,7 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
 		gl::ScopedGlslProg glslScope( glsl );
-		glsl->uniform( "uScale", mScale );
+		glsl->uniform( "uScale", mOptions.mScale );
 		glsl->uniform( "uInverted", mOptions.mInvertColor );
 
 		gl::drawSolidRect( destRect );
@@ -423,7 +426,7 @@ void TextureViewer::renderVelocity( const gl::Texture2dRef &texture, const Rectf
 		gl::ScopedTextureBind scopedTex0( texture, 0 );
 
 		gl::ScopedGlslProg glslScope( glsl );
-		glsl->uniform( "uScale", mScale );
+		glsl->uniform( "uScale", mOptions.mScale );
 
 		gl::drawSolidRect( destRect );
 	}
@@ -464,8 +467,8 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 			gl::ScopedGlslProg glslScope( glsl );
 			glsl->uniform( "uNumTiles", mNumTiles );
 			glsl->uniform( "uFocusedLayer", mFocusedLayer );
-			glsl->uniform( "uTiledAtlasMode", mTiledAtlasMode );
-			glsl->uniform( "uRgbScale", mScale );
+			glsl->uniform( "uTiledAtlasMode", mOptions.mTiledAtlasMode );
+			glsl->uniform( "uRgbScale", mOptions.mScale );
 
 			gl::drawSolidRect( destRect );
 		}
@@ -473,8 +476,8 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 
 	if( mOptions.mExtendedUI ) {
 		// TODO: make this a dropdown to select mode (may have more than two)
-		Checkbox( "atlas mode", &mTiledAtlasMode );
-		if( mTiledAtlasMode ) {
+		Checkbox( "atlas mode", &mOptions.mTiledAtlasMode );
+		if( mOptions.mTiledAtlasMode ) {
 			SameLine();
 			Text( ", tiles: %d", mNumTiles );
 		}
@@ -482,6 +485,64 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 			SliderInt( "slice", &mFocusedLayer, 0, texture->getDepth() );
 		}
 	}
+}
+
+void TextureViewer::render2dArray( const gl::Texture3dRef &texture, const Rectf &destRect )
+{
+	if( ! texture ) {
+		ImGui::Text( "%s null", mLabel.c_str() );
+		return;
+	}
+
+	if( texture->getTarget() != GL_TEXTURE_2D_ARRAY ) {
+		ImGui::Text( "wrong data type (expected GL_TEXTURE_2D_ARRAY)" );
+		return;
+	}
+
+	mNumTiles = texture->getDepth();
+
+	// use static glsl if none provided
+	auto glsl = mOptions.mGlsl;
+	if( ! glsl ) {
+		static gl::GlslProgRef sGlsl;
+		if( ! sGlsl ) {
+			const fs::path vertPath = "mason/textureViewer/texture.vert";
+			const fs::path fragPath = "mason/textureViewer/texture2dArray.frag";
+			ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
+				sGlsl = glsl;
+			} );
+		}
+		glsl = sGlsl;
+	}
+
+	// render to fbo based on current params
+	{
+		gl::ScopedTextureBind scopedTex0( texture, 0 );
+
+		if( glsl ) {
+			gl::ScopedGlslProg glslScope( glsl );
+			glsl->uniform( "uNumTiles", mNumTiles );
+			glsl->uniform( "uFocusedLayer", mFocusedLayer );
+			glsl->uniform( "uTiledAtlasMode", mOptions.mTiledAtlasMode );
+			glsl->uniform( "uRgbScale", mOptions.mScale );
+
+			gl::drawSolidRect( destRect );
+		}
+	}
+
+	// TODO: combine as a single extended3DUI if they stay the same
+	if( mOptions.mExtendedUI ) {
+		// TODO: make this a dropdown to select mode (may have more than two)
+		Checkbox( "atlas mode", &mOptions.mTiledAtlasMode );
+		if( mOptions.mTiledAtlasMode ) {
+			SameLine();
+			Text( ", tiles: %d", mNumTiles );
+		}
+		else {
+			SliderInt( "slice", &mFocusedLayer, 0, texture->getDepth() );
+		}
+	}
+
 }
 
 void Texture2d( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
@@ -502,6 +563,11 @@ void TextureVelocity( const char *label, const gl::TextureBaseRef &texture, cons
 void Texture3d( const char *label, const gl::TextureBaseRef &texture, const TextureViewerOptions &options )
 {
 	TextureViewer::getTextureViewer( label, TextureViewer::Type::Texture3d, options )->view( texture  );
+}
+
+void Texture2dArray( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options )
+{
+	TextureViewer::getTextureViewer( label, TextureViewer::Type::Texture2dArray, options )->view( texture  );
 }
 
 } // namespace imx

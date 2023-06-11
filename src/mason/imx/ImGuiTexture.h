@@ -27,6 +27,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace imx {
 
+enum class DebugPixelMode {
+	Disabled,
+	MouseClick,
+	MouseHover
+};
+
 struct TextureViewerOptions {
 
 	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
@@ -36,27 +42,26 @@ struct TextureViewerOptions {
 	ci::gl::GlslProgRef mGlsl;
 	bool				mClearCachedOptions = false; //! Only used when getting the internal cached TextureViewer - allows updating options from outside C++ (will blow away internal options)
 	bool				mInvertColor = false; //! interpreted differently by viewers
-	enum class DebugPixelMode {
-		Disabled,
-		MouseClick,
-		MouseHover
-	};
-
-	DebugPixelMode	mDebugPixelMode = DebugPixelMode::Disabled;
+	float				mScale = 1.0f; //! interpreted by shaders to scale their visual output
+	DebugPixelMode		mDebugPixelMode = DebugPixelMode::Disabled;
+	bool				mTiledAtlasMode = false; //! defaults to true only for Texture3d
 
 	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags ) { mOpenNewWindow = flags; return *this; }
 	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags ) { mTreeNodeFlags = flags; return *this; }
 	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl ) { mGlsl = glsl; return *this; }
 	TextureViewerOptions&	extendedUI( bool enabled ) { mExtendedUI = enabled; return *this; }
 	TextureViewerOptions&	openNewWindow( bool enabled ) { mOpenNewWindow = enabled; return *this; }
-	TextureViewerOptions&	debugPixel( DebugPixelMode &mode ) { mDebugPixelMode = mode; return *this; }
+	TextureViewerOptions&	debugPixel( DebugPixelMode mode ) { mDebugPixelMode = mode; return *this; }
 	TextureViewerOptions&	clearCachedOptions( bool b = true )	{ mClearCachedOptions = b; return *this; }
+	TextureViewerOptions&	scale( float s )	{ mScale = s; return *this; }
 	TextureViewerOptions&	invertColor( bool b = true )	{ mInvertColor = b; return *this; }
+	TextureViewerOptions&	tiledAtlas( bool m = true )	{ mTiledAtlasMode = m; return *this; }
 };
 
 void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
 void TextureDepth( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
 void TextureVelocity( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
 void Texture3d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
+void Texture2dArray( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );
 
 } // namespace imx
