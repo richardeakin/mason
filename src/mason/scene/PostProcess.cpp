@@ -141,6 +141,7 @@ PostProcess::Options &PostProcess::Options::config( const ma::Info &config )
 	mEnabled = config.get( "enabled", mEnabled );
 	mUIEnabled = config.get( "ui", mUIEnabled );
 	mGamma = config.get( "gamma", mGamma );
+	mExposure  = config.get( "exposure", mExposure );
 	mGlowBuffer = config.get( "glowBuffer", mGlowBuffer );
 	mVelocityBuffer = config.get( "velocityBuffer", mVelocityBuffer );
 	mDebugBuffer = config.get( "debugBuffer", mDebugBuffer );
@@ -180,11 +181,14 @@ PostProcess::Options &PostProcess::Options::config( const ma::Info &config )
 
 	// BloomEffect
 	mBloom = config.get( "bloom", mBloom );
+	mBloomDownsampleFactor = config.get( "bloomDownsampleFactor", mBloomDownsampleFactor ); // stored here as PostProces class manages downsampled buffer size
+	mBloomGlowContrib	   = config.get( "bloomGlowContrib", mBloomGlowContrib ); // used in compositing
 
 	// MotionBlurEffect
 	mMotionBlur = config.get( "motionBlur", mMotionBlur );
 
 	// Depth Of Field
+	// TODO: add macro to disable at compile time
 	mDepthOfField = config.get( "depthOfField", mDepthOfField );
 
 	return *this;
@@ -200,10 +204,12 @@ void PostProcess::Options::save( ma::Info &info ) const
 	info["motionBlur"] = mMotionBlur;
 	info["depthOfField"] = mDepthOfField;
 	info["gamma"] = mGamma;
+	info["exposure"] = mExposure;
 	info["bloom"] = mBloom;
 	info["glowBuffer"] = mGlowBuffer;
 	info["debugBuffer"] = mDebugBuffer;
 	info["bloomDownsampleFactor"] = mBloomDownsampleFactor;
+	info["bloomGlowContrib"]	  = mBloomGlowContrib;
 	info["colorFormat"] = colorFormatToString( mColorFormat );
 	info["depthSource"] = mDepthSource == DepthSource::Z_BUFFER ? "z buffer" : mDepthSource == DepthSource::COLOR_ALPHA_CHANNEL ? "color alpha" : "disabled";
 }
@@ -573,6 +579,32 @@ void PostProcess::postDraw( const Rectf &destRect )
 
 		// draw full-screen quad
 		{
+			// TODO: fog params in gui and here
+			// TODO: re-enable vignette
+
+			auto glsl = mBatchComposite->getGlslProg();
+			glsl->uniform( "uExposure", mOptions.mExposure );
+			//glsl->uniform( "uFogEnabled", mOptions.mFog );
+			//glsl->uniform( "uFogDensity", mOptions.mFogDensity );
+			//glsl->uniform( "uFogColor", mOptions.mFogColor );
+			//glsl->uniform( "uFogDistScale", mOptions.mFogDistScale );
+			//glsl->uniform( "uFogDistStart", mOptions.mFogDistStart );
+			//glsl->uniform( "uVignetteIntensity", mOptions.mVignetteIntensity );
+			//glsl->uniform( "uVignetteExtent", mOptions.mVignetteExtent );
+			//glsl->uniform( "uVignetteBlend", mOptions.mVignetteBlend );
+			glsl->uniform( "uGlowContrib", mOptions.mBloomGlowContrib );
+
+			vec4 projectionParams;
+			// float nearClipDistance = mCam.getNearClip();
+			// float farClipDistance = mCam.getFarClip();
+			// projectionParams.x = farClipDistance / ( farClipDistance - nearClipDistance );
+			// projectionParams.y = ( -farClipDistance * nearClipDistance ) / ( farClipDistance - nearClipDistance );
+			projectionParams.x = mCam.getNearClip();
+			projectionParams.y = mCam.getFarClip();
+			// projectionParams.z = mCam.getEyePoint().z;
+			glsl->uniform( "uProjectionParams", projectionParams );
+			glsl->uniform( "uProjectionMatrixInverse", glm::inverse( mCam.getProjectionMatrix() ) );
+
 			gl::ScopedModelMatrix modelScope;
 			gl::scale( mSize.x, mSize.y, 0 );
 			mBatchComposite->draw();
@@ -691,6 +723,8 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 		loadGlsl();
 	}
 
+	im::DragFloat( "exposure", &mOptions.mExposure, 0.1f, -1, 20 ); // if <= 0, disables tone-mapping
+
 	im::Text( "buffers: " );
 	im::SameLine();
 	if( im::Button( "clear" ) ) {
@@ -791,28 +825,33 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 			}
 			else {
 				// not doing a full reconfigure, just remove the post effect
-				mBloom = nullptr;
+				mBloom				 = nullptr;
 				mOptions.mGlowBuffer = false;
 			}
 
 			loadGlsl();
 		}
 		if( mBloom ) {
+			im::DragFloat( "glow contrib", &mOptions.mBloomGlowContrib, 0.01f, 0.0f, 3.0f );
 			imx::BeginDisabled( true ); // FIXME: see comment in preDraw()
 			if( im::InputFloat( "downsample factor", &mOptions.mBloomDownsampleFactor, 1 ) ) {
 				mOptions.mBloomDownsampleFactor = glm::clamp( mOptions.mBloomDownsampleFactor, 1.0f, 10.0f );
 				markBuffersNeedConfigure();
 			}
 			imx::EndDisabled();
-			//imx::TexturePreview( "final", mBloom->getTexture(), imageBounds );
+			// imx::TexturePreview( "final", mBloom->getTexture(), imageBounds );
 		}
 		else {
 			if( ! mOptions.mBloom ) {
 				im::Text( "Bloom disabled" );
 			}
-			else if( !mBloom ) {
+			else if( ! mBloom ) {
 				im::Text( "null mBloom" );
 			}
+		}
+
+		if( mBloom ) {
+			mBloom->updateUI();
 		}
 	}
 

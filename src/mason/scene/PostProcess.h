@@ -104,6 +104,7 @@ public:
 	private:
 		bool mEnabled = true;
 		bool mUIEnabled = false;
+		float mExposure = 0.0f; //! set to zero to disable exposure / tone-mapping
 		bool mGamma = true;
 		bool mBloom = false;
 		bool mDepthOfField = false;
@@ -117,7 +118,8 @@ public:
 		bool mDebugBuffer = false;
 
 		float mBloomDownsampleFactor = 1;
-		
+		float mBloomGlowContrib		 = 0.5f;
+
 #if SCENE_MOTION_BLUR_ENABLED
 		bool	mMotionBlur = false;
 #endif
