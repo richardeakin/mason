@@ -205,7 +205,7 @@ void AssetManager::initShaderPreprocessorLazy()
 	mShaderPreprocessor->setVersion( 300 );
 	mShaderPreprocessor->addDefine( "CINDER_GL_ES" );
 #else
-	mShaderPreprocessor->setVersion( 410 );
+	mShaderPreprocessor->setVersion( 430 );
 	mShaderPreprocessor->addDefine( "CINDER_GL_CORE" );
 #endif
 
