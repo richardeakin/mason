@@ -575,6 +575,11 @@ void PostProcess::postDraw( const Rectf &destRect )
 
 		// writeImage( "scene.png", destFbo->getColorTexture()->createSource() );
 
+		auto texDepth = getDepthTexture();
+		if( texDepth ) {
+			gl::context()->pushTextureBinding( texDepth->getTarget(), texDepth->getId(), TEXTURE_UNIT_DEPTH );
+		}
+
 #if SCENE_MOTION_BLUR_ENABLED
 		gl::Texture2dRef velocityTex;
 		if( mOptions.mVelocityBuffer ) {
@@ -621,6 +626,10 @@ void PostProcess::postDraw( const Rectf &destRect )
 			gl::ScopedModelMatrix modelScope;
 			gl::scale( mSize.x, mSize.y, 0 );
 			mBatchComposite->draw();
+		}
+
+		if( texDepth ) {
+			gl::context()->popTextureBinding( mFboScene->getDepthTexture()->getTarget(), TEXTURE_UNIT_DEPTH );
 		}
 
 #if SCENE_MOTION_BLUR_ENABLED
@@ -743,7 +752,7 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 		im::ColorEdit3( "color", &mOptions.mFogColor, ImGuiColorEditFlags_Float );
 		im::DragFloat( "density", &mOptions.mFogDensity, 0.01f, 0, 20 );
 		im::DragFloat( "dist start", &mOptions.mFogDistStart, 0.002f, 0, 20 );
-		im::DragFloat( "dist scale", &mOptions.mFogDistScale, 0.002f, 0, 20 );
+		im::DragFloat( "dist scale", &mOptions.mFogDistScale, 0.002f, 0, 100 );
 	}
 
 	im::Text( "buffers: " );

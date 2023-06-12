@@ -113,11 +113,11 @@ public:
 		bool mBloom = false;
 		bool mDepthOfField = false;
 
-		bool		mFog = false;
+		bool		mFog = true;
 		ci::Color	mFogColor = { 0, 0.1f, 0.2f };
 		float		mFogDensity = 0.25f;
-		float		mFogDistScale = 100;
-		float		mFogDistStart = 0.4f;
+		float		mFogDistStart = 1;
+		float		mFogDistScale = 30;
 
 		ColorFormat	mColorFormat = ColorFormat::RGB32;
 		DepthSource mDepthSource = DepthSource::DISABLED;
