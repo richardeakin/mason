@@ -142,9 +142,15 @@ PostProcess::Options &PostProcess::Options::config( const ma::Info &config )
 	mUIEnabled = config.get( "ui", mUIEnabled );
 	mGamma = config.get( "gamma", mGamma );
 	mExposure  = config.get( "exposure", mExposure );
-	mGlowBuffer = config.get( "glowBuffer", mGlowBuffer );
+	mFog			= config.get( "fog", mFog );
+	mFogDensity		= config.get( "fogDensity", mFogDensity );
+	mFogDistStart	= config.get( "fogDistStart", mFogDistStart );
+	mFogDistScale	= config.get( "fogDistScale", mFogDistScale );
+	mFogColor		= config.get( "fogColor", mFogColor );
+	mGlowBuffer		= config.get( "glowBuffer", mGlowBuffer );
 	mVelocityBuffer = config.get( "velocityBuffer", mVelocityBuffer );
 	mDebugBuffer = config.get( "debugBuffer", mDebugBuffer );
+
 
 	// main color buffer
 	ColorFormat defaultColorFormat = mColorFormat;
@@ -205,6 +211,11 @@ void PostProcess::Options::save( ma::Info &info ) const
 	info["depthOfField"] = mDepthOfField;
 	info["gamma"] = mGamma;
 	info["exposure"] = mExposure;
+	info["fog"]			   = mFog;
+	info["fogColor"] 	   = mFogColor;
+	info["fogDensity"]	   = mFogDensity;
+	info["fogDistStart"]   = mFogDistStart;
+	info["fogDistScale"]   = mFogDistScale;
 	info["bloom"] = mBloom;
 	info["glowBuffer"] = mGlowBuffer;
 	info["debugBuffer"] = mDebugBuffer;
@@ -449,14 +460,19 @@ void PostProcess::loadGlsl()
 {
 	auto format = gl::GlslProg::Format();
 
-	if( mOptions.mGamma ) // TODO: should also defnie if AA is FXAA / SMAA (though currently this define isn't being used in composite.frag
+	if( mOptions.mGamma )
 		format.define( "GAMMA_ENABLED" );
 	if( mOptions.mBloom )
 		format.define( "BLOOM_ENABLED" );
+	//if( mOptions.mVignette )
+	//	format.define( "VIGNETTE_ENABLED" );
 
 	format.define( "AA_TYPE", to_string( (int)mOptions.mAntiAliasType ) );
 
-	mConnGlslPostProcess = ma::assets()->getShader( "mason/passthrough.vert", "mason/post/composite.frag", format, [this]( gl::GlslProgRef glsl ) {
+	auto compositeVert = ( ! mOptions.mCompositeVertPath.empty() ) ? mOptions.mCompositeVertPath : "mason/passthrough.vert";
+	auto compositeFrag = ( ! mOptions.mCompositeFragPath.empty() ) ? mOptions.mCompositeFragPath : "mason/post/composite.frag";
+
+	mConnGlslPostProcess = ma::assets()->getShader( compositeVert, compositeFrag, format, [this]( gl::GlslProgRef glsl ) {
 		glsl->uniform( "uTexColor", TEXTURE_UNIT_COLOR );
 
 		if( mOptions.mDepthSource != DepthSource::DISABLED ) {
@@ -466,9 +482,7 @@ void PostProcess::loadGlsl()
 			glsl->uniform( "uTexGlow", TEXTURE_UNIT_GLOW );
 		}
 
-#if SCENE_MOTION_BLUR_ENABLED
 		glsl->uniform( "uTexVelocity", TEXTURE_UNIT_VELOCITY );
-#endif
 
 		if( mBatchComposite )
 			mBatchComposite->replaceGlslProg( glsl );
@@ -579,16 +593,15 @@ void PostProcess::postDraw( const Rectf &destRect )
 
 		// draw full-screen quad
 		{
-			// TODO: fog params in gui and here
 			// TODO: re-enable vignette
 
 			auto glsl = mBatchComposite->getGlslProg();
 			glsl->uniform( "uExposure", mOptions.mExposure );
-			//glsl->uniform( "uFogEnabled", mOptions.mFog );
-			//glsl->uniform( "uFogDensity", mOptions.mFogDensity );
-			//glsl->uniform( "uFogColor", mOptions.mFogColor );
-			//glsl->uniform( "uFogDistScale", mOptions.mFogDistScale );
-			//glsl->uniform( "uFogDistStart", mOptions.mFogDistStart );
+			glsl->uniform( "uFogEnabled", mOptions.mFog );
+			glsl->uniform( "uFogDensity", mOptions.mFogDensity );
+			glsl->uniform( "uFogColor", mOptions.mFogColor );
+			glsl->uniform( "uFogDistScale", mOptions.mFogDistScale );
+			glsl->uniform( "uFogDistStart", mOptions.mFogDistStart );
 			//glsl->uniform( "uVignetteIntensity", mOptions.mVignetteIntensity );
 			//glsl->uniform( "uVignetteExtent", mOptions.mVignetteExtent );
 			//glsl->uniform( "uVignetteBlend", mOptions.mVignetteBlend );
@@ -724,6 +737,14 @@ void PostProcess::updateUI( int devFlags, const ci::Rectf &destRect )
 	}
 
 	im::DragFloat( "exposure", &mOptions.mExposure, 0.1f, -1, 20 ); // if <= 0, disables tone-mapping
+
+    if( im::CollapsingHeader( "Fog", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+		im::Checkbox( "enabled##fog", &mOptions.mFog );
+		im::ColorEdit3( "color", &mOptions.mFogColor, ImGuiColorEditFlags_Float );
+		im::DragFloat( "density", &mOptions.mFogDensity, 0.01f, 0, 20 );
+		im::DragFloat( "dist start", &mOptions.mFogDistStart, 0.002f, 0, 20 );
+		im::DragFloat( "dist scale", &mOptions.mFogDistScale, 0.002f, 0, 20 );
+	}
 
 	im::Text( "buffers: " );
 	im::SameLine();

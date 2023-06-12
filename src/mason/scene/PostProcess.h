@@ -97,6 +97,10 @@ public:
 
 		Options& bloomDownsampleFactor( float factor )	{ mBloomDownsampleFactor = factor; return *this; }
 
+		//! swap in your own glsl for compositing pass (postDraw()), ins/outs/uniforms must match
+		Options& compositeVert(const ci::fs::path &p )	{ mCompositeVertPath = p; return *this; }
+		Options& compositeFrag(const ci::fs::path &p )	{ mCompositeFragPath = p; return *this; }
+
 		Options& config( const ma::Info &config );
 
 		void save( ma::Info &info ) const;
@@ -108,7 +112,12 @@ public:
 		bool mGamma = true;
 		bool mBloom = false;
 		bool mDepthOfField = false;
-		bool mSunRays = true;
+
+		bool		mFog = false;
+		ci::Color	mFogColor = { 0, 0.1f, 0.2f };
+		float		mFogDensity = 0.25f;
+		float		mFogDistScale = 100;
+		float		mFogDistStart = 0.4f;
 
 		ColorFormat	mColorFormat = ColorFormat::RGB32;
 		DepthSource mDepthSource = DepthSource::DISABLED;
@@ -123,6 +132,8 @@ public:
 #if SCENE_MOTION_BLUR_ENABLED
 		bool	mMotionBlur = false;
 #endif
+
+		ci::fs::path	mCompositeVertPath, mCompositeFragPath;
 
 		AntiAliasType			mAntiAliasType = AntiAliasType::None;
 		int						mMSAASamples = 8;
