@@ -16,7 +16,7 @@ extern "C" {
 #include "mason/prepareAppSettings.h"
 #include "mason/Profiling.h"
 #include "mason/FlyCam.h"
-#include "mason/extra/ImGuiStuff.h"
+#include "mason/imx/ImGuiStuff.h"
 #include "mason/extra/LivePPManager.h"
 
 #include "DebugScene.h"
@@ -115,7 +115,7 @@ void loadLoggerSettings()
 	}
 
 	int breakOnLogLevel = devConfig["breakOnLogLevel"];
-	log::makeOrGetLogger<log::LoggerBreakpoint>()->setTriggerLevel( ( log::Level )breakOnLogLevel );
+	log::makeOrGetLogger<log::LoggerBreakpoint>( ( log::Level )breakOnLogLevel );
 
 	bool timestamps = appConfig["logTimestamps"];
 	if( timestamps ) {

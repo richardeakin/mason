@@ -5,7 +5,7 @@
     <REPO_PATH>..\..\..\..</REPO_PATH>
     <CINDER_PATH>$(REPO_PATH)\..\..\cinder</CINDER_PATH>
     <K4ABT_SDK_PATH>C:\Program Files\Azure Kinect Body Tracking SDK</K4ABT_SDK_PATH>
-    <K4A_SDK_PATH>C:\Program Files\Azure Kinect SDK v1.4.0</K4A_SDK_PATH>
+    <K4A_SDK_PATH>C:\Program Files\Azure Kinect SDK v1.4.1</K4A_SDK_PATH>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />

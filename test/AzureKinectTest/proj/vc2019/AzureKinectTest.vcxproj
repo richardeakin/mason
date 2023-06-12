@@ -153,8 +153,6 @@
     <ClCompile Include="..\..\..\..\blocks\Cinder-AzureKinect\src\imguix\ImGuiFilePicker.cpp" />
     <ClCompile Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.cpp" />
     <ClCompile Include="..\..\..\..\src\mason\extra\AssertOverride.cpp" />
-    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiStuff.cpp" />
-    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiTexture.cpp" />
     <ClCompile Include="..\..\..\..\src\mason\extra\LivePPManager.cpp" />
     <ClCompile Include="..\..\src\AzureKinectTestApp.cpp" />
     <ClCompile Include="..\..\src\DebugScene.cpp" />
@@ -167,8 +165,6 @@
     <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\ck4a\CaptureTypes.h" />
     <ClInclude Include="..\..\..\..\blocks\Cinder-AzureKinect\src\imguix\ImGuiFilePicker.h" />
     <ClInclude Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.h" />
-    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiStuff.h" />
-    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiTexture.h" />
     <ClInclude Include="..\..\..\..\src\mason\extra\LivePPManager.h" />
     <ClInclude Include="..\..\src\DebugScene.h" />
     <ClInclude Include="CinderMswUserDefines.h" />

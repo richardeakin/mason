@@ -63,16 +63,10 @@
     <ClCompile Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.cpp">
       <Filter>blocks\mason\blocks\Cinder-Profiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiStuff.cpp">
-      <Filter>blocks\mason\extra</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\mason\extra\LivePPManager.cpp">
       <Filter>blocks\mason\extra</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\mason\extra\AssertOverride.cpp">
-      <Filter>blocks\mason\extra</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\mason\extra\ImGuiTexture.cpp">
       <Filter>blocks\mason\extra</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\cinder\blocks\OSC\src\cinder\osc\Osc.cpp">
@@ -104,13 +98,7 @@
     <ClInclude Include="..\..\..\..\blocks\Cinder-Profiler\src\Profiler.h">
       <Filter>blocks\mason\blocks\Cinder-Profiler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiStuff.h">
-      <Filter>blocks\mason\extra</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\mason\extra\LivePPManager.h">
-      <Filter>blocks\mason\extra</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\mason\extra\ImGuiTexture.h">
       <Filter>blocks\mason\extra</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\cinder\blocks\OSC\src\cinder\osc\Osc.h">

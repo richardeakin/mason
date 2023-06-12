@@ -4,7 +4,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 //#include "cinder/CinderImGui.h"
-#include "mason/extra/ImGuiStuff.h"
+#include "mason/imx/ImGuiStuff.h"
 
 #include "mason/Assets.h"
 #include "mason/Config.h"
