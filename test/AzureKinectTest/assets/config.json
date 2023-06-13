@@ -1,8 +1,8 @@
 {
 	"app" : {
 		"standalone": false,
-		"fullScreen" : true,
-		"borderless" : true,
+		"fullScreen" : false,
+		"borderless" : false,
 		"screenIndex" : 1,
 		"fileLogging": true,
 		"logTimestamps": false
