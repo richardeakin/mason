@@ -44,6 +44,12 @@ struct ScopedId : public ci::Noncopyable {
 };
 #endif
 
+// TODO: move to cinder/CinderImGui.h
+struct ScopedItemWidth : public ci::Noncopyable {
+	ScopedItemWidth( float itemWidth );
+	~ScopedItemWidth();
+};
+
 } // namespace ImGui
 
 namespace imx {

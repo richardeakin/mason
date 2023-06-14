@@ -26,24 +26,6 @@ using namespace ci;
 using namespace std;
 namespace im = ImGui;
 
-// TODO: move to cinder/CinderImGui.h
-namespace ImGui {
-
-struct ScopedItemWidth : public ci::Noncopyable {
-	ScopedItemWidth( float itemWidth );
-	~ScopedItemWidth();
-};
-
-ScopedItemWidth::ScopedItemWidth( float itemWidth )
-{
-	ImGui::PushItemWidth( itemWidth );
-}
-ScopedItemWidth::~ScopedItemWidth()
-{
-	ImGui::PopItemWidth();
-}
-
-}
 //! config.json: master config, with comments
 //! local.json: overrides anything in config.json locally, with comments, .gitignored.
 //! user.json: config settings saved by the General "save user settings" button or ctrl + s, .gitignored.

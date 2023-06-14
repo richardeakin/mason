@@ -94,6 +94,15 @@ ScopedId::~ScopedId()
 
 #endif // defined( CINDER_IMGUI_BAKED )
 
+ScopedItemWidth::ScopedItemWidth( float itemWidth )
+{
+	ImGui::PushItemWidth( itemWidth );
+}
+ScopedItemWidth::~ScopedItemWidth()
+{
+	ImGui::PopItemWidth();
+}
+
 } // namespace ImGui
 
 namespace imx {
