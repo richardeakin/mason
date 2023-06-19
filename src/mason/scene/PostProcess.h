@@ -233,6 +233,7 @@ private:
 	std::unique_ptr<FXAA>	mFXAA;
 	std::unique_ptr<SMAA>	mSMAA;
 	bool					mBuffersNeedConfigure = false;
+	std::vector<GLenum>		mDrawBuffers;
 };
 
 } // namespace mason::scene

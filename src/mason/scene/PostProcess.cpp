@@ -280,13 +280,11 @@ void PostProcess::markBuffersNeedConfigure()
 	mFboComposite = nullptr;
 }
 
-vector<GLenum> drawBuffers;
 
 void PostProcess::configureBuffers()
 {
 	auto fboFormat = gl::Fbo::Format();
-	//vector<GLenum> drawBuffers;
-	drawBuffers.clear();
+	mDrawBuffers.clear();
 
 	LOG_BUFFERS( "color format: " << colorFormatToString( mOptions.mColorFormat ) );
 
@@ -305,7 +303,7 @@ void PostProcess::configureBuffers()
 
 		format.setLabel( "PostProcess Color" );
 		fboFormat.attachment( COLOR_ATTACHMENT_COLOR, gl::Texture2d::create( mSize.x, mSize.y, format ) );
-		drawBuffers.push_back( COLOR_ATTACHMENT_COLOR );
+		mDrawBuffers.push_back( COLOR_ATTACHMENT_COLOR );
 	}
 
 	if( mOptions.mDepthSource == DepthSource::Z_BUFFER ) {
@@ -337,11 +335,11 @@ void PostProcess::configureBuffers()
 		format.setLabel( "PostProcess Glow" );
 
 		fboFormat.attachment( COLOR_ATTACHMENT_GLOW, gl::Texture2d::create( mSize.x, mSize.y, format ) );
-		drawBuffers.push_back( COLOR_ATTACHMENT_GLOW );
+		mDrawBuffers.push_back( COLOR_ATTACHMENT_GLOW );
 	}
 	else {
 		mBloom = nullptr;
-		drawBuffers.push_back( GL_NONE );
+		mDrawBuffers.push_back( GL_NONE );
 	}
 #endif
 
@@ -361,10 +359,10 @@ void PostProcess::configureBuffers()
 		format.setLabel( "PostProcess Velocity" );
 
 		fboFormat.attachment( COLOR_ATTACHMENT_VELOCITY, gl::Texture2d::create( mSize.x, mSize.y, format ) );
-		drawBuffers.push_back( COLOR_ATTACHMENT_VELOCITY );
+		mDrawBuffers.push_back( COLOR_ATTACHMENT_VELOCITY );
 	}
 	else {
-		drawBuffers.push_back( GL_NONE );
+		mDrawBuffers.push_back( GL_NONE );
 	}
 #endif
 
@@ -382,10 +380,10 @@ void PostProcess::configureBuffers()
 		format.setLabel( "PostProcess Debug" );
 
 		fboFormat.attachment( COLOR_ATTACHMENT_DEBUG, gl::Texture2d::create( mSize.x, mSize.y, format ) );
-		drawBuffers.push_back( COLOR_ATTACHMENT_DEBUG );
+		mDrawBuffers.push_back( COLOR_ATTACHMENT_DEBUG );
 	}
 	else {
-		drawBuffers.push_back( GL_NONE );
+		mDrawBuffers.push_back( GL_NONE );
 	}
 
 	if( mOptions.mAntiAliasType == AntiAliasType::MSAA ) {
@@ -408,7 +406,7 @@ void PostProcess::configureBuffers()
 	// - see Description section here: https://www.khronos.org/opengl/wiki/GLAPI/glDrawBuffers
 	{
 		gl::ScopedFramebuffer fboScope( mFboScene );
-		gl::drawBuffers( drawBuffers.size(), drawBuffers.data() );
+		gl::drawBuffers( mDrawBuffers.size(), mDrawBuffers.data() );
 	}
 
 	// Create compositing Fbo
@@ -508,7 +506,7 @@ void PostProcess::preDraw()
 
 	// TODO: figure if it's indeed best to call glDrawBuffers() every frame
 	// - seems to be fixing the issue with msaa + motion blur and no glow buffer attachment
-	gl::drawBuffers( drawBuffers.size(), drawBuffers.data() );
+	gl::drawBuffers( mDrawBuffers.size(), mDrawBuffers.data() );
 
 	gl::pushViewport( 0, 0, mFboScene->getWidth(), mFboScene->getHeight() );
 
