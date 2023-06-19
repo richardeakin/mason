@@ -10,13 +10,9 @@ namespace mason::scene {
 
 using ComponentRef = std::shared_ptr<class Component>;
 
-//! Type for something drawn in the scene.
+//! Base class for lightweight types for something drawn in the scene.
 //! - a WorldClock manages for the update and draw loops
 //! - virtual load() / save() methods allow for serializing config params, virtual updateUI() provides controls (imgui)
-//!
-// TODO: consider renaming to Element (because Component is widely used in ECS nomenclature)
-// TODO: consider making this a light subclass on top of View, that has methods for load / save and imgui update / add to component list
-// - right now thinking to leave it separate and very minimal. Also, might end up being more 3d which would be a bit different
 class Component {
 public:
 	Component();
