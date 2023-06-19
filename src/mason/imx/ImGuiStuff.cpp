@@ -421,13 +421,13 @@ public:
 		mFilteredLogsCached( false )
 	{
 		ImVec4* colors = ImGui::GetStyle().Colors;
-		mLevelColors = {
-			colors[ImGuiCol_FrameBg],
-			colors[ImGuiCol_TextDisabled],
-			colors[ImGuiCol_NavWindowingDimBg],
-			colors[ImGuiCol_NavWindowingHighlight],
-			colors[ImGuiCol_HeaderActive],
-			colors[ImGuiCol_PlotLinesHovered]
+		mLevelColors   = {
+			  colors[ImGuiCol_TextDisabled],	// verbose
+			  colors[ImGuiCol_FrameBg],			// debug
+			  colors[ImGuiCol_Text],			// info
+			  { 0.936f, 0.68f, 0.21f, 1 },		// warning (yellow-orange)
+			  { 1, 0, 0, 1 },					// error (red)
+			  { 1, 0, 0, 1 }					// fatal (red)
 		};
 	}
 
@@ -668,6 +668,12 @@ Logger* getLogger( ImGuiID logId )
 }
 
 } // anonymous namespace
+
+void InitLogs()
+{
+	auto logger = log::makeOrGetLogger<Logger>();
+	CI_VERIFY( logger );
+}
 
 void Logs( const char* label, bool* open )
 {
