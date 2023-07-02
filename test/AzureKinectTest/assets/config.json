@@ -3,7 +3,7 @@
 		"standalone": false,
 		"fullScreen" : false,
 		"borderless" : false,
-		"screenIndex" : 1,
+		"screenIndex" : 2,
 		"fileLogging": true,
 		"logTimestamps": false
 	},
@@ -14,10 +14,10 @@
 			{
 				"bodyTracking" : true,
 				"color" : false,
-				"recordingFile" : "E:\\Dropbox\\work\\rte\\azurekinect\\device_recordings\\kinect0_posA_nfov_1.mkv",
+				// "recordingFile" : "E:\\Dropbox\\work\\rte\\azurekinect\\device_recordings\\kinect0_posA_nfov_1.mkv",
 				"debugColor" : [ 0, 1, 0 ],
 				"depth" : true,
-				"serialNumber" : "000639394512",
+				// "serialNumber" : "000639394512",
 				"enabled" : true,
 				"id" : "device-desk",
 				"orientation" : [ 0, 0, 0, 1 ],
@@ -50,6 +50,7 @@
 		"networkingEnabled" : true,
 		"autoStart" : true,
 		"heartbeatSeconds" : 10,
+		"syncDevices" : false,
 		"ui" : true,
 		"verboseLogging" : true
 	},
