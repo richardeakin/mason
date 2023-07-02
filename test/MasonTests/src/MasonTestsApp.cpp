@@ -151,7 +151,7 @@ void prepareSettings( App::Settings *settings )
 	if( useSecondaryScreen ) {
 		const auto &display = Display::getDisplays()[1];
 		settings->setDisplay( display );
-		settings->setFullScreen( true );
+		settings->setFullScreen( false );
 	}
 	else {
 #if defined( CINDER_MAC )
