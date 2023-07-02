@@ -249,6 +249,9 @@ void FlyCam::keyDown( ci::app::KeyEvent &event )
 
 void FlyCam::keyUp( ci::app::KeyEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	bool handled = true;
 	const char c = tolower( event.getChar() );
 	if( c == 'a' || c == 'd' || event.getCode() == app::KeyEvent::KEY_LEFT || event.getCode() == app::KeyEvent::KEY_RIGHT ) {
