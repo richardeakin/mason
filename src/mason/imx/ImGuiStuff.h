@@ -72,12 +72,14 @@ void EndDisabled();
 void SetNotificationColors();
 /// Shows a tooltip when an item is hovered for longer than delay.
 void HoverTooltip(const char* tip, float delay = 1.0f);
+//! Shows profiling information using Cinder-Profiler
+void Profiling( bool *open = nullptr );
 
 //! Init the Logger instance used for UI logs, so that you can capture logs before it is visible.
 void InitLogs();
 //! Shows the ci::logs output in a new Window.
 void Logs( const char* label, bool* open = nullptr );
-//! Shows profiling information using Cinder-Profiler
-void Profiling( bool *open = nullptr );
+//! Shows a checkbox for enabling logs + some info on how many bad logs have been recorded
+void LogsCheckBox( const char* label, bool* open = nullptr );
 
 } // namespace imx

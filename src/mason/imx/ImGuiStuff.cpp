@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018, Richard Eakin - All rights reserved.
+Copyright (c) 2018-23, Richard Eakin - All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -420,15 +420,6 @@ public:
 		mAutoScroll( true ), mMaxLines( 10000 ),
 		mFilteredLogsCached( false )
 	{
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		mLevelColors   = {
-			  colors[ImGuiCol_TextDisabled],	// verbose
-			  colors[ImGuiCol_FrameBg],			// debug
-			  colors[ImGuiCol_Text],			// info
-			  { 0.936f, 0.68f, 0.21f, 1 },		// warning (yellow-orange)
-			  { 1, 0, 0, 1 },					// error (red)
-			  { 1, 0, 0, 1 }					// fatal (red)
-		};
 	}
 
 	void clear()
@@ -442,6 +433,16 @@ public:
 
 	void write( const ci::log::Metadata &meta, const std::string &text ) override
 	{
+		if( meta.mLevel == ci::log::LEVEL_FATAL ) {
+			mNumLinesFatal += 1;
+		}
+		else if( meta.mLevel == ci::log::LEVEL_ERROR ) {
+			mNumLinesError += 1;
+		}
+		else if( meta.mLevel == ci::log::LEVEL_WARNING ) {
+			mNumLinesWarning += 1;
+		}
+
 		if( ! mCompact ) {
 			mLogs.push_back( Log( meta, text ) );			}
 		else {
@@ -472,6 +473,18 @@ public:
 
 	void draw( const std::string &label )
 	{
+		if( mLevelColors.empty() ) {
+			ImVec4* colors = ImGui::GetStyle().Colors;
+			mLevelColors   = {
+				colors[ImGuiCol_TextDisabled],	// verbose
+				colors[ImGuiCol_FrameBg],		// debug
+				colors[ImGuiCol_Text],			// info
+				{ 0.936f, 0.68f, 0.21f, 1 },	// warning (yellow-orange)
+				{ 1, 0, 0, 1 },					// error (red)
+				{ 1, 0, 0, 1 }					// fatal (red)
+			};
+		}
+
 		if( ImGui::Button( "Clear" ) ) { 
 			clear();
 		}
@@ -536,6 +549,8 @@ public:
 		ImGui::PopItemWidth();
 
 		ImGui::Separator();
+		ImGui::Text( "entries: %d", mLogs.size() );
+		ImGui::Separator();
 		ImGui::BeginChild( "scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar );
 
 		mCurrentLineCount = 0;
@@ -598,6 +613,10 @@ public:
 		ImGui::EndChild();
 	}
 
+	int getNumLogsFatal() const { return mNumLinesFatal; }
+	int getNumLogsErrors() const { return mNumLinesError; }
+	int getNumLogsWarning() const { return mNumLinesWarning; }
+
 protected:
 
 	struct Log {
@@ -642,7 +661,7 @@ protected:
 	std::deque<Log>	mLogs;
 	std::deque<size_t>	mFilteredLogs;
 	std::array<bool,6>	mLevelFilters;
-	std::array<ImVec4,6> mLevelColors;
+	std::vector<ImVec4> mLevelColors; // 6 known log levels, colors are lazy loaded before drawing
 	std::array<bool,4>	mMetaFormat;
 	bool				mAutoScroll, mScrollToBottom;
 	bool				mFilteredLogsCached;
@@ -651,6 +670,9 @@ protected:
 	size_t				mCurrentLineCount;
 	bool				mLimitLines;
 	int					mMaxLines;
+	int					mNumLinesFatal = 0;
+	int					mNumLinesError = 0;
+	int					mNumLinesWarning = 0;
 
 	ImGuiTextFilter     mTextFilter;
 };
@@ -660,7 +682,7 @@ Logger* getLogger( ImGuiID logId )
 	ImGuiStorage* storage = ImGui::GetStateStorage();
 	Logger* appLog = (Logger*) storage->GetVoidPtr( logId );
 	if( ! appLog ) {
-		auto logger = log::makeLogger<Logger>();
+		auto logger = log::makeOrGetLogger<Logger>();
 		appLog = logger.get();
 		storage->SetVoidPtr( logId, (void*) logger.get() );
 	}
@@ -684,6 +706,25 @@ void Logs( const char* label, bool* open )
 	}
 
 	ImGui::End();
+}
+
+void LogsCheckBox( const char* label, bool* open )
+{
+	Checkbox( label, open );
+	if( Logger* appLog = getLogger( ImGui::GetID( "Logger::instance" ) ) ) {
+		if( appLog->getNumLogsFatal() ) {
+			SameLine();
+			TextColored( Color( 0.65f, 0.0f, 0.0f ), " fatals: %d", appLog->getNumLogsFatal() );
+		}
+		if( appLog->getNumLogsErrors() ) {
+			SameLine();
+			TextColored( Color( 1.0f, 0.0f, 0.0f ), " errors: %d", appLog->getNumLogsErrors() );
+		}
+		if( appLog->getNumLogsWarning() ) {
+			SameLine();
+			TextColored( Color( 0.65f, 0.65f, 0.0f ), " warnings: %d", appLog->getNumLogsWarning() );
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
