@@ -468,7 +468,7 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 			glsl->uniform( "uNumTiles", mNumTiles );
 			glsl->uniform( "uFocusedLayer", mFocusedLayer );
 			glsl->uniform( "uTiledAtlasMode", mOptions.mTiledAtlasMode );
-			glsl->uniform( "uRgbScale", mOptions.mScale );
+			glsl->uniform( "uScale", mOptions.mScale );
 
 			gl::drawSolidRect( destRect );
 		}
