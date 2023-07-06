@@ -44,6 +44,7 @@ MiscTest::MiscTest()
 		CI_LOG_EXCEPTION( "failed to load Info", exc );
 	}
 
+	testInfoTypeConversions();
 	testPrintingDict();
 	testSetDictWithOperators();
 	testMergegDict();
@@ -190,6 +191,32 @@ void MiscTest::testMergegDict()
 
 	auto json = a.convert<Json::Value>();
 	CI_LOG_I( "merged:\n" << json );
+}
+
+// FIXME: std::any_bad_cast() when converting Info -> json
+// - next: work through these constructors and see why/how vec3 and quat aree different to float
+void MiscTest::testInfoTypeConversions()
+{
+	ma::Info info;
+
+	float f = 2.0f;
+	info.set<float>( "f", f );
+	info["f2"] = f;
+
+	vec3 v = { 3, 3, 3 };
+	info.set<vec3>( "v", v );
+	info["v2"] = v;
+
+	quat q;
+	info.set<quat>( "quat", q ); // vs..
+	info["quat2"] = q;
+
+
+	CI_LOG_I( "info:\n" << info );
+
+
+	auto json = info.convert<Json::Value>();
+	CI_LOG_I( "converted:\n" << json );
 }
 
 void MiscTest::addStressTestWatches()

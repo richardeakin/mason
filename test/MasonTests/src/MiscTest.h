@@ -23,6 +23,7 @@ class MiscTest : public vu::SuiteView {
 	void testPrintingDict();
 	void testSetDictWithOperators();
 	void testMergegDict();
+	void testInfoTypeConversions();
 
 	void addStressTestWatches();
 
