@@ -32,14 +32,11 @@ void Component::loadComponent( const ma::Info &info )
 
 void Component::saveComponent( ma::Info &info ) const
 {
-	ma::Info component;
-	component["update"] = mUpdateEnabled;
-	component["draw"] = mDrawEnabled;
-	component["ui"] = mUIEnabled;
+	info["update"] = mUpdateEnabled;
+	info["draw"] = mDrawEnabled;
+	info["ui"] = mUIEnabled;
 
-	save( component );
-
-	info[mLabel] = component;
+	save( info );
 }
 
 void Component::layoutComponent( const Rectf &bounds )
