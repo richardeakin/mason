@@ -7,8 +7,8 @@
 
 #include "jsoncpp/json.h"
 
-#define LOG_CONFIGS( stream )	CI_LOG_I( stream )
-//#define LOG_CONFIGS( stream )	( (void)( 0 ) )
+//#define LOG_CONFIGS( stream )	CI_LOG_I( stream )
+#define LOG_CONFIGS( stream )	( (void)( 0 ) )
 
 using namespace ci;
 using namespace std;
