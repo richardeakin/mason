@@ -159,14 +159,20 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		Text( "size: [%d, %d],", tex->getWidth(), tex->getHeight() );
 	}
 	SameLine();
-	Text( "format: %s", mason::textureFormatToString( tex->getInternalFormat() ) );
+	Text( "format: %s", ma::textureFormatToString( tex->getInternalFormat() ) );
 
 	// show size of data in kilobytes
-	// - TODO: need convenience routine for calcing one pixel's size
-	size_t bytes = tex->getWidth() * tex->getHeight() * tex->getDepth() * ( sizeof( float ) * 4 );
+	size_t bytesPerPixel = ma::textureBytesPerPixel( tex->getInternalFormat() );
+	size_t bytesTotal = tex->getWidth() * tex->getHeight() * tex->getDepth() * bytesPerPixel;
+	string sizeType = "kb";
+	float memoryUsed = float( bytesTotal ) / 1024.0f;
+	if( memoryUsed > 1024.0f ) {
+		sizeType = "mb";
+		memoryUsed /= 1024.0f;
+	}
 
 	SameLine();
-	Text( "memory: %0.2f kb", float( bytes ) / 1024.0f );
+	Text( "memory: %0.2f %s, bytes per pixel: %d", memoryUsed, sizeType.c_str(), bytesPerPixel );
 
 	// render to fbo based on current params
 	{
@@ -221,8 +227,8 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		if( DragInt3( "pixel coord", &mDebugPixelCoord, 0.5f, 0, tex->getWidth() - 1 ) ) {
 			mDebugPixelNeedsUpdate = true;
 		}
+		SetNextItemWidth( 200 );
 		DragFloat4( "pixel", &mDebugPixel );
-
 	}
 
 	// show texture that we've rendered to
@@ -291,8 +297,10 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			DragFloat( "atlas line thikness", &mOptions.mVolumeAtlasLineThickness, 0.02f, 0, 4096 );
 		}
 		DragFloat( "scale", &mOptions.mScale, 0.01f, 0.02f, 1000.0f );
-		if( mType == Type::TextureDepth ) {
+		DragFloat( "alpha override", &mOptions.mAlphaOverride, 0.004f, 0, 1 );
+		if( mType == Type::TextureColor|| mType == Type::TextureDepth ) {
 			Checkbox( "inverted", &mOptions.mInvertColor );
+			Checkbox( "flip y", &mOptions.mFlipY );
 		}
 
 		EndPopup();
@@ -363,6 +371,8 @@ void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &d
 
 		gl::ScopedGlslProg glslScope( glsl );
 		glsl->uniform( "uScale", mOptions.mScale );
+		glsl->uniform( "uInverted", mOptions.mInvertColor );
+		glsl->uniform( "uFlipY", mOptions.mFlipY );
 
 		gl::drawSolidRect( destRect );
 	}
@@ -395,6 +405,7 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 		gl::ScopedGlslProg glslScope( glsl );
 		glsl->uniform( "uScale", mOptions.mScale );
 		glsl->uniform( "uInverted", mOptions.mInvertColor );
+		glsl->uniform( "uFlipY", mOptions.mFlipY );
 
 		gl::drawSolidRect( destRect );
 	}
@@ -469,6 +480,7 @@ void TextureViewer::render3d( const gl::Texture3dRef &texture, const Rectf &dest
 			glsl->uniform( "uFocusedLayer", mFocusedLayer );
 			glsl->uniform( "uTiledAtlasMode", mOptions.mTiledAtlasMode );
 			glsl->uniform( "uScale", mOptions.mScale );
+			glsl->uniform( "uAlphaOverride", mOptions.mAlphaOverride );
 
 			gl::drawSolidRect( destRect );
 		}
@@ -524,7 +536,7 @@ void TextureViewer::render2dArray( const gl::Texture3dRef &texture, const Rectf 
 			glsl->uniform( "uNumTiles", mNumTiles );
 			glsl->uniform( "uFocusedLayer", mFocusedLayer );
 			glsl->uniform( "uTiledAtlasMode", mOptions.mTiledAtlasMode );
-			glsl->uniform( "uRgbScale", mOptions.mScale );
+			glsl->uniform( "uScale", mOptions.mScale );
 
 			gl::drawSolidRect( destRect );
 		}

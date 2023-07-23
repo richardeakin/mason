@@ -42,20 +42,24 @@ struct TextureViewerOptions {
 	ci::gl::GlslProgRef mGlsl;
 	bool				mClearCachedOptions = false; //! Only used when getting the internal cached TextureViewer - allows updating options from outside C++ (will blow away internal options)
 	bool				mInvertColor = false; //! interpreted differently by viewers
+	bool				mFlipY = false; //! for color textures that show up in gui upside down
 	float				mScale = 1.0f; //! interpreted by shaders to scale their visual output
+	float				mAlphaOverride = 0.0f; //! if > 0, overrides output alpha
 	DebugPixelMode		mDebugPixelMode = DebugPixelMode::Disabled;
 	bool				mTiledAtlasMode = false; //! defaults to true only for Texture3d
 
-	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags ) { mOpenNewWindow = flags; return *this; }
-	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags ) { mTreeNodeFlags = flags; return *this; }
-	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl ) { mGlsl = glsl; return *this; }
-	TextureViewerOptions&	extendedUI( bool enabled ) { mExtendedUI = enabled; return *this; }
-	TextureViewerOptions&	openNewWindow( bool enabled ) { mOpenNewWindow = enabled; return *this; }
-	TextureViewerOptions&	debugPixel( DebugPixelMode mode ) { mDebugPixelMode = mode; return *this; }
-	TextureViewerOptions&	clearCachedOptions( bool b = true )	{ mClearCachedOptions = b; return *this; }
-	TextureViewerOptions&	scale( float s )	{ mScale = s; return *this; }
-	TextureViewerOptions&	invertColor( bool b = true )	{ mInvertColor = b; return *this; }
-	TextureViewerOptions&	tiledAtlas( bool m = true )	{ mTiledAtlasMode = m; return *this; }
+	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags )	{ mOpenNewWindow = flags; return *this; }
+	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags )	{ mTreeNodeFlags = flags; return *this; }
+	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl )		{ mGlsl = glsl; return *this; }
+	TextureViewerOptions&	extendedUI( bool enabled )					{ mExtendedUI = enabled; return *this; }
+	TextureViewerOptions&	openNewWindow( bool enabled )				{ mOpenNewWindow = enabled; return *this; }
+	TextureViewerOptions&	debugPixel( DebugPixelMode mode )			{ mDebugPixelMode = mode; return *this; }
+	TextureViewerOptions&	clearCachedOptions( bool b = true )			{ mClearCachedOptions = b; return *this; }
+	TextureViewerOptions&	scale( float s )							{ mScale = s; return *this; }
+	TextureViewerOptions&	alphaOverride( float a )					{ mAlphaOverride = a; return *this; }
+	TextureViewerOptions&	invertColor( bool b = true )				{ mInvertColor = b; return *this; }
+	TextureViewerOptions&	flipY( bool b = true )						{ mFlipY = b; return *this; }
+	TextureViewerOptions&	tiledAtlas( bool m = true )					{ mTiledAtlasMode = m; return *this; }
 };
 
 void Texture2d( const char *label, const ci::gl::TextureBaseRef &texture, const TextureViewerOptions &options = TextureViewerOptions() );

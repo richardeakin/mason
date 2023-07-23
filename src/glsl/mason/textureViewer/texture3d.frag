@@ -5,7 +5,8 @@ uniform sampler3D uTex0;
 uniform int 	uNumTiles;
 uniform int 	uFocusedLayer;
 uniform bool  	uTiledAtlasMode;
-uniform float 	uScale = 1;
+uniform float 	uScale = 1.0;
+uniform float 	uAlphaOverride = 0.0;
 
 in vec2	vTexCoord;
 
@@ -42,4 +43,8 @@ void main()
 	}
 
 	oFragColor *= uScale;
+
+	if( uAlphaOverride > 0.0 ) {
+		oFragColor.a = uAlphaOverride;
+	}
 }

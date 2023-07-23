@@ -5,6 +5,7 @@
 uniform sampler2D uTex0;
 uniform float 	uScale = 1.0;
 uniform bool 	uInverted = false;
+uniform bool 	uFlipY = false;
 
 in vec2	vTexCoord;
 
@@ -12,7 +13,12 @@ out vec4 oFragColor;
 
 void main()
 {
-	float depth = texture( uTex0, vTexCoord.st ).r;
+	vec2 uv = vTexCoord.st;
+	if( uFlipY ) {
+		uv.y = 1.0 - uv.y;
+	}
+
+	float depth = texture( uTex0, uv ).r;
 
 	// TODO: this neds to be more flexible
 	// - tweaked it now so I can use with the kinect buffer, but this also gets
