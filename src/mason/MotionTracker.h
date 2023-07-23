@@ -33,8 +33,8 @@ class MotionTracker {
 public:
 	void clear()	{ mStoredPositions.clear(); }
 	void storePos( const T &pos, double currentTime );
-	T calcVelocity();
-	T calcDistance();
+	T calcVelocity() const;
+	T calcDistance() const;
 
 	T getFirstPos() const	{ return mFirstTouch.position; }
 	//! Returns the positions of the last recorded touch, or T( 0 ) if none have yet been recorded.
@@ -74,7 +74,7 @@ void MotionTracker<T>::storePos( const T &pos, double currentTime )
 }
 
 template <typename T>
-T MotionTracker<T>::calcVelocity()
+T MotionTracker<T>::calcVelocity() const
 {
 	if( mStoredPositions.size() < 2 )
 		return T( 0 );
@@ -100,7 +100,7 @@ T MotionTracker<T>::calcVelocity()
 }
 
 template <typename T>
-T MotionTracker<T>::calcDistance()
+T MotionTracker<T>::calcDistance() const
 {
 	return getLastPos() - getFirstPos();
 }
