@@ -11,8 +11,10 @@ namespace mason {
 void pushTextureBinding( const ci::gl::TextureBaseRef &texture, uint8_t textureUnit );
 void popTextureBinding( const ci::gl::TextureBaseRef &texture, uint8_t textureUnit );
 
-//! slightly shorter names than gl::constantToString()
+//! Returns a string version of the gl::Texture format (removes "GL_" prefix)
 const char* textureFormatToString( GLenum format );
+//! Returns the number of bytes per pixel for this gl::Texture format
+size_t textureBytesPerPixel( GLenum format );
 
 // TODO: use ci::context()->bindBufferBase()
 struct ScopedBindBufferBase : private ci::Noncopyable {
