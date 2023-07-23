@@ -24,5 +24,6 @@ POSSIBILITY OF SUCH DAMAGE.
 namespace imx {
 
 void SetStyle( bool darkMode, float alpha );
+void SetStyleDougBinks( bool styleDark, float alpha );
 
 } // namespace imx
