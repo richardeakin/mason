@@ -360,6 +360,21 @@ void EndDisabled()
 	ImGui::PopStyleVar();
 }
 
+void Value( const char *prefix, const glm::vec2 &v )
+{
+	ImGui::Text( "%s: [%+3.1f, %+3.1f]", prefix, v.x, v.y );
+}
+
+void Value( const char *prefix, const glm::vec3 &v )
+{
+	ImGui::Text( "%s: [%+3.1f, %+3.1f, %+3.1f]", prefix, v.x, v.y, v.z );
+}
+
+void Value( const char *prefix, const glm::vec4 &v )
+{
+	ImGui::Text( "%s: [%+2.1f, %+2.1f, %+2.1f, %+2.1f]", prefix, v.x, v.y, v.z, v.w );
+}
+
 void SetNotificationColors()
 {
 	const double timeShowingFailure = 1.0;

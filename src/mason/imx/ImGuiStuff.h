@@ -63,6 +63,11 @@ void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 
 void TexturePreview( const std::string &label, const ci::gl::Texture2dRef &tex, const ci::Rectf &imageBounds, const ImVec2& uv0 = ImVec2(0,1), const ImVec2& uv1 = ImVec2(1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
 bool XYPad( const char *name, const ImVec2& size, float v[2], const ImVec2 &min = ImVec2( 0, 0 ), const ImVec2 &max = ImVec2( 1, 1 ) );
 
+//! Value overloads for vec types
+void Value( const char *prefix, const glm::vec2 &v );
+void Value( const char *prefix, const glm::vec3 &v );
+void Value( const char *prefix, const glm::vec4 &v );
+
 //! If disableInteraction is false, will only dim current drawing scope
 // TODO: probably remove once https://github.com/ocornut/imgui/issues/211 is resolved
 void BeginDisabled( bool disableInteraction = true, bool grayedOut = true );
