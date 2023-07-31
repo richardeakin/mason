@@ -462,5 +462,8 @@
     <ClInclude Include="..\..\src\mason\scene\Suite.h">
       <Filter>Source Files\mason\scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\mason\Factory.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

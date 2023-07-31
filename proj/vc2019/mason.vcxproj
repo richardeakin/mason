@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\src\mason\audio\OfflineContext.h" />
     <ClInclude Include="..\..\src\mason\audio\ProfilerNode.h" />
     <ClInclude Include="..\..\src\mason\Dispatch.h" />
+    <ClInclude Include="..\..\src\mason\Factory.h" />
     <ClInclude Include="..\..\src\mason\FlyCam.h" />
     <ClInclude Include="..\..\src\mason\Common.h" />
     <ClInclude Include="..\..\src\mason\Config.h" />
