@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Richard Eakin
+Copyright (c) 2019-23 Richard Eakin
 All rights reserved.
 
 This code is designed for use with the Cinder C++ library, http://libcinder.org
