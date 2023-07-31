@@ -232,6 +232,9 @@
     <ClCompile Include="..\..\src\mason\scene\Suite.cpp">
       <Filter>Source Files\mason\scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mason\Volume.cpp">
+      <Filter>Source Files\mason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\mason\Assets.h">
@@ -463,6 +466,9 @@
       <Filter>Source Files\mason\scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mason\Factory.h">
+      <Filter>Source Files\mason</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mason\Volume.h">
       <Filter>Source Files\mason</Filter>
     </ClInclude>
   </ItemGroup>

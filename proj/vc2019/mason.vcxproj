@@ -96,6 +96,7 @@
     <ClCompile Include="..\..\src\mason\ui\AudioViews.cpp" />
     <ClCompile Include="..\..\src\mason\ui\DraggableView.cpp" />
     <ClCompile Include="..\..\src\mason\VisualMonitor.cpp" />
+    <ClCompile Include="..\..\src\mason\Volume.cpp" />
     <ClCompile Include="..\..\src\mason\WorldClock.cpp" />
     <ClCompile Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\imGuIZMOquat.cpp" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClInclude Include="..\..\src\mason\ui\DraggableView.h" />
     <ClInclude Include="..\..\src\mason\Var.h" />
     <ClInclude Include="..\..\src\mason\VisualMonitor.h" />
+    <ClInclude Include="..\..\src\mason\Volume.h" />
     <ClInclude Include="..\..\src\mason\WorldClock.h" />
     <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\imGuIZMOquat.h" />
     <ClInclude Include="..\..\thirdparty\imGuiZMO.quat\imGuIZMO.quat\vgConfig.h" />
