@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019, Richard Eakin
+Copyright (c) 2019-23, Richard Eakin
 All rights reserved.
 
 This code is designed for use with the Cinder C++ library, http://libcinder.org
@@ -34,7 +34,7 @@ namespace mason {
 //! - note: I wish I could have placed this method in mason/Config.h alongside the rest of the config stuff,
 //!   but well C++ inner classes prevent me from forward declaring App::Settings so we're stuck with this or
 //!   other nastier tricks for now
-extern void prepareAppSettings( ci::app::App::Settings *settings, const std::vector<ci::fs::path> &configFiles = { "config.json", "local.json", "user.json" } )
+extern void prepareAppSettings( ci::app::App::Settings *settings, const std::vector<ci::fs::path> &configFiles = {} )
 {
 	if( ! configFiles.empty() ) {
 		ma::loadConfig( configFiles );
@@ -43,11 +43,20 @@ extern void prepareAppSettings( ci::app::App::Settings *settings, const std::vec
 		ma::loadConfig();
 	}
 
+	if( ! ma::config()->contains( "app" ) ) {
+		CI_LOG_E( "config missing 'app' section" );
+		return;
+	}
+
 	auto appConfig = ma::config()->get<ma::Info>( "app" );
 
-	bool fullScreen = appConfig.get( "fullScreen", false );
-	bool borderless = appConfig.get( "borderless", false );
-	int screenIndex = appConfig.get( "screenIndex", 0 );
+	bool fullScreen			= appConfig.get( "fullScreen", false );
+	bool borderless			= appConfig.get( "borderless", false );
+	bool highDensityDisplay = appConfig.get( "highDensityDisplay", false );
+	int screenIndex			= appConfig.get( "screenIndex", 0 );
+	auto windowPos			= appConfig.get( "windowPos", ci::ivec2( 8, 50 ) );
+	auto windowSize			= appConfig.get( "windowSize", ci::ivec2( 1200, 800 ) );
+
 	if( screenIndex >= ci::Display::getDisplays().size() ) {
 		CI_LOG_W( "config's app.screenIndex out of range (" << screenIndex << ")" );
 		screenIndex = 0;
@@ -56,13 +65,8 @@ extern void prepareAppSettings( ci::app::App::Settings *settings, const std::vec
 	}
 
 	const auto &display = ci::Display::getDisplays().at( screenIndex );
-
 	CI_LOG_I( "display name: " << display->getName() << ", size: " << display->getSize() );
 	settings->setDisplay( display );
-
-
-	ci::ivec2 windowPos = appConfig.get( "windowPos", ci::ivec2( 8, 50 ) );
-	ci::ivec2 windowSize = appConfig.get( "windowSize", ci::ivec2( 1200, 800 ) );
 
 	if( fullScreen && borderless ) {
 		// 'fullscreen + borderless' mode, which overcomes some issues with fullscreen on windows
@@ -74,9 +78,7 @@ extern void prepareAppSettings( ci::app::App::Settings *settings, const std::vec
 	}
 
 	settings->setBorderless( borderless );
-
-	//settings->setHighDensityDisplayEnabled();
-
+	settings->setHighDensityDisplayEnabled( highDensityDisplay );
 	settings->setWindowPos( windowPos.x, windowPos.y );
 	settings->setWindowSize( windowSize.x, windowSize.y );
 }
