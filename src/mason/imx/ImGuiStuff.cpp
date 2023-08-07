@@ -773,7 +773,7 @@ void Profiling( bool *open )
 	float currentFps = float( floor( 1.0 / elapsed ) );
 	fps[fpsIndex++ % fps.size()] = currentFps;
 	if( CollapsingHeader( ( "Framerate (" + to_string( (int)currentFps ) + "s)###fps counter" ).c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {
-		ImGui::PlotLines( "##fps_lines", fps.data(), int( fps.size() ), 0, 0, 0.0f, 120.0f, ImVec2( ImGui::GetContentRegionAvailWidth(), 90 ) );
+		ImGui::PlotLines( "##fps_lines", fps.data(), int( fps.size() ), 0, 0, 0.0f, 120.0f, ImVec2( ImGui::GetContentRegionAvail().x, 90 ) );
 	}
 
 	static bool sortTimes = false;
