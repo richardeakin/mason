@@ -27,10 +27,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "cinder/audio/Context.h"
 
-#if ! defined( IMGUI_DEFINE_MATH_OPERATORS )
-#define IMGUI_DEFINE_MATH_OPERATORS
-#endif
-
 #include "imgui/imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
 #include "imgui/imgui_stdlib.h" // InputText( std::string )
 
