@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "imgui/imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
+#include "imgui/imgui_stdlib.h" // InputText( std::string )
 
 #include <deque>
 
@@ -597,7 +598,8 @@ public:
 		// list and keeping a cached filtered version of mLogs to be able to pass the actual
 		// number of items to the clipper constructor...
 
-		ImGuiListClipper clipper( static_cast<int>( mFilteredLogs.size() ), ImGui::GetTextLineHeightWithSpacing() );
+		ImGuiListClipper clipper;
+		clipper.Begin( (int)mFilteredLogs.size() );
 		while( clipper.Step() ) {
 			//for( size_t i = 0; i < mLogs.size(); i++ ) {
 			for( size_t i = clipper.DisplayStart; i < clipper.DisplayEnd; i++ ) {

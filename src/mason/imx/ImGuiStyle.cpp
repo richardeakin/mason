@@ -11,7 +11,7 @@ namespace imx {
 // Style
 // ----------------------------------------------------------------------------------------------------
 
-// TODO: need top update this with missing newer enum colors (those commented out no longer exist)
+// TODO: need to update this with missing newer enum colors (those commented out no longer exist)
 // - screenshots /code: https://github.com/GraphicsProgramming/dear-imgui-styles
 void SetStyleDougBinks( bool styleDark, float alpha_ )
 {
@@ -62,7 +62,7 @@ void SetStyleDougBinks( bool styleDark, float alpha_ )
 	style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
 	style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
 	style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-	style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+	//style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 
 	if( styleDark )
 	{
