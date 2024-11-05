@@ -62,8 +62,9 @@ bool LivePPManager::initLivePP( const fs::path &LivePPPath, const std::string &g
 		CI_LOG_E( "Cannot find LivePP folder at expected path: " << LivePPPath << ". Path should be relative to .vcxproj folder. executable path: " << appPath );
 		return false;
 	}
-	lpp::LppDefaultAgent lppAgent = lpp::LppCreateDefaultAgent( msw::toWideString( LivePPPath.string() ).c_str() );
-	lppAgent.EnableModule( lpp::LppGetCurrentModulePath(), lpp::LPP_MODULES_OPTION_ALL_IMPORT_MODULES );
+
+	lpp::LppDefaultAgent lppAgent = lpp::LppCreateDefaultAgent( nullptr, msw::toWideString( LivePPPath.string() ).c_str() );
+	lppAgent.EnableModule( lpp::LppGetCurrentModulePath(), lpp::LPP_MODULES_OPTION_ALL_IMPORT_MODULES, nullptr, nullptr );
 
 	// TODO: move to an optional public method
 	// destroy the Live++ agent
