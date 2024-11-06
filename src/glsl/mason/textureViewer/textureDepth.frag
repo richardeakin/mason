@@ -2,10 +2,14 @@
 
 #include "mason/util.glsl"
 
-uniform sampler2D 	uTex0;
-uniform float 		uScale = 1.0;
-uniform bool 		uInverted = false;
-uniform bool 		uFlipY = false;
+#ifndef SAMPLER_TYPE
+#define SAMPLER_TYPE sampler2D
+#endif
+
+uniform SAMPLER_TYPE uTex0;
+uniform float 	uScale = 1.0;
+uniform bool 	uInverted = false;
+uniform bool 	uFlipY = false;
 
 in vec2	vTexCoord;
 

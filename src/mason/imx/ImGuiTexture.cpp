@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2019-23, Richard Eakin - All rights reserved.
+ Copyright (c) 2019-24, Richard Eakin - All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided
  that the following conditions are met:
@@ -43,7 +43,7 @@ public:
 		TextureVelocity,
 		TextureDepth,
 		Texture3d,
-		Texture2dArray, // TODO: Add this type next to make sure that the random buffer is correct
+		Texture2dArray,
 		NumTypes
 	};
 
@@ -75,13 +75,18 @@ private:
 	int			mNumTiles = -1; // TODO: tiles per row for Texture3D, total tiles (.z) for TextureArray
 	int			mFocusedLayer = 0;
 
-	vec4		mDebugPixel;
-	ivec3		mDebugPixelCoord;
-	bool        mDebugPixelNeedsUpdate = false;
+	vec4		mReadPixel;
+	ivec3		mReadPixelCoord;
+	bool        mReadPixelNeedsUpdate = false;
 
 	TextureViewerOptions mOptions;
 };
 
+namespace {
+
+// TODO: add all local glsl progs to this (so they can easily be cleared / managed)
+// - for now using for depth viewers since they can use uint or int samplers
+map<string, gl::GlslProgRef> sDefaultGlslProgs;
 
 const char *typeToString( TextureViewer::Type type )
 {
@@ -96,6 +101,20 @@ const char *typeToString( TextureViewer::Type type )
 
 	return "(unknown)";
 }
+
+const char *typeToString( SamplerType type )
+{
+	switch( type ) {
+		case SamplerType::SamplerFloat: return "sampler2D";
+		case SamplerType::SamplerInt:	return "isampler2D";
+		case SamplerType::SamplerUInt:	return "usampler2D";
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
+
+	return "(unknown)";
+}
+
+} // anon
 
 // static
 TextureViewer* TextureViewer::getTextureViewer( const char *label, TextureViewer::Type type, const TextureViewerOptions &options )
@@ -156,7 +175,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 
 	// init or resize fbo if needed
 	float availWidth = GetContentRegionAvail().x;
-	if( ! fbo || abs( mFbo->getWidth() - availWidth ) > 4 ) {
+	if( availWidth >= 1.0f && ( ! fbo || abs( mFbo->getWidth() - availWidth ) > 4 ) ) {
 		auto texFormat = gl::Texture2d::Format()
 			.minFilter( GL_NEAREST ).magFilter( GL_NEAREST )
 			.mipmap( false )
@@ -165,8 +184,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 
 		vec2 size = vec2( availWidth );
 		if( mType != Type::Texture3d ) {
-			float aspect = tex->getAspectRatio();
-			size.y /= tex->getAspectRatio();
+			size.y = glm::max( 1.0f, size.y / tex->getAspectRatio() );
 		}
 
 		auto fboFormat = gl::Fbo::Format().colorTexture( texFormat ).samples( 0 ).label( texFormat.getLabel() );
@@ -194,6 +212,10 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 
 	SameLine();
 	Text( "memory: %0.2f %s, bytes per pixel: %d", memoryUsed, sizeType.c_str(), bytesPerPixel );
+	if( ! fbo ) {
+		TextColored( Color( 1, 0, 0 ), "null fbo" );
+		return;
+	}
 
 	// render to fbo based on current params
 	{
@@ -230,26 +252,28 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 	}
 
 	if( mOptions.mExtendedUI ) {
+		ScopedId idScope( "extended" );
 
-		//Checkbox( "debug pixel", &options.mDebugPixelEnabled );
-		//SameLine();
-		//Checkbox( "use mouse", &mDebugPixelUseMouse );
-		static vector<string> debugPixelModes = { "Disabled", "MouseClick", "MouseHover" };
-		int                   t = (int)mOptions.mDebugPixelMode;
+		static vector<string> readPixelModes = { "Disabled", "MouseClick", "MouseHover" };
+		int                   t = (int)mOptions.mReadPixelMode;
 		SetNextItemWidth( 200 );
-		if( Combo( "debug pixel", &t, debugPixelModes ) ) {
-			mOptions.mDebugPixelMode = (DebugPixelMode)t;
+		if( Combo( "read pixel", &t, readPixelModes ) ) {
+			mOptions.mReadPixelMode = (ReadPixelMode)t;
 		}
 
 		SameLine();
 
 		SetNextItemWidth( 300 );
-		// TODO: fix this for non-square images
-		if( DragInt3( "pixel coord", &mDebugPixelCoord, 0.5f, 0, tex->getWidth() - 1 ) ) {
-			mDebugPixelNeedsUpdate = true;
+		int maxDim = glm::max( tex->getWidth(), glm::max( tex->getHeight(), tex->getDepth() ) );
+		if( DragInt3( "coord", &mReadPixelCoord.x, 0.5f, 0, maxDim - 1 ) ) {
+			// clamp for non-square images
+			mReadPixelCoord.x = glm::clamp( mReadPixelCoord.x, 0, tex->getWidth() - 1 );
+			mReadPixelCoord.y = glm::clamp( mReadPixelCoord.y, 0, tex->getHeight() - 1 );
+			mReadPixelCoord.z = glm::clamp( mReadPixelCoord.z, 0, tex->getDepth() - 1 );
+			mReadPixelNeedsUpdate = true;
 		}
 		SetNextItemWidth( 200 );
-		DragFloat4( "pixel", &mDebugPixel );
+		Text( "R: %0.4f\tG: %0.4f\tB: %0.4f\tA: %0.4f", mReadPixel.x, mReadPixel.y, mReadPixel.z, mReadPixel.w );
 	}
 
 	// show texture that we've rendered to
@@ -257,18 +281,21 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 	Image( fbo->getColorTexture(), vec2( fbo->getSize() ) - vec2( 0.0f ) );
 
 	bool pixelCoordNeedsUpdate = false;
-	if( mOptions.mDebugPixelMode == DebugPixelMode::MouseClick && IsItemClicked() ) {
-		mDebugPixelNeedsUpdate = true;
+	if( mOptions.mReadPixelMode == ReadPixelMode::MouseClick && IsItemClicked() ) {
+		mReadPixelNeedsUpdate = true;
 		pixelCoordNeedsUpdate = true;
 	}
-	else if( mOptions.mDebugPixelMode == DebugPixelMode::MouseHover && IsItemHovered() ) {
-		mDebugPixelNeedsUpdate = true;
+	else if( mOptions.mReadPixelMode == ReadPixelMode::MouseHover && IsItemHovered() ) {
+		mReadPixelNeedsUpdate = true;
 		pixelCoordNeedsUpdate = true;
 	}
 
 	if( pixelCoordNeedsUpdate ) {
 		const float tiles = (float)mNumTiles;
 		vec2 mouseNorm = ( vec2( GetMousePos() ) - vec2( GetItemRectMin() ) ) / vec2( GetItemRectSize() );
+		if( mOptions.mFlipY ) {
+			mouseNorm.y = 1 - mouseNorm.y;
+		}
 		vec3 pixelCoord;
 		if( mOptions.mTiledAtlasMode ) {
 			pixelCoord.x = fmodf( mouseNorm.x * (float)tex->getWidth() * tiles, (float)tex->getWidth() );
@@ -283,7 +310,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 			pixelCoord.y = lround( mouseNorm.y * (float)tex->getHeight() );
 			pixelCoord.z = mFocusedLayer;
 		}
-		mDebugPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) - ivec3( 1 ) );
+		mReadPixelCoord = glm::clamp( ivec3( pixelCoord ), ivec3( 0 ), ivec3( tex->getWidth(), tex->getHeight(), tex->getDepth() ) - ivec3( 1 ) );
 	}
 
 
@@ -322,6 +349,12 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		if( mType == Type::TextureColor|| mType == Type::TextureDepth ) {
 			Checkbox( "inverted", &mOptions.mInvertColor );
 			Checkbox( "flip y", &mOptions.mFlipY );
+
+			vector<string> samplerTypes = { "sampler2D", "usampler2D" };
+			int currentSamplerType = (int)mOptions.mSamplerType;
+			if( Combo( "sampler type", &currentSamplerType, samplerTypes ) ) {
+				mOptions.mSamplerType = (SamplerType)currentSamplerType;
+			}
 		}
 
 		EndPopup();
@@ -336,7 +369,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 
 void TextureViewer::updatePixelCoord( const gl::TextureBaseRef &texture )
 {
-	if( ! mDebugPixelNeedsUpdate ) {
+	if( ! mReadPixelNeedsUpdate ) {
 		return;
 	}
 
@@ -344,8 +377,6 @@ void TextureViewer::updatePixelCoord( const gl::TextureBaseRef &texture )
 
 	//glPixelStorei( GL_PACK_ALIGNMENT, 1 ); // TODO: needed?
 	//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-
-	ivec3 pixelCoord = mDebugPixelCoord; // TODO: clamp so we can't crash
 
 	vec4 pixel;
 	const ivec3 pixelSize = { 1, 1, 1 };
@@ -358,11 +389,12 @@ void TextureViewer::updatePixelCoord( const gl::TextureBaseRef &texture )
 
 	// fetch one pixel from texture
 	glGetTextureSubImage( texture->getId(), level,
-		pixelCoord.x, pixelCoord.y, pixelCoord.z, pixelSize.x, pixelSize.y, pixelSize.z,
+		mReadPixelCoord.x, mReadPixelCoord.y, mReadPixelCoord.z,
+		pixelSize.x, pixelSize.y, pixelSize.z,
 		format, dataType, sizeof( pixel ), &pixel.x );
 
-	mDebugPixel = pixel;
-	mDebugPixelNeedsUpdate = false;
+	mReadPixel = pixel;
+	mReadPixelNeedsUpdate = false;
 }
 
 void TextureViewer::renderColor( const gl::Texture2dRef &texture, const Rectf &destRect )
@@ -409,15 +441,22 @@ void TextureViewer::renderDepth( const gl::Texture2dRef &texture, const Rectf &d
 	// use static glsl if none provided
 	auto glsl = mOptions.mGlsl;
 	if( ! glsl ) {
-		static gl::GlslProgRef sGlsl;
-		if( ! sGlsl ) {
+		const string samplerType = typeToString( mOptions.mSamplerType );
+		const string glslId = "depth-" + samplerType;
+		auto glslIt = sDefaultGlslProgs.find( glslId );
+		if( glslIt != sDefaultGlslProgs.end() ) {
+			glsl = glslIt->second;
+		}
+		else {
 			const fs::path vertPath = "mason/textureViewer/texture.vert";
 			const fs::path fragPath = "mason/textureViewer/textureDepth.frag";
-			ma::assets()->getShader( vertPath, fragPath, []( gl::GlslProgRef glsl ) {
-				sGlsl = glsl;
+
+			auto opts = gl::GlslProg::Format().define( "SAMPLER_TYPE", samplerType );
+			ma::assets()->getShader( vertPath, fragPath, opts, [glslId, &glsl]( gl::GlslProgRef glslLoaded ) {
+				glsl = glslLoaded;
+				sDefaultGlslProgs[glslId] = glslLoaded;
 			} );
 		}
-		glsl = sGlsl;
 	}
 
 	if( glsl) {

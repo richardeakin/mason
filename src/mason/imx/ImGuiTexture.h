@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2019-23, Richard Eakin - All rights reserved.
+ Copyright (c) 2019-24, Richard Eakin - All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided
  that the following conditions are met:
@@ -27,14 +27,21 @@
 
 namespace imx {
 
-enum class DebugPixelMode {
+//! Options for reading a pixel back from gpu -> cpu
+enum class ReadPixelMode {
 	Disabled,
 	MouseClick,
 	MouseHover
 };
 
-struct TextureViewerOptions {
+//! Sampler type read from in the viewer's fragment shader
+enum class SamplerType {
+	SamplerFloat,	//! sampler2D
+	SamplerInt,		//! isampler2D
+	SamplerUInt		//! usampler2D
+};
 
+struct TextureViewerOptions {
 	ImGuiTreeNodeFlags	mTreeNodeFlags = 0;
 	bool				mOpenNewWindow = false; // TODO: also add option for whether it is in a collapseable header or not (might want it to be in a tree or somewhere else
 	bool				mExtendedUI = false;
@@ -45,15 +52,17 @@ struct TextureViewerOptions {
 	bool				mFlipY = false; //! for color textures that show up in gui upside down
 	float				mScale = 1.0f; //! interpreted by shaders to scale their visual output
 	float				mAlphaOverride = 0.0f; //! if > 0, overrides output alpha
-	DebugPixelMode		mDebugPixelMode = DebugPixelMode::Disabled;
+	ReadPixelMode		mReadPixelMode = ReadPixelMode::Disabled;
 	bool				mTiledAtlasMode = false; //! defaults to true only for Texture3d
+	SamplerType			mSamplerType = SamplerType::SamplerFloat;
 
 	TextureViewerOptions&	openNewWindow( ImGuiTreeNodeFlags flags )	{ mOpenNewWindow = flags; return *this; }
 	TextureViewerOptions&	treeNodeFlags( ImGuiTreeNodeFlags flags )	{ mTreeNodeFlags = flags; return *this; }
 	TextureViewerOptions&	glsl( const ci::gl::GlslProgRef &glsl )		{ mGlsl = glsl; return *this; }
 	TextureViewerOptions&	extendedUI( bool enabled )					{ mExtendedUI = enabled; return *this; }
 	TextureViewerOptions&	openNewWindow( bool enabled )				{ mOpenNewWindow = enabled; return *this; }
-	TextureViewerOptions&	debugPixel( DebugPixelMode mode )			{ mDebugPixelMode = mode; return *this; }
+	TextureViewerOptions&	readPixel( ReadPixelMode mode )				{ mReadPixelMode = mode; return *this; }
+	TextureViewerOptions&	samplerType( SamplerType type )				{ mSamplerType = type; return *this; }
 	TextureViewerOptions&	clearCachedOptions( bool b = true )			{ mClearCachedOptions = b; return *this; }
 	TextureViewerOptions&	scale( float s )							{ mScale = s; return *this; }
 	TextureViewerOptions&	alphaOverride( float a )					{ mAlphaOverride = a; return *this; }
