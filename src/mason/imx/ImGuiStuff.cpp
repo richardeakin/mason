@@ -29,6 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "imgui/imgui_internal.h" // PushItemFlag( ImGuiItemFlags_Disabled ), ImVec2 operator+
 #include "imgui/imgui_stdlib.h" // InputText( std::string )
+#include "imGuIZMO.quat/imGuIZMOquat.h"
 
 #include <deque>
 
@@ -98,6 +99,25 @@ ScopedItemWidth::ScopedItemWidth( float itemWidth )
 ScopedItemWidth::~ScopedItemWidth()
 {
 	ImGui::PopItemWidth();
+}
+
+ScopedStyleColor::ScopedStyleColor( ImGuiCol idx, const ImVec4& col )
+{
+	ImGui::PushStyleColor( idx, col );
+}
+ScopedStyleColor::~ScopedStyleColor()
+{
+	ImGui::PopStyleColor();
+}
+
+ScopedIndent::ScopedIndent()
+{
+	ImGui::Indent();
+}
+
+ScopedIndent::~ScopedIndent()
+{
+	ImGui::Unindent();
 }
 
 } // namespace ImGui
@@ -295,18 +315,6 @@ void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 
 	}
 }
 
-void TexturePreview( const std::string &label, const ci::gl::Texture2dRef &tex, const ci::Rectf &imageBounds, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col )
-{
-	if( ! tex ) {
-		ImGui::Text( "%s null", label.c_str() );
-		return;
-	}
-
-	ImGui::Text( "%s size: [%d, %d], format: %s", label.c_str(), tex->getWidth(), tex->getHeight(), ma::textureFormatToString( tex->getInternalFormat() ) );
-	auto fitRect = Rectf( tex->getBounds() ).getCenteredFit( imageBounds, true );
-	ImGui::Image( tex, fitRect.getSize(), vec2( 0, 1 ), vec2( 1, 0 ), ColorA( 1, 1, 1, 1 ), ColorA::gray( 0.3f, 1 ) );
-}
-
 // TODO: draw label
 // TODO: adhere to min and max. currently only defaults are working
 // TODO: finish drawing position
@@ -345,6 +353,38 @@ bool XYPad( const char *label, const ImVec2& size, float v[2], const ImVec2 &min
 	return active;
 }
 
+// related issue I was initially having https://github.com/ocornut/imgui/issues/6739
+bool Direction( const char *label, glm::vec3 *v )
+{
+	bool edited = false;
+#if IMGUI_VERSION_NUM >= 18000
+	BeginTable( label, 2 );
+
+	//ImGuiTableColumnFlags columnFlags = ImGuiTableColumnFlags_WidthFixed;
+	ImGuiTableColumnFlags columnFlags = 0;
+
+	TableNextColumn();
+	Text( label );
+	PushStyleColor( ImGuiCol_FrameBg, vec4( 0 ) );
+	edited |= gizmo3D( "##direction arrow", *v, GetTextLineHeight() * 4, imguiGizmo::modeDirection );
+	PopStyleColor();
+	TableNextColumn();
+
+	edited |= DragFloat( "x", &v->x );
+	edited |= DragFloat( "y", &v->y );
+	edited |= DragFloat( "z", &v->z );
+
+	EndTable();
+
+	if( edited ) {
+		*v = glm::normalize( *v );
+	}
+#else
+	TextColored( ColorA( 1, 0, 0, 1 ), "old ImGui version, no support for Tables API" );
+#endif
+	return edited;
+}
+
 void BeginDisabled( bool disableInteraction, bool grayedOut )
 {
 	ImGui::PushItemFlag( ImGuiItemFlags_Disabled, disableInteraction );
@@ -357,19 +397,100 @@ void EndDisabled()
 	ImGui::PopStyleVar();
 }
 
-void Value( const char *prefix, const glm::vec2 &v )
+void Value( const char *prefix, const std::string &str )
 {
-	ImGui::Text( "%s: [%+3.1f, %+3.1f]", prefix, v.x, v.y );
+	ImGui::Text( "%s: %s", prefix, str.c_str() );
 }
 
-void Value( const char *prefix, const glm::vec3 &v )
+void Value( const char *prefix, const glm::vec2 &v, const char *format )
 {
-	ImGui::Text( "%s: [%+3.1f, %+3.1f, %+3.1f]", prefix, v.x, v.y, v.z );
+	string text = string( prefix ) + ": [";
+	text += string( format ) + ", ";
+	text += string( format ) + "]";
+
+	ImGui::Text( text.c_str(), v.x, v.y );
 }
 
-void Value( const char *prefix, const glm::vec4 &v )
+void Value( const char *prefix, const glm::vec3 &v, const char *format )
 {
-	ImGui::Text( "%s: [%+2.1f, %+2.1f, %+2.1f, %+2.1f]", prefix, v.x, v.y, v.z, v.w );
+	string text = string( prefix ) + ": [";
+	text += string( format ) + ", ";
+	text += string( format ) + ", ";
+	text += string( format ) + "]";
+
+	ImGui::Text( text.c_str(), v.x, v.y, v.z );
+}
+
+void Value( const char *prefix, const glm::vec4 &v, const char *format )
+{
+	string text = string( prefix ) + ": [";
+	text += string( format ) + ", ";
+	text += string( format ) + ", ";
+	text += string( format ) + ", ";
+	text += string( format ) + "]";
+
+	ImGui::Text( text.c_str(), v.x, v.y, v.z, v.w );
+}
+
+void Value( const std::string &str )
+{
+	ImGui::Text( "%s", str.c_str() );
+}
+
+void Value( const int &d )
+{
+	ImGui::Text( "%d", d );
+}
+
+void Value( const glm::ivec2 &v )
+{
+	ImGui::Text( "[%d, %d]", v.x, v.y );
+}
+
+void Value( const glm::ivec3 &v )
+{
+	ImGui::Text( "[%d, %d, %d]", v.x, v.y, v.z );
+}
+
+void Value( const glm::ivec4 &v )
+{
+	ImGui::Text( "[%d, %d, %d, %d]", v.x, v.y, v.z, v.w );
+}
+
+void Value( const float &f, const char *format )
+{
+	string text = string( format );
+	ImGui::Text( text.c_str(), f );
+}
+
+void Value( const glm::vec2 &v, const char *format )
+{
+	string text = "[";
+	text += string( format ) + ", ";
+	text += string( format ) + "]";
+
+	ImGui::Text( text.c_str(), v.x, v.y );
+}
+
+void Value( const glm::vec3 &v, const char *format )
+{
+	string text = "[";
+	text += string( format ) + ", ";
+	text += string( format ) + ", ";
+	text += string( format ) + "]";
+
+	ImGui::Text( text.c_str(), v.x, v.y, v.z );
+}
+
+void Value( const glm::vec4 &v, const char *format )
+{
+	string text = "[";
+	text += string( format ) + ", ";
+	text += string( format ) + ", ";
+	text += string( format ) + ", ";
+	text += string( format ) + "]";
+
+	ImGui::Text( text.c_str(), v.x, v.y, v.z, v.w );
 }
 
 void SetNotificationColors()
@@ -441,6 +562,9 @@ public:
 		mLogs.clear();
 		mFilteredLogs.clear();
 		mFilteredLogsCached = false;
+		mNumLinesFatal = 0;
+		mNumLinesError = 0;
+		mNumLinesWarning = 0;
 	}	
 
 	void write( const ci::log::Metadata &meta, const std::string &text ) override
@@ -548,6 +672,14 @@ public:
 			static const std::string levelsNames[6] = { "verbose", "debug", "info", "warning", "error", "fatal" };
 			for( size_t i = 0; i < mLevelFilters.size(); ++i ) {
 				ImGui::PushID( static_cast<int>( i ) );
+				if( ImGui::Button( std::string( "s##" + to_string( i ) ).c_str() ) ) {
+					// clear all others
+					for( size_t k = 0; k < mLevelFilters.size(); ++k ) {
+						mLevelFilters[k] = ( i == k );
+					}
+					mFilteredLogsCached = false;
+				}
+				ImGui::SameLine();
 				if( ImGui::Checkbox( "##Level", &mLevelFilters[i] ) ) {
 					mFilteredLogsCached = false;
 				}
@@ -589,10 +721,6 @@ public:
 			}
 			mFilteredLogsCached = true;
 		}
-
-		// TODO: Using clipper and filtering at the same times requires pre-filtering (right above this comment) the
-		// list and keeping a cached filtered version of mLogs to be able to pass the actual
-		// number of items to the clipper constructor...
 
 		ImGuiListClipper clipper;
 		clipper.Begin( (int)mFilteredLogs.size() );

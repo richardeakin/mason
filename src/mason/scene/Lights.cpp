@@ -22,7 +22,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "mason/scene/Lights.h"
 
 #include "mason/imx/ImGuiStuff.h"
-#include "imGuIZMOquat.h"
+#include "imGuIZMO.quat/imGuIZMOquat.h"
 
 #include "cinder/Log.h"
 #include "cinder/gl/gl.h"

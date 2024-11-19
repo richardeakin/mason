@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018, Richard Eakin - All rights reserved.
+Copyright (c) 2018-24, Richard Eakin - All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -50,6 +50,16 @@ struct ScopedItemWidth : public ci::Noncopyable {
 	~ScopedItemWidth();
 };
 
+struct ScopedStyleColor : public ci::Noncopyable {
+	ScopedStyleColor( ImGuiCol idx, const ImVec4& col );
+	~ScopedStyleColor();
+};
+
+struct ScopedIndent : public ci::Noncopyable {
+	ScopedIndent();
+	~ScopedIndent();
+};
+
 } // namespace ImGui
 
 namespace imx {
@@ -60,18 +70,30 @@ bool WaveformImage( const char* label, const ci::audio::BufferRef &buffer, const
 //! TODO: rename these to VMeter, add HMeter horizontal versions
 void VuMeter( const char* label, const ImVec2& size, float *value, float min = 0, float max = 1 );
 void VuMeter( const char* label, const ImVec2& size, float *value, const ImVec4 &fillColor, float min = 0, float max = 1 );
-void TexturePreview( const std::string &label, const ci::gl::Texture2dRef &tex, const ci::Rectf &imageBounds, const ImVec2& uv0 = ImVec2(0,1), const ImVec2& uv1 = ImVec2(1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
 bool XYPad( const char *name, const ImVec2& size, float v[2], const ImVec2 &min = ImVec2( 0, 0 ), const ImVec2 &max = ImVec2( 1, 1 ) );
-
-//! Value overloads for vec types
-void Value( const char *prefix, const glm::vec2 &v );
-void Value( const char *prefix, const glm::vec3 &v );
-void Value( const char *prefix, const glm::vec4 &v );
+//! manipulator for normalized vec3s using imguizmo.quat lib + 3 DragFloats
+bool Direction( const char *label, glm::vec3 *v );
 
 //! If disableInteraction is false, will only dim current drawing scope
 // TODO: probably remove once https://github.com/ocornut/imgui/issues/211 is resolved
 void BeginDisabled( bool disableInteraction = true, bool grayedOut = true );
 void EndDisabled();
+
+//! Value overloads for commonly used types
+void Value( const char *prefix, const std::string &str );
+void Value( const char *prefix, const glm::vec2 &v, const char *format = "%+3.2f" );
+void Value( const char *prefix, const glm::vec3 &v, const char *format = "%+3.2f" );
+void Value( const char *prefix, const glm::vec4 &v, const char *format = "%+3.2f" );
+//! These variants are useful when you want to easily put a formatted vec in a table or something
+void Value( const std::string &str );
+void Value( const int &d );
+void Value( const glm::ivec2 &v );
+void Value( const glm::ivec3 &v );
+void Value( const glm::ivec4 &v );
+void Value( const float &f, const char *format = "%+3.2f" );
+void Value( const glm::vec2 &v, const char *format = "%+3.2f" );
+void Value( const glm::vec3 &v, const char *format = "%+3.2f" );
+void Value( const glm::vec4 &v, const char *format = "%+3.2f" );
 
 //! Flashes the ImGui borders red on ma::NOTIFY_FAILURE (log levels > error) and green on ma::NOTIFY_SUCCESS
 void SetNotificationColors();

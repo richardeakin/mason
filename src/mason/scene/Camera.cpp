@@ -1,6 +1,6 @@
 #include "mason/scene/Camera.h"
 #include "mason/imx/ImGuiStuff.h"
-#include "imGuIZMOquat.h"
+#include "imGuIZMO.quat/imGuIZMO.quat/imGuIZMOquat.h"
 
 #include "cinder/Log.h"
 #include "cinder/app/AppBase.h"
