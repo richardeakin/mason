@@ -191,7 +191,7 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		fbo = gl::Fbo::create( int( size.x ), int( size.y ), fboFormat );
 	}
 
-	if( mType == Type::Texture3d ) {
+	if( mType == Type::Texture3d || mType == Type::Texture2dArray ) {
 		Text( "size: [%d, %d, %d]", tex->getWidth(), tex->getHeight(), tex->getDepth() );
 	}
 	else {
@@ -246,6 +246,10 @@ void TextureViewer::viewImpl( gl::FboRef &fbo, const gl::TextureBaseRef &tex )
 		else if( mType == Type::Texture3d ) {
 			auto texture3d = dynamic_pointer_cast<gl::Texture3d>( tex );
 			render3d( texture3d, destRect );
+		}
+		else if( mType == Type::Texture2dArray ) {
+			auto texture3d = dynamic_pointer_cast<gl::Texture3d>( tex );
+			render2dArray( texture3d, destRect );
 		}
 
 		updatePixelCoord( tex );
